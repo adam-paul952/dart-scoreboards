@@ -10,6 +10,7 @@ import {
   AntDesign,
   FontAwesome5,
   MaterialCommunityIcons,
+  Ionicons,
 } from "@expo/vector-icons";
 // Types
 interface ILandingButtonProps {
@@ -40,25 +41,22 @@ export const AntDesignIcon = (props: {
   name: React.ComponentProps<typeof AntDesign>["name"];
   color: string;
   size: number;
-}) => {
-  return <AntDesign style={styles.iconStyle} {...props} />;
-};
-
+}) => <AntDesign style={styles.iconStyle} {...props} />;
 export const FontAwesome5Icon = (props: {
   name: React.ComponentProps<typeof FontAwesome5>["name"];
   color: string;
   size: number;
-}) => {
-  return <FontAwesome5 style={styles.iconStyle} {...props} />;
-};
-
+}) => <FontAwesome5 style={styles.iconStyle} {...props} />;
 export const MaterialCommunityIcon = (props: {
   name: React.ComponentProps<typeof MaterialCommunityIcons>["name"];
   color: string;
   size: number;
-}) => {
-  return <MaterialCommunityIcons style={styles.iconStyle} {...props} />;
-};
+}) => <MaterialCommunityIcons style={styles.iconStyle} {...props} />;
+export const IonIcon = (props: {
+  name: React.ComponentProps<typeof Ionicons>["name"];
+  color: string;
+  size: number;
+}) => <Ionicons style={styles.iconStyle} {...props} />;
 
 export default LandingPageButton;
 
@@ -66,7 +64,6 @@ const styles = StyleSheet.create({
   buttonStyle: {
     width: "49%",
     height: height / 3,
-    borderWidth: 1,
     marginBottom: 5,
     justifyContent: "center",
     alignItems: "center",

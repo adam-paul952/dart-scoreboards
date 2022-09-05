@@ -1,5 +1,6 @@
 import { StatusBar } from "expo-status-bar";
 import { SafeAreaProvider } from "react-native-safe-area-context";
+import { PlayerListProvider } from "./context/PlayerContext";
 
 import useCachedResources from "./hooks/useCachedResources";
 import useColorScheme from "./hooks/useColorScheme";
@@ -14,8 +15,10 @@ const App = () => {
   } else {
     return (
       <SafeAreaProvider>
-        <Navigation colorScheme={colorScheme} />
-        <StatusBar />
+        <PlayerListProvider>
+          <Navigation colorScheme={colorScheme} />
+          <StatusBar />
+        </PlayerListProvider>
       </SafeAreaProvider>
     );
   }

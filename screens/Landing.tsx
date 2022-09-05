@@ -2,8 +2,8 @@ import React from "react";
 // Components
 import { StyleSheet } from "react-native";
 import LandingPageButton, {
-  AntDesignIcon,
   FontAwesome5Icon,
+  IonIcon,
   MaterialCommunityIcon,
 } from "../components/LandingButtons";
 import { View } from "../components/Themed";
@@ -16,7 +16,7 @@ const width = window.window.width;
 
 const Landing = () => {
   // Navigation
-  //   const navigate = useNavigation();
+  const navigate = useNavigation();
   // Theme Colors
   const buttonBG = useThemeColor(
     { light: "lightblue", dark: "royalblue" },
@@ -50,22 +50,22 @@ const Landing = () => {
       </View>
       <View style={styles.buttonRow}>
         <LandingPageButton
-          variant="Create Player"
-          buttonBG={buttonBG}
-          color={color}
-          //   onPressOut={() => navigate.navigate("CreatePlayer")}
-        >
-          <AntDesignIcon name="adduser" color={color} size={60} />
-        </LandingPageButton>
-        <LandingPageButton
           variant="Manage Players"
           buttonBG={buttonBG}
           color={color}
-          //   onPressOut={() => {
-          //     navigate.navigate("ManagePlayer");
-          //   }}
+          onPressOut={() => {
+            navigate.navigate("manage-players");
+          }}
         >
           <FontAwesome5Icon name="user-friends" color={color} size={60} />
+        </LandingPageButton>
+        <LandingPageButton
+          variant="Stats"
+          buttonBG={buttonBG}
+          color={color}
+          onPressOut={() => {}}
+        >
+          <IonIcon name="stats-chart" color={color} size={60} />
         </LandingPageButton>
       </View>
     </View>

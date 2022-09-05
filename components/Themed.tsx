@@ -3,7 +3,12 @@
  * https://docs.expo.io/guides/color-schemes/
  */
 
-import { Text as DefaultText, View as DefaultView } from "react-native";
+import {
+  Text as DefaultText,
+  View as DefaultView,
+  KeyboardAvoidingView as DefaultKeyboardAvoidingView,
+  TextInput as DefaultTextInput,
+} from "react-native";
 
 import Colors from "../constants/Colors";
 import useColorScheme from "../hooks/useColorScheme";
@@ -29,6 +34,9 @@ type ThemeProps = {
 
 export type TextProps = ThemeProps & DefaultText["props"];
 export type ViewProps = ThemeProps & DefaultView["props"];
+export type KeyboardAvoidingViewProps = ThemeProps &
+  DefaultKeyboardAvoidingView["props"];
+export type TextInputProps = ThemeProps & DefaultTextInput["props"];
 
 const Text = (props: TextProps) => {
   const { style, lightColor, darkColor, ...otherProps } = props;
@@ -47,5 +55,27 @@ const View = (props: ViewProps) => {
   return <DefaultView style={[{ backgroundColor }, style]} {...otherProps} />;
 };
 
+const KeyboardAvoidingView = (props: KeyboardAvoidingViewProps) => {
+  const { style, lightColor, darkColor, ...otherProps } = props;
+  const backgroundColor = useThemeColor(
+    { light: lightColor, dark: darkColor },
+    "background"
+  );
+
+  return (
+    <DefaultKeyboardAvoidingView
+      style={[{ backgroundColor }, style]}
+      {...otherProps}
+    />
+  );
+};
+
+const TextInput = (props: TextInputProps) => {
+  const { style, lightColor, darkColor, ...otherProps } = props;
+  const color = useThemeColor({ light: lightColor, dark: darkColor }, "text");
+
+  return <DefaultTextInput style={[{ color }, style]} {...otherProps} />;
+};
+
 export default useThemeColor;
-export { Text, View };
+export { KeyboardAvoidingView, Text, TextInput, View };

@@ -4,9 +4,6 @@
  */
 import * as React from "react";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import { Pressable } from "react-native";
-
-import { FontAwesome } from "@expo/vector-icons";
 
 import Colors from "../constants/Colors";
 import useColorScheme from "../hooks/useColorScheme";
@@ -15,9 +12,13 @@ import Landing from "../screens/Landing";
 
 import TabOneScreen from "../screens/TabOneScreen";
 import TabTwoScreen from "../screens/TabTwoScreen";
-import TabBarIcon from "./tabBarIcons/TabBarIcon";
+import {
+  TabBarIconHome,
+  TabBarIconRules,
+  TabBarIconSettings,
+} from "./tabBarIcons/TabBarIcon";
 
-import { RootTabParamList, RootTabScreenProps } from "../types";
+import { RootTabParamList } from "../types";
 
 const BottomTab = createBottomTabNavigator<RootTabParamList>();
 
@@ -26,40 +27,41 @@ const BottomTabNavigator = () => {
 
   return (
     <BottomTab.Navigator
-      initialRouteName="TabOne"
+      initialRouteName="landing"
       screenOptions={{
         tabBarActiveTintColor: Colors[colorScheme].tint,
       }}
     >
       <BottomTab.Screen
-        name="TabOne"
+        name="landing"
         component={Landing}
-        options={({ navigation }: RootTabScreenProps<"TabOne">) => ({
-          title: "Tab One",
-          tabBarIcon: ({ color }) => <TabBarIcon name="code" color={color} />,
-          headerRight: () => (
-            <Pressable
-              onPress={() => navigation.navigate("Modal")}
-              style={({ pressed }) => ({
-                opacity: pressed ? 0.5 : 1,
-              })}
-            >
-              <FontAwesome
-                name="info-circle"
-                size={25}
-                color={Colors[colorScheme].text}
-                style={{ marginRight: 15 }}
-              />
-            </Pressable>
+        options={() => ({
+          title: "Dart Scoreboard",
+          tabBarIcon: ({ color }) => (
+            <TabBarIconHome name="target" color={color} />
           ),
         })}
       />
+
       <BottomTab.Screen
-        name="TabTwo"
+        name="rules"
         component={TabTwoScreen}
         options={{
-          title: "Tab Two",
-          tabBarIcon: ({ color }) => <TabBarIcon name="code" color={color} />,
+          title: "Rules",
+          tabBarIcon: ({ color }) => (
+            <TabBarIconRules name="text-document" color={color} />
+          ),
+        }}
+      />
+
+      <BottomTab.Screen
+        name="settings"
+        component={TabOneScreen}
+        options={{
+          title: "Settings",
+          tabBarIcon: ({ color }) => (
+            <TabBarIconSettings name="settings-outline" color={color} />
+          ),
         }}
       />
     </BottomTab.Navigator>

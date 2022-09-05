@@ -1,4 +1,5 @@
 import React from "react";
+
 import {
   Pressable,
   PressableProps,
@@ -10,12 +11,7 @@ import {
 
 import { Text, View } from "../components/Themed";
 
-import window from "../constants/Layout";
-
-const winHeight = window.window.height;
-const winWidth = window.window.width;
-
-interface ICustomButtonProps extends PressableProps {
+export interface ICustomButtonProps extends PressableProps {
   title: string;
   buttonStyle?: StyleProp<ViewStyle>;
   textStyle?: StyleProp<TextStyle>;
@@ -42,9 +38,9 @@ const CustomButton = (props: ICustomButtonProps) => {
       // onAccessibilityAction={() => !props.disabled && props.onPressOut!()}
       style={
         props.disabled
-          ? [styles.disabledButton, props.buttonStyle]
+          ? [props.buttonStyle, styles.button, styles.disabledButton]
           : props.selected
-          ? [styles.button, props.buttonStyle, styles.selectedButton]
+          ? [props.buttonStyle, styles.selectedButton, styles.button]
           : ({ pressed }) => [
               { opacity: pressed ? 0.5 : 1 },
               props.buttonStyle
@@ -86,7 +82,7 @@ const CustomButton = (props: ICustomButtonProps) => {
         <Text
           style={
             props.disabled
-              ? [styles.disabledButtonText]
+              ? [styles.disabledButtonText, styles.buttonText]
               : props.textStyle
               ? [styles.buttonText, props.textStyle]
               : styles.buttonText
@@ -103,22 +99,24 @@ export default CustomButton;
 
 const styles = StyleSheet.create({
   button: {
-    // backgroundColor: "royalblue",
+    backgroundColor: "lightblue",
     // width: winWidth * 0.8,
-    // alignSelf: "center",
-    // borderRadius: 20,
-    // padding: 5,
+    alignItems: "center",
+    borderRadius: 15,
+    paddingVertical: 8,
+    borderWidth: 0,
+    // borderColor: "lightBlue",
   },
   buttonText: {
-    // fontSize: 30,
+    fontSize: 25,
     // alignSelf: "center",
     // color: "#FCF2CE",
   },
   disabledButton: {
-    // backgroundColor: "transparent",
+    backgroundColor: "transparent",
     // borderStyle: "solid",
     // borderColor: "#707070",
-    // borderWidth: 1,
+    borderWidth: 1,
     // width: winWidth * 0.8,
     // alignSelf: "center",
     // borderRadius: 20,
