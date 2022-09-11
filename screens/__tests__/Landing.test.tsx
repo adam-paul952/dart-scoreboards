@@ -4,11 +4,14 @@ import { fireEvent, render, screen } from "@testing-library/react-native";
 import { NavigationContainer } from "@react-navigation/native";
 
 import Landing from "../Landing";
+import { PlayerListProvider } from "../../context/PlayerContext";
 
 const component = (
-  <NavigationContainer>
-    <Landing />
-  </NavigationContainer>
+  <PlayerListProvider>
+    <NavigationContainer>
+      <Landing />
+    </NavigationContainer>
+  </PlayerListProvider>
 );
 
 describe("<Landing />", () => {
@@ -36,5 +39,16 @@ describe("<Landing />", () => {
 
     const header = screen.getByText("Manage Players");
     expect(header).toBeTruthy();
+  });
+
+  it("if no players are stored, alert the user they must create players prior to creating a match", () => {
+    render(component);
+
+    const newGameBtn = screen.getByText("New Game");
+    fireEvent(newGameBtn, "press");
+
+    // const alert = screen.getByAcc("alert");
+
+    // expect(alert).toBeTruthy();
   });
 });

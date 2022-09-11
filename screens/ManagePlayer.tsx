@@ -42,35 +42,39 @@ const ManagePlayerScreen = () => {
     );
   };
 
+  const ListEmpty = () => {
+    return (
+      <Text style={{ fontSize: 22 }}>
+        No players added -- {"\n"}Please add players to continue
+      </Text>
+    );
+  };
+
   return (
     <View
-      style={
+      style={[
+        styles.container,
         playerList.length === 0
           ? styles.emptyListContainer
-          : styles.filledListContainer
-      }
+          : styles.filledListContainer,
+      ]}
     >
-      {playerList.length === 0 ? (
-        <Text style={{ fontSize: 22 }}>
-          No players added -- {"\n"}Please add players to continue
-        </Text>
-      ) : (
-        <>
-          <FlatList
-            data={playerList}
-            renderItem={renderItem}
-            keyExtractor={(item) => `${item.id}`}
-          />
-          <CustomButton
-            title="Continue to Game"
-            buttonStyle={styles.buttonStyle}
-            disabled={disableButton()}
-            onPressOut={() => {
-              navigation.navigate("create-match");
-            }}
-          />
-        </>
-      )}
+      <>
+        <FlatList
+          data={playerList}
+          renderItem={renderItem}
+          keyExtractor={(item) => `${item.id}`}
+          ListEmptyComponent={ListEmpty}
+        />
+        <CustomButton
+          title="Continue to Game"
+          buttonStyle={styles.buttonStyle}
+          disabled={disableButton()}
+          onPressOut={() => {
+            navigation.navigate("create-match");
+          }}
+        />
+      </>
     </View>
   );
 };
@@ -78,13 +82,13 @@ const ManagePlayerScreen = () => {
 export default ManagePlayerScreen;
 
 const styles = StyleSheet.create({
+  container: { flex: 1 },
   emptyListContainer: {
-    flex: 1,
     alignItems: "center",
     paddingHorizontal: 20,
     paddingTop: "50%",
   },
-  filledListContainer: { flex: 1, paddingTop: 20 },
+  filledListContainer: { paddingTop: 20 },
   buttonStyle: {
     borderWidth: 1,
     borderColor: "gray",

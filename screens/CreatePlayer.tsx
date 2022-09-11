@@ -15,12 +15,9 @@ import {
 } from "../components/Themed";
 import CustomButton from "../components/CustomButton";
 
-import window from "../constants/Layout";
-const height = window.window.height;
-
 import { usePlayerState } from "../context/PlayerContext";
 
-const CreatePlayerModal = () => {
+const CreatePlayer = () => {
   const initialState = {
     id: Math.floor(Math.random() * 10000),
     name: "",
@@ -54,16 +51,12 @@ const CreatePlayerModal = () => {
         <ScrollView>
           <View
             style={{
-              // height: height / 3.5,
-              // alignItems: "center",
               justifyContent: "center",
               paddingHorizontal: 20,
               paddingVertical: 90,
             }}
           >
-            <Text style={{ fontSize: 25, paddingBottom: 10 }}>
-              Enter Playername:
-            </Text>
+            <Text style={{ fontSize: 25, paddingBottom: 10 }}>Enter Name:</Text>
             <TextInput
               style={styles.input}
               value={name}
@@ -73,6 +66,8 @@ const CreatePlayerModal = () => {
               keyboardType="default"
               onSubmitEditing={addPlayer}
               autoCapitalize="words"
+              autoFocus
+              placeholder="Player name"
             />
             <View
               style={{
@@ -87,6 +82,7 @@ const CreatePlayerModal = () => {
                   backgroundColor: "lightblue",
                 }}
                 onPress={() => addPlayer()}
+                disabled={name.length < 3 ? true : false}
               />
             </View>
           </View>
@@ -96,16 +92,14 @@ const CreatePlayerModal = () => {
   );
 };
 
-export default CreatePlayerModal;
+export default CreatePlayer;
 
 const styles = StyleSheet.create({
   input: {
     height: 40,
-    // margin: 12,
     borderWidth: 1,
     borderColor: "gray",
     borderRadius: 10,
     paddingHorizontal: 10,
-    // backgroundColor: "white",
   },
 });

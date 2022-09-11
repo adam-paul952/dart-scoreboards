@@ -12,7 +12,7 @@ import Colors from "../constants/Colors";
 import useColorScheme from "../hooks/useColorScheme";
 
 import CreateMatch from "../screens/CreateMatch";
-import CreatePlayerModal from "../screens/CreatePlayerModal";
+import CreatePlayer from "../screens/CreatePlayer";
 import NotFoundScreen from "../screens/NotFoundScreen";
 import BottomTabNavigator from "./BottomTabNavigator";
 import ManagePlayerScreen from "../screens/ManagePlayer";
@@ -70,7 +70,7 @@ const RootNavigator = () => {
       />
       <Stack.Screen
         name="create-player"
-        component={CreatePlayerModal}
+        component={CreatePlayer}
         options={{ title: "Create New Player" }}
       />
       <Stack.Screen

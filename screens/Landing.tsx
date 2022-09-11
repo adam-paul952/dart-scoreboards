@@ -12,9 +12,11 @@ import { useNavigation } from "@react-navigation/native";
 import useThemeColor from "../components/Themed";
 // Window Size
 import window from "../constants/Layout";
+import { usePlayerState } from "../context/PlayerContext";
 const width = window.window.width;
 
 const Landing = () => {
+  const { playerList } = usePlayerState();
   // Navigation
   const navigate = useNavigation();
   // Theme Colors
@@ -24,6 +26,11 @@ const Landing = () => {
   );
   const color = useThemeColor({ light: "black", dark: "white" }, "text");
 
+  const alertUser = () => {
+    if (playerList.length === 0) alert("Please create a player first");
+    else navigate.navigate("create-match");
+  };
+
   return (
     <View style={styles.container}>
       <View style={styles.buttonRow}>
@@ -31,7 +38,7 @@ const Landing = () => {
           variant="New Game"
           buttonBG={buttonBG}
           color={color}
-          //   onPressOut={() => navigate.navigate("CreateGame")}
+          onPressOut={() => alertUser()}
         >
           <MaterialCommunityIcon
             name="bullseye-arrow"

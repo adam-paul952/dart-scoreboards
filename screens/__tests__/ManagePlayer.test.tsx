@@ -4,6 +4,7 @@ import { NavigationContainer } from "@react-navigation/native";
 import { fireEvent, render, screen } from "@testing-library/react-native";
 
 import ManagePlayerScreen from "../ManagePlayer";
+import { PlayerListProvider } from "../../context/PlayerContext";
 
 const noPlayersFound = `No players added -- Please add players to continue`;
 
@@ -14,9 +15,11 @@ const players = [
 ];
 
 const component = (
-  <NavigationContainer>
-    <ManagePlayerScreen />
-  </NavigationContainer>
+  <PlayerListProvider>
+    <NavigationContainer>
+      <ManagePlayerScreen />
+    </NavigationContainer>
+  </PlayerListProvider>
 );
 
 describe("<ManagePlayerScreen />", () => {
