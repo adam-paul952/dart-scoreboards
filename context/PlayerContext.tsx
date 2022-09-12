@@ -9,6 +9,25 @@ export interface IPlayer {
   lives: number;
 }
 
+const players = [
+  {
+    id: 1,
+    name: "Adam",
+    score: 0,
+    selected: true,
+    scoreList: [],
+    lives: 0,
+  },
+  {
+    id: 2,
+    name: "Paul",
+    score: 0,
+    selected: true,
+    scoreList: [0, 0, 0, 0, 0, 0, 0],
+    lives: 0,
+  },
+];
+
 const PlayerStateContext = createContext({} as any);
 
 const PlayerListProvider = ({ children }: { children: React.ReactNode }) => {

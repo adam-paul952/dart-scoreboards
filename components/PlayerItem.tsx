@@ -31,10 +31,11 @@ const PlayerItem: React.FC<IPlayerItemProps> = ({
       />
       <Checkbox value={player.selected} />
       <CustomButton
-        title=""
+        title="delete"
         buttonStyle={styles.delButtonStyle}
         buttonChildrenStyle={styles.delChildButtonStyle}
         onPressOut={() => deletePlayer(player.id)}
+        textStyle={{ display: "none" }}
       >
         <MaterialIcons
           name="delete"

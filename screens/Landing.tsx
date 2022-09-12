@@ -18,7 +18,7 @@ const width = window.window.width;
 const Landing = () => {
   const { playerList } = usePlayerState();
   // Navigation
-  const navigate = useNavigation();
+  const navigation = useNavigation();
   // Theme Colors
   const buttonBG = useThemeColor(
     { light: "lightblue", dark: "royalblue" },
@@ -28,7 +28,7 @@ const Landing = () => {
 
   const alertUser = () => {
     if (playerList.length === 0) alert("Please create a player first");
-    else navigate.navigate("create-match");
+    else navigation.navigate("create-match");
   };
 
   return (
@@ -50,7 +50,7 @@ const Landing = () => {
           variant="Resume Game"
           buttonBG={buttonBG}
           color={color}
-          onPressOut={() => {}}
+          onPressOut={() => navigation.navigate("resume-game")}
         >
           <FontAwesome5Icon name="undo-alt" color={color} size={60} />
         </LandingPageButton>
@@ -61,7 +61,7 @@ const Landing = () => {
           buttonBG={buttonBG}
           color={color}
           onPressOut={() => {
-            navigate.navigate("manage-players");
+            navigation.navigate("manage-players");
           }}
         >
           <FontAwesome5Icon name="user-friends" color={color} size={60} />
@@ -70,7 +70,7 @@ const Landing = () => {
           variant="Stats"
           buttonBG={buttonBG}
           color={color}
-          onPressOut={() => {}}
+          onPressOut={() => navigation.navigate("statistics")}
         >
           <IonIcon name="stats-chart" color={color} size={60} />
         </LandingPageButton>

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 
 import { Keyboard, Platform, StyleSheet } from "react-native";
 import {
@@ -37,10 +37,6 @@ const CreatePlayer = () => {
 
     navigation.goBack();
   };
-
-  useEffect(() => {
-    console.log(playerName);
-  }, [playerName]);
 
   return (
     <KeyboardAvoidingView

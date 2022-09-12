@@ -10,8 +10,8 @@ import useColorScheme from "../hooks/useColorScheme";
 
 import Landing from "../screens/Landing";
 
-import TabOneScreen from "../screens/TabOneScreen";
-import TabTwoScreen from "../screens/TabTwoScreen";
+import Rules from "../screens/Rules";
+import Settings from "../screens/Settings";
 import {
   TabBarIconHome,
   TabBarIconRules,
@@ -45,7 +45,7 @@ const BottomTabNavigator = () => {
 
       <BottomTab.Screen
         name="rules"
-        component={TabTwoScreen}
+        component={Rules}
         options={{
           title: "Rules",
           tabBarIcon: ({ color }) => (
@@ -56,7 +56,7 @@ const BottomTabNavigator = () => {
 
       <BottomTab.Screen
         name="settings"
-        component={TabOneScreen}
+        component={Settings}
         options={{
           title: "Settings",
           tabBarIcon: ({ color }) => (

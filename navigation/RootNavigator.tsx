@@ -21,6 +21,8 @@ import Cricket from "../screens/Cricket";
 import X01 from "../screens/X01";
 import Elimination from "../screens/Elimination";
 import Killer from "../screens/Killer";
+import Statistics from "../screens/Statistics";
+import ResumeGame from "../screens/ResumeGame";
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
@@ -93,6 +95,16 @@ const RootNavigator = () => {
         name="killer"
         component={Killer}
         options={{ title: "Killer" }}
+      />
+      <Stack.Screen
+        name="statistics"
+        component={Statistics}
+        options={{ title: "Stats" }}
+      />
+      <Stack.Screen
+        name="resume-game"
+        component={ResumeGame}
+        options={{ title: "Resume Game" }}
       />
       {/* <Stack.Group screenOptions={{ presentation: "modal" }}></Stack.Group> */}
     </Stack.Navigator>

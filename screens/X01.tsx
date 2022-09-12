@@ -4,8 +4,9 @@ import { StyleSheet } from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
 import { Text, TextInput, View } from "../components/Themed";
 import { IPlayer, usePlayerState } from "../context/PlayerContext";
+import { AntDesign } from "@expo/vector-icons";
 
-const header = ["Player", "Points"];
+const header = ["Player", "Legs", "Points"];
 
 const X01 = () => {
   const { playerList } = usePlayerState();
@@ -39,9 +40,23 @@ const X01 = () => {
           {playerList.map((player: IPlayer) => {
             return (
               <View key={player.id} style={styles.playerRow}>
-                <Text style={[styles.scoreboardText, styles.playerColumn]}>
-                  {player.name}
-                </Text>
+                <View
+                  style={[
+                    styles.playerColumn,
+                    { flexDirection: "row", alignItems: "center" },
+                  ]}
+                >
+                  <Text style={[styles.scoreboardText, { flex: 2 }]}>
+                    {player.name}
+                  </Text>
+                  <AntDesign
+                    name="caretleft"
+                    size={18}
+                    color="darkred"
+                    style={{}}
+                  />
+                </View>
+                <Text style={[styles.scoreboardText, { flex: 1 }]}>0</Text>
                 <Text style={[styles.scoreboardText, { flex: 1 }]}>
                   {player.score}
                 </Text>
@@ -70,6 +85,18 @@ const X01 = () => {
             No Outshots Available
           </Text>
         </ScrollView>
+        <View
+          style={{
+            flexDirection: "row",
+            justifyContent: "space-evenly",
+            paddingVertical: 5,
+          }}
+        >
+          <Text style={{ fontSize: 15 }}>Darts: 0</Text>
+          <Text>1 Dart: --</Text>
+          <Text>High Score: --</Text>
+          <Text>CO: --</Text>
+        </View>
       </View>
     </View>
   );
@@ -102,7 +129,7 @@ const styles = StyleSheet.create({
   scoreInput: {
     borderWidth: 1,
     borderColor: "gray",
-    marginBottom: 20,
+    marginBottom: 10,
     width: "25%",
     height: 50,
     padding: 10,

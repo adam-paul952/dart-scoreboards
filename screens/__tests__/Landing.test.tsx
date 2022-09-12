@@ -45,7 +45,7 @@ describe("<Landing />", () => {
     render(component);
 
     const newGameBtn = screen.getByText("New Game");
-    fireEvent(newGameBtn, "press");
+    // fireEvent(newGameBtn, "press");
 
     // const alert = screen.getByAcc("alert");
 
