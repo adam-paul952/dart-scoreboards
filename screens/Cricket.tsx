@@ -4,10 +4,11 @@ import { StyleSheet } from "react-native";
 import { IPlayer, usePlayerState } from "../context/PlayerContext";
 
 import { View } from "../components/Themed";
-import CricketCalculatorButtons from "../components/scoreboard/calculator-buttons/CricketCalculatorButtons";
-import CricketRoundInfo from "../components/scoreboard/round-info/CricketRoundInfo";
-import CricketHeader from "../components/scoreboard/header/CricketHeader";
-import CricketScoreboardBody from "../components/scoreboard/body/CricketScoreboardBody";
+import CalculatorButtons from "@scoreboard/calculator-buttons/CalculatorButtons";
+import CricketRoundInfo from "@scoreboard/round-info/CricketRoundInfo";
+import CricketHeader from "@scoreboard/header/CricketHeader";
+import CricketScoreboardBody from "@scoreboard/body/CricketScoreboardBody";
+import { cricketButtons } from "@scoreboard/calculator-buttons/constants";
 
 const Cricket = () => {
   const { playerList } = usePlayerState();
@@ -24,7 +25,7 @@ const Cricket = () => {
       </View>
       <View>
         <CricketRoundInfo />
-        <CricketCalculatorButtons />
+        <CalculatorButtons data={cricketButtons} />
       </View>
     </View>
   );

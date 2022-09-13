@@ -3,16 +3,18 @@ import React from "react";
 import { FlatList, StyleSheet } from "react-native";
 
 import CustomButton from "../../CustomButton";
-import { cricketButtons } from "./constants";
 
-const CricketCalculatorButtons = () => {
+interface ICalculatorButtonsProps {
+  data: Array<string>;
+}
+const CalculatorButtons = (props: ICalculatorButtonsProps) => {
   const Item = ({ item }: { item: any }) => {
     return <CustomButton buttonStyle={styles.item} title={item} />;
   };
 
   return (
     <FlatList
-      data={cricketButtons}
+      data={props.data}
       numColumns={3}
       renderItem={Item}
       keyExtractor={(item) => item}
@@ -20,7 +22,7 @@ const CricketCalculatorButtons = () => {
   );
 };
 
-export default CricketCalculatorButtons;
+export default CalculatorButtons;
 
 const styles = StyleSheet.create({
   item: {

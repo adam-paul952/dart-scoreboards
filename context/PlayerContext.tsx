@@ -31,7 +31,7 @@ const players = [
 const PlayerStateContext = createContext({} as any);
 
 const PlayerListProvider = ({ children }: { children: React.ReactNode }) => {
-  const [playerList, setPlayerList] = useState<IPlayer[]>([]);
+  const [playerList, setPlayerList] = useState<IPlayer[]>(players);
 
   const onAddPlayer = (player: IPlayer) => {
     setPlayerList([...playerList, player]);

@@ -5,7 +5,7 @@ import { AntDesign } from "@expo/vector-icons";
 
 import CricketScoreboardColumn from "./CricketScoreboardColumn";
 import { Text, View } from "../../Themed";
-import { IPlayer } from "../../../context/PlayerContext";
+import { IPlayer } from "@context/PlayerContext";
 
 interface ICricketScoreboardBodyProps {
   player: IPlayer;

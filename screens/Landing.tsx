@@ -1,32 +1,41 @@
 import React from "react";
-// Components
+
 import { StyleSheet } from "react-native";
-import LandingPageButton, {
+
+import LandingPageButton from "../components/LandingButtons";
+import { View } from "../components/Themed";
+import {
   FontAwesome5Icon,
   IonIcon,
   MaterialCommunityIcon,
-} from "../components/LandingButtons";
-import { View } from "../components/Themed";
-// Hooks
-import { useNavigation } from "@react-navigation/native";
-import useThemeColor from "../components/Themed";
-// Window Size
-import window from "../constants/Layout";
+} from "../components/button-icons/ButtonIcons";
+
 import { usePlayerState } from "../context/PlayerContext";
+import { useNavigation } from "@react-navigation/native";
+import Colors from "../constants/Colors";
+import useColorScheme from "../hooks/useColorScheme";
+
+import window from "../constants/Layout";
 const width = window.window.width;
+
+/**
+ * @description Main Landing Screen - Renders buttons to direct the user
+ * @description New Game - route "create-match"
+ * @description Manage Players - route "manage-players"
+ * @description Resume Game - route "resume-game" (Not used yet)
+ * @description Stats - route "statistics" (Not used yet)
+ */
 
 const Landing = () => {
   const { playerList } = usePlayerState();
-  // Navigation
-  const navigation = useNavigation();
-  // Theme Colors
-  const buttonBG = useThemeColor(
-    { light: "lightblue", dark: "royalblue" },
-    "background"
-  );
-  const color = useThemeColor({ light: "black", dark: "white" }, "text");
 
-  const alertUser = () => {
+  const navigation = useNavigation();
+
+  const colorScheme = useColorScheme();
+  const buttonBG = Colors[colorScheme].buttonColor;
+  const color = Colors[colorScheme].text;
+
+  const alertUserNoPlayers = () => {
     if (playerList.length === 0) alert("Please create a player first");
     else navigation.navigate("create-match");
   };
@@ -38,7 +47,7 @@ const Landing = () => {
           variant="New Game"
           buttonBG={buttonBG}
           color={color}
-          onPressOut={() => alertUser()}
+          onPressOut={() => alertUserNoPlayers()}
         >
           <MaterialCommunityIcon
             name="bullseye-arrow"

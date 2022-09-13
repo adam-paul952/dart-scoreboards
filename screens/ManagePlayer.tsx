@@ -2,11 +2,10 @@ import React from "react";
 
 import { FlatList, StyleSheet } from "react-native";
 
-import { Text, View } from "../components/Themed";
-import PlayerItem from "../components/PlayerItem";
-
-import { IPlayer, usePlayerState } from "../context/PlayerContext";
-import CustomButton from "../components/CustomButton";
+import { Text, View } from "@components/Themed";
+import PlayerItem from "@components/PlayerItem";
+import { IPlayer, usePlayerState } from "@context/PlayerContext";
+import CustomButton from "@components/CustomButton";
 import { useNavigation } from "@react-navigation/native";
 
 const ManagePlayerScreen = () => {

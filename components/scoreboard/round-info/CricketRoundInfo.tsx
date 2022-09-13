@@ -2,7 +2,7 @@ import React from "react";
 
 import { StyleSheet } from "react-native";
 
-import { Text, TextInput, View } from "../../../components/Themed";
+import { Text, TextInput, View } from "@components/Themed";
 
 const CricketRoundInfo = () => {
   return (

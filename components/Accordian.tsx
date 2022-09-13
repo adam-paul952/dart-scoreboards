@@ -1,8 +1,7 @@
-import React, { useState } from "react";
-import { FlatList, Pressable, StyleSheet } from "react-native";
-import { Text, View } from "./Themed";
-import { Entypo } from "@expo/vector-icons";
-import RulesDescription from "./RulesDescription";
+import React from "react";
+import { FlatList, StyleSheet } from "react-native";
+import { View } from "./Themed";
+import AccordianItem from "./AccordianItem";
 
 interface ICustomAccordianProps {
   title: string;
@@ -10,21 +9,19 @@ interface ICustomAccordianProps {
 }
 
 let data = [
-  { game: "Baseball", scoring: "", note: "" },
-  { game: "Cricket", scoring: "", note: "" },
-  { game: "Elimination", scoring: "", note: "" },
-  { game: "Killer", scoring: "", note: "" },
-  { game: "X01", scoring: "", note: "" },
+  { game: "Baseball" },
+  { game: "Cricket" },
+  { game: "Elimination" },
+  { game: "Killer" },
+  { game: "X01" },
 ];
 
 const CustomAccordian = () => {
-  const [expanded, setExpanded] = React.useState<boolean>(false);
-
   return (
     <View>
       <FlatList
         data={data}
-        renderItem={({ item }) => AccordianItem({ item, expanded })}
+        renderItem={({ item }) => <AccordianItem item={item} />}
         keyExtractor={(item) => item.game}
       />
     </View>
@@ -40,30 +37,3 @@ const styles = StyleSheet.create({
     marginVertical: "5%",
   },
 });
-
-const AccordianItem = ({
-  item,
-  expanded,
-}: {
-  item: any;
-  expanded: boolean;
-}) => {
-  return (
-    <View>
-      <Pressable>
-        <View
-          style={{
-            flexDirection: "row",
-            justifyContent: "space-between",
-            paddingHorizontal: 20,
-            paddingVertical: 10,
-          }}
-        >
-          <Text style={{ fontSize: 20 }}>{item.game}</Text>
-          <Entypo name="chevron-thin-down" size={24} color="black" />
-        </View>
-      </Pressable>
-      {expanded && <RulesDescription variant={item.game} />}
-    </View>
-  );
-};

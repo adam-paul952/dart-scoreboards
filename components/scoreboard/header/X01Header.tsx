@@ -2,13 +2,14 @@ import React from "react";
 
 import { StyleSheet } from "react-native";
 
-import { Text, View } from "@components/Themed";
-import { cricketHeader } from "./constants";
+import { Text, View } from "../../Themed";
 
-const CricketHeader = () => {
+import { x01Header } from "./constants";
+
+const X01Header = () => {
   return (
     <View style={styles.scoreboardRow}>
-      {cricketHeader.map((text) => {
+      {x01Header.map((text) => {
         return (
           <View
             key={text}
@@ -26,16 +27,12 @@ const CricketHeader = () => {
   );
 };
 
-export default CricketHeader;
+export default X01Header;
 
 const styles = StyleSheet.create({
-  scoreboardRow: {
-    flexDirection: "row",
-    justifyContent: "center",
-    marginHorizontal: 5,
-  },
+  scoreboardRow: { flexDirection: "row", justifyContent: "center" },
   playerHeaderColumn: {
-    flex: 2,
+    flex: 3,
     borderRightColor: "gray",
     borderRightWidth: 1,
     borderBottomWidth: 1,

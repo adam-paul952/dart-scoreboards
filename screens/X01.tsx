@@ -1,12 +1,16 @@
 import React, { useState } from "react";
 
 import { StyleSheet } from "react-native";
-import { ScrollView } from "react-native-gesture-handler";
-import { Text, TextInput, View } from "../components/Themed";
-import { IPlayer, usePlayerState } from "../context/PlayerContext";
-import { AntDesign } from "@expo/vector-icons";
 
-const header = ["Player", "Legs", "Points"];
+import { Text, TextInput, View } from "@components/Themed";
+import { usePlayerState } from "../context/PlayerContext";
+
+import X01Header from "@scoreboard/header/X01Header";
+import X01ScoreboardBody from "@scoreboard/body/X01ScoreboardBody";
+import X01PlayerInfo from "@scoreboard/round-info/X01PlayerInfo";
+import CalculatorButtons from "@scoreboard/calculator-buttons/CalculatorButtons";
+
+import { regularButtons } from "@scoreboard/calculator-buttons/constants";
 
 const X01 = () => {
   const { playerList } = usePlayerState();
@@ -20,82 +24,27 @@ const X01 = () => {
   return (
     <View style={styles.container}>
       <View style={{ flex: 2 }}>
-        <View style={styles.scoreboardRow}>
-          {header.map((text) => {
-            return (
-              <View
-                key={text}
-                style={
-                  text === "Player"
-                    ? styles.playerHeaderColumn
-                    : styles.pointsHeaderColumn
-                }
-              >
-                <Text style={styles.scoreboardText}>{text}</Text>
-              </View>
-            );
-          })}
-        </View>
+        <X01Header />
         <View>
-          {playerList.map((player: IPlayer) => {
-            return (
-              <View key={player.id} style={styles.playerRow}>
-                <View
-                  style={[
-                    styles.playerColumn,
-                    { flexDirection: "row", alignItems: "center" },
-                  ]}
-                >
-                  <Text style={[styles.scoreboardText, { flex: 2 }]}>
-                    {player.name}
-                  </Text>
-                  <AntDesign
-                    name="caretleft"
-                    size={18}
-                    color="darkred"
-                    style={{}}
-                  />
-                </View>
-                <Text style={[styles.scoreboardText, { flex: 1 }]}>0</Text>
-                <Text style={[styles.scoreboardText, { flex: 1 }]}>
-                  {player.score}
-                </Text>
-              </View>
-            );
-          })}
+          <X01ScoreboardBody playerList={playerList} />
         </View>
       </View>
       <View>
-        <ScrollView
-          keyboardShouldPersistTaps="always"
-          contentContainerStyle={{
+        <View
+          style={{
             flexDirection: "row",
             justifyContent: "space-evenly",
             alignItems: "center",
           }}
         >
-          <TextInput
-            autoFocus
-            style={styles.scoreInput}
-            keyboardType="numeric"
-            blurOnSubmit={false}
-            maxLength={3}
-          />
+          <TextInput style={styles.scoreInput} maxLength={3} />
           <Text style={{ fontSize: 20, paddingBottom: 20 }}>
             No Outshots Available
           </Text>
-        </ScrollView>
-        <View
-          style={{
-            flexDirection: "row",
-            justifyContent: "space-evenly",
-            paddingVertical: 5,
-          }}
-        >
-          <Text style={{ fontSize: 15 }}>Darts: 0</Text>
-          <Text>1 Dart: --</Text>
-          <Text>High Score: --</Text>
-          <Text>CO: --</Text>
+        </View>
+        <View>
+          <X01PlayerInfo />
+          <CalculatorButtons data={regularButtons} />
         </View>
       </View>
     </View>
@@ -119,13 +68,7 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: "gray",
   },
-  scoreboardText: { textAlign: "center", fontSize: 20 },
-  playerRow: { flexDirection: "row" },
-  playerColumn: {
-    flex: 3,
-    borderRightColor: "gray",
-    borderRightWidth: 1,
-  },
+
   scoreInput: {
     borderWidth: 1,
     borderColor: "gray",

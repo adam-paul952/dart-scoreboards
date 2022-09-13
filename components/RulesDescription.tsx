@@ -1,5 +1,6 @@
 import React from "react";
 
+import { StyleSheet } from "react-native";
 import { Text } from "../components/Themed";
 
 const RulesDescription = ({ variant }: { variant: string }) => {
@@ -24,14 +25,14 @@ export default RulesDescription;
 const X01Rules = () => {
   return (
     <>
-      <Text>
+      <Text style={styles.textBody}>
         <Text style={{ fontWeight: "bold" }}>Game Play:</Text> X01 is a
         tournament style game, where players start with X01 points and lower
         their score to exactly 0. First players have to define how many points
         they start with (typically 301 or 501) but can be any number of points
         the players want.
       </Text>
-      <Text>
+      <Text style={styles.textBody}>
         <Text style={{ fontWeight: "bold" }}>Scoring:</Text> This game can be
         played either by double-in and double-out or just double out. Players
         take turns throwing darts into the board, adding up their points based
@@ -47,7 +48,7 @@ const X01Rules = () => {
 const BaseBallRules = () => {
   return (
     <>
-      <Text>
+      <Text style={styles.textBody}>
         <Text style={{ fontWeight: "bold" }}>Game Play:</Text> Players each take
         turns throwing three darts, starting with the 1. Once all players have
         thrown at the 1, the start of the next round players will throw at the
@@ -57,7 +58,7 @@ const BaseBallRules = () => {
         a treble is 3. Players record their score, and whoever has the most
         points at the end of the game wins.
       </Text>
-      <Text>
+      <Text style={styles.textBody}>
         <Text style={{ fontWeight: "bold" }}>Note:</Text> As we play the game,
         there are a few exceptions. If a player successfully lands three darts
         in the number they are shooting for (single,double or treble), then that
@@ -75,7 +76,7 @@ const BaseBallRules = () => {
 const CricketRules = () => {
   return (
     <>
-      <Text>
+      <Text style={styles.textBody}>
         <Text style={{ fontWeight: "bold" }}>Game Play:</Text> Players take
         turns throwing three darts at the board, hitting the numbers 15 through
         20; bulls-eye included. The game requires players to &quot;close&quot;
@@ -84,7 +85,7 @@ const CricketRules = () => {
         the 15 through 20 and bulls-eye then it doesn&apos;t have any effect to
         their score.
       </Text>
-      <Text>
+      <Text style={styles.textBody}>
         <Text style={{ fontWeight: "bold" }}>Scoring:</Text> If a player hits a
         single, it accounts for 1 mark on a number, a double counts as 2, and a
         treble counts as 3. Once a number has been &quot;closed&quot; by one
@@ -97,7 +98,7 @@ const CricketRules = () => {
         or the player with all numbers &quot;closed&quot; accumulates more
         points.
       </Text>
-      <Text>
+      <Text style={styles.textBody}>
         <Text style={{ fontWeight: "bold" }}>Note:</Text> When it comes to the
         bulls-eye, a true bulls-eye is worth 2 of the 3 required marks for bull
         and a cow is worth 1 of the 3 required.
@@ -109,7 +110,7 @@ const CricketRules = () => {
 const EliminationRules = () => {
   return (
     <>
-      <Text>
+      <Text style={styles.textBody}>
         <Text style={{ fontWeight: "bold" }}>Game Play:</Text> Players alternate
         throwing 3 darts at the board trying to achieve the highest possible
         scoring hand. The next player must score higher then the player in front
@@ -126,7 +127,7 @@ const EliminationRules = () => {
 const KillerRules = () => {
   return (
     <>
-      <Text>
+      <Text style={styles.textBody}>
         <Text style={{ fontWeight: "bold" }}>Game Play:</Text> The game begins
         by players throwing darts into the board with their hand opposite for
         throwing. (If I was right-handed, I would use my left hand for this.) A
@@ -135,7 +136,7 @@ const KillerRules = () => {
         &quot;assigned&quot; a number game play will begin with the player with
         the lowest number and counting up.
       </Text>
-      <Text>
+      <Text style={styles.textBody}>
         <Text style={{ fontWeight: "bold" }}>Scoring:</Text> Players take turns
         shooting at their assigned numbers (singles are 1, doubles are 2,
         trebles are 3), players gain lives relative to the scoring. Once a
@@ -146,7 +147,7 @@ const KillerRules = () => {
         There can be more then one killer at a time, and game play continues
         until there is only one player remaining.
       </Text>
-      <Text>
+      <Text style={styles.textBody}>
         A few additional notes: If a player has 4 lives and hits a double of
         their number, they in fact do not become a killer but instead they bring
         themself up to 5 then back down to 4 again. As such, if a player is a
@@ -156,3 +157,7 @@ const KillerRules = () => {
     </>
   );
 };
+
+const styles = StyleSheet.create({
+  textBody: { paddingHorizontal: 15, fontSize: 18 },
+});

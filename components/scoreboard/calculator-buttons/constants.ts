@@ -10,4 +10,19 @@ const cricketButtons = [
   "Enter",
 ];
 
-export { cricketButtons };
+const regularButtons = [
+  "1",
+  "2",
+  "3",
+  "4",
+  "5",
+  "6",
+  "7",
+  "8",
+  "9",
+  "Del",
+  "0",
+  "Enter",
+];
+
+export { cricketButtons, regularButtons };

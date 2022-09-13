@@ -5,7 +5,7 @@
 
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { RootStackParamList, RootStackScreenProps } from "../types";
-import { AntDesign } from "@expo/vector-icons";
+import { AntDesignIcon } from "../components/button-icons/ButtonIcons";
 
 import { Pressable } from "react-native";
 import Colors from "../constants/Colors";
@@ -56,7 +56,7 @@ const RootNavigator = () => {
               })}
               accessibilityHint="add-player"
             >
-              <AntDesign
+              <AntDesignIcon
                 name="adduser"
                 size={25}
                 color={Colors[colorScheme].text}
@@ -106,7 +106,6 @@ const RootNavigator = () => {
         component={ResumeGame}
         options={{ title: "Resume Game" }}
       />
-      {/* <Stack.Group screenOptions={{ presentation: "modal" }}></Stack.Group> */}
     </Stack.Navigator>
   );
 };

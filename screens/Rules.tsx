@@ -1,8 +1,8 @@
 import React from "react";
-import { StyleSheet, ScrollView } from "react-native";
-import CustomAccordian from "../components/Accordian";
+import { StyleSheet } from "react-native";
+import CustomAccordian from "@components/Accordian";
 
-import { Text, View } from "../components/Themed";
+import { Text, View } from "@components/Themed";
 
 // import CustomAccordian from "../components/Accordian";
 // import RulesDescription from "../components/RulesDescription";
