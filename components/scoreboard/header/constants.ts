@@ -12,4 +12,6 @@ const cricketHeader = [
 
 const x01Header = ["Player", "Legs", "Points"];
 
-export { cricketHeader, x01Header };
+const eliminationHeader = ["Player", "Score", "Lives"];
+
+export { cricketHeader, x01Header, eliminationHeader };

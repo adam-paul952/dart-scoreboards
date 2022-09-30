@@ -5,7 +5,10 @@
 
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { RootStackParamList, RootStackScreenProps } from "../types";
-import { AntDesignIcon } from "../components/button-icons/ButtonIcons";
+import {
+  AntDesignIcon,
+  FontAwesome5Icon,
+} from "../components/button-icons/ButtonIcons";
 
 import { Pressable } from "react-native";
 import Colors from "../constants/Colors";
@@ -23,6 +26,7 @@ import Elimination from "../screens/Elimination";
 import Killer from "../screens/Killer";
 import Statistics from "../screens/Statistics";
 import ResumeGame from "../screens/ResumeGame";
+import X01OutChart from "../screens/X01OutChart";
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
@@ -85,7 +89,28 @@ const RootNavigator = () => {
         component={Cricket}
         options={{ title: "Cricket" }}
       />
-      <Stack.Screen name="x01" component={X01} options={{ title: "X01" }} />
+      <Stack.Screen
+        name="x01"
+        component={X01}
+        options={({ navigation, route }: RootStackScreenProps<"x01">) => ({
+          title: "X01",
+          headerRight: () => (
+            <Pressable
+              onPress={() => navigation.navigate("x01-outchart")}
+              style={({ pressed }) => ({
+                opacity: pressed ? 0.5 : 1,
+              })}
+              accessibilityHint="add-player"
+            >
+              <FontAwesome5Icon
+                name="clipboard-list"
+                size={25}
+                color={Colors[colorScheme].text}
+              />
+            </Pressable>
+          ),
+        })}
+      />
       <Stack.Screen
         name="elimination"
         component={Elimination}
@@ -106,6 +131,7 @@ const RootNavigator = () => {
         component={ResumeGame}
         options={{ title: "Resume Game" }}
       />
+      <Stack.Screen name="x01-outchart" component={X01OutChart} options={{}} />
     </Stack.Navigator>
   );
 };

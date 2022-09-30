@@ -1,3 +1,5 @@
+import Colors from "../constants/Colors";
+import useColorScheme from "../hooks/useColorScheme";
 import React from "react";
 
 import {
@@ -22,6 +24,9 @@ export interface ICustomButtonProps extends PressableProps {
 }
 
 const CustomButton = (props: ICustomButtonProps) => {
+  const colorScheme = useColorScheme();
+  const background = Colors[colorScheme].buttonColor;
+  const textColor = Colors[colorScheme].text;
   return (
     <Pressable
       {...props}
@@ -38,14 +43,28 @@ const CustomButton = (props: ICustomButtonProps) => {
       // onAccessibilityAction={() => !props.disabled && props.onPressOut!()}
       style={
         props.disabled
-          ? [props.buttonStyle, styles.button, styles.disabledButton]
+          ? [
+              styles.button,
+              styles.disabledButton,
+              props.buttonStyle,
+              { backgroundColor: background },
+            ]
           : props.selected
-          ? [props.buttonStyle, styles.selectedButton, styles.button]
+          ? [
+              props.buttonStyle,
+              styles.selectedButton,
+              styles.button,
+              { backgroundColor: background },
+            ]
           : ({ pressed }) => [
               { opacity: pressed ? 0.5 : 1 },
               props.buttonStyle
-                ? [styles.button, props.buttonStyle]
-                : styles.button,
+                ? [
+                    styles.button,
+                    { backgroundColor: background },
+                    props.buttonStyle,
+                  ]
+                : [styles.button, { backgroundColor: background }],
             ]
       }
     >
@@ -68,10 +87,11 @@ const CustomButton = (props: ICustomButtonProps) => {
                       styles.buttonText,
                       props.textStyle,
                       styles.selectedButtonText,
+                      { color: textColor },
                     ]
                   : props.textStyle
-                  ? [styles.buttonText, props.textStyle]
-                  : styles.buttonText
+                  ? [styles.buttonText, props.textStyle, { color: textColor }]
+                  : [styles.buttonText, { color: textColor }]
               }
             >
               {props.title}
@@ -82,10 +102,14 @@ const CustomButton = (props: ICustomButtonProps) => {
         <Text
           style={
             props.disabled
-              ? [styles.disabledButtonText, styles.buttonText]
+              ? [
+                  styles.disabledButtonText,
+                  styles.buttonText,
+                  { color: textColor },
+                ]
               : props.textStyle
-              ? [styles.buttonText, props.textStyle]
-              : styles.buttonText
+              ? [styles.buttonText, props.textStyle, { color: textColor }]
+              : [styles.buttonText, { color: textColor }]
           }
         >
           {props.title}
@@ -99,7 +123,7 @@ export default CustomButton;
 
 const styles = StyleSheet.create({
   button: {
-    backgroundColor: "lightblue",
+    // backgroundColor: "lightblue",
     // width: winWidth * 0.8,
     alignItems: "center",
     borderRadius: 15,
@@ -113,10 +137,11 @@ const styles = StyleSheet.create({
     // color: "#FCF2CE",
   },
   disabledButton: {
-    backgroundColor: "transparent",
+    // backgroundColor: "transparent",
     // borderStyle: "solid",
     // borderColor: "#707070",
-    borderWidth: 1,
+    // borderWidth: 1,
+    opacity: 0.5,
     // width: winWidth * 0.8,
     // alignSelf: "center",
     // borderRadius: 20,

@@ -2,21 +2,42 @@ import React from "react";
 
 import { FlatList, StyleSheet } from "react-native";
 
-import CustomButton from "../../CustomButton";
+import ButtonItem from "./ButtonItem";
 
 interface ICalculatorButtonsProps {
   data: Array<string>;
+  value?: string;
+  setValue?: React.Dispatch<React.SetStateAction<string>>;
+  disabled?: boolean;
 }
 const CalculatorButtons = (props: ICalculatorButtonsProps) => {
-  const Item = ({ item }: { item: any }) => {
-    return <CustomButton buttonStyle={styles.item} title={item} />;
+  const { data, value, setValue, disabled } = props;
+
+  // button on press
+  const onButtonPress = (inputValue: number | string) => {
+    if (setValue !== undefined) {
+      if (inputValue === "Del") {
+        setValue("");
+        console.log("Deleted score");
+      } else if (inputValue === "Enter") console.log("Score is submitted");
+      else {
+        setValue((prev: any) => `${prev}${inputValue}`);
+        console.log(inputValue);
+      }
+    }
   };
 
   return (
     <FlatList
-      data={props.data}
+      data={data}
       numColumns={3}
-      renderItem={Item}
+      renderItem={({ item }) => (
+        <ButtonItem
+          item={item}
+          onButtonPress={onButtonPress}
+          disabled={disabled}
+        />
+      )}
       keyExtractor={(item) => item}
     />
   );
@@ -24,16 +45,4 @@ const CalculatorButtons = (props: ICalculatorButtonsProps) => {
 
 export default CalculatorButtons;
 
-const styles = StyleSheet.create({
-  item: {
-    flex: 1,
-    maxWidth: "33.33%",
-    justifyContent: "center",
-    borderRadius: 0,
-    padding: 10,
-    backgroundColor: "rgba(249, 180, 45, 0.25)",
-    borderWidth: 1.5,
-    borderColor: "#fff",
-    height: 70,
-  },
-});
+const styles = StyleSheet.create({});

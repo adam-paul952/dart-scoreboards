@@ -8,47 +8,21 @@ import Dropdown from "../components/Dropdown";
 
 import { Text, View } from "../components/Themed";
 import { IPlayer, usePlayerState } from "../context/PlayerContext";
-
-const data = [
-  { label: "Baseball", value: "baseball" },
-  { label: "Cricket", value: "cricket" },
-  { label: "Elimination", value: "elimination" },
-  { label: "Killer", value: "killer" },
-  { label: "X01", value: "x01" },
-];
-
-const x01Data = [
-  { label: "201", value: "201" },
-  { label: "301", value: "301" },
-  { label: "401", value: "401" },
-  { label: "501", value: "501" },
-  { label: "601", value: "601" },
-  { label: "701", value: "701" },
-  { label: "801", value: "801" },
-  { label: "901", value: "901" },
-  { label: "1001", value: "1001" },
-  { label: "1501", value: "1501" },
-];
-
-const eliminationData = [
-  { label: "3", value: "3" },
-  { label: "4", value: "4" },
-  { label: "5", value: "5" },
-  { label: "6", value: "6" },
-  { label: "7", value: "7" },
-  { label: "8", value: "8" },
-  { label: "9", value: "9" },
-  { label: "10", value: "10" },
-];
+import {
+  baseballData,
+  x01Data,
+  eliminationData,
+} from "../constants/data/createMatch";
 
 const CreateMatch = () => {
   const navigation = useNavigation();
   const { playerList, setPlayerList } = usePlayerState();
-
+  // game to be selected
   const [game, setGame] = useState<null>(null);
-
+  // x01 points - elimination lives
   const [points, setPoints] = useState<number | null>(null);
 
+  // disable button if game is null or specific game options are not set
   const disableButton = () => {
     if (game === null) return true;
     else if (game === "x01" && points === null) return true;
@@ -56,10 +30,30 @@ const CreateMatch = () => {
     else return false;
   };
 
+  // if x01 is selected set points to player
+  const setX01Points = () => {
+    if (points !== null)
+      setPlayerList((prev: IPlayer[]) =>
+        prev.map((player) => {
+          player.score = points;
+          return player;
+        })
+      );
+  };
+
+  // handle conditions for setting state and navigation
+  const onHandleSelect = () => {
+    if (game !== null)
+      if (game === "x01") {
+        setX01Points();
+        navigation.navigate(game);
+      } else navigation.navigate(game);
+  };
+
   return (
     <View style={styles.container}>
       <Dropdown
-        data={data}
+        data={baseballData}
         label="Choose Game:"
         value={game}
         setValue={setGame}
@@ -86,15 +80,7 @@ const CreateMatch = () => {
           buttonStyle={styles.buttonStyle}
           disabled={disableButton()}
           onPressOut={() => {
-            // game === "x01" &&
-            //   points !== null &&
-            //   setPlayerList((prev: any) =>
-            //     prev.forEach((player: IPlayer) => {
-            //       player.score = points;
-            //       return player;
-            //     })
-            //   );
-            game !== null && navigation.navigate(game);
+            onHandleSelect();
           }}
         />
       </View>

@@ -29,6 +29,7 @@ export type RootStackParamList = {
   killer: undefined;
   statistics: undefined;
   "resume-game": undefined;
+  "x01-outchart": undefined;
 };
 
 export type RootStackScreenProps<Screen extends keyof RootStackParamList> =

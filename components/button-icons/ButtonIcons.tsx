@@ -4,6 +4,7 @@ import { StyleSheet } from "react-native";
 
 import {
   AntDesign,
+  Feather,
   FontAwesome5,
   MaterialCommunityIcons,
   Ionicons,
@@ -14,6 +15,12 @@ export const AntDesignIcon = (props: {
   color: string;
   size: number;
 }) => <AntDesign style={styles.iconStyle} {...props} />;
+
+export const FeatherIcon = (props: {
+  name: React.ComponentProps<typeof Feather>["name"];
+  color: string;
+  size: number;
+}) => <Feather style={styles.iconStyle} {...props} />;
 
 export const FontAwesome5Icon = (props: {
   name: React.ComponentProps<typeof FontAwesome5>["name"];

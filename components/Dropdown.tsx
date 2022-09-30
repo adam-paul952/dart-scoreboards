@@ -1,3 +1,5 @@
+import Colors from "../constants/Colors";
+import useColorScheme from "../hooks/useColorScheme";
 import React, { useState } from "react";
 
 import { StyleSheet } from "react-native";
@@ -20,13 +22,16 @@ const Dropdown = ({
 }) => {
   const [isFocus, setIsFocus] = useState(false);
 
+  const colorScheme = useColorScheme();
+  const color = Colors[colorScheme].text;
+
   return (
     <View style={styles.dropdownRow}>
       <Text style={styles.dropdownLabel}>{label}</Text>
       <DefaultDropdown
         style={styles.dropdown}
         placeholderStyle={styles.placeholderStyle}
-        selectedTextStyle={styles.selectedTextStyle}
+        selectedTextStyle={[styles.selectedTextStyle, { color: color }]}
         data={data}
         labelField="label"
         valueField="value"

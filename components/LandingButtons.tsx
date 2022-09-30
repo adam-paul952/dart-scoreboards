@@ -12,13 +12,18 @@ interface ILandingButtonProps {
   buttonBG?: string;
   color?: string;
   onPressOut?: () => void;
+  buttonOverrideStyle?: any;
 }
 
 const LandingPageButton = (props: ILandingButtonProps) => (
   <CustomButton
     title={props.variant}
     textStyle={styles.buttonTextStyle}
-    buttonStyle={[styles.buttonStyle, { backgroundColor: props.buttonBG }]}
+    buttonStyle={[
+      styles.buttonStyle,
+      props.buttonOverrideStyle,
+      { backgroundColor: props.buttonBG },
+    ]}
     buttonChildrenStyle={{ backgroundColor: props.buttonBG }}
     buttonIconStyle={[
       styles.buttonIconStyle,
