@@ -9,10 +9,12 @@ import { IPlayer } from "@context/PlayerContext";
 
 interface ICricketScoreboardBodyProps {
   player: IPlayer;
+  currentPlayer: IPlayer;
 }
 
 const CricketScoreboardBody = (props: ICricketScoreboardBodyProps) => {
-  const { player } = props;
+  const { player, currentPlayer } = props;
+
   return (
     <View style={styles.playerRow}>
       <View
@@ -22,7 +24,9 @@ const CricketScoreboardBody = (props: ICricketScoreboardBodyProps) => {
         ]}
       >
         <Text style={[styles.scoreboardText, { flex: 2 }]}>{player.name}</Text>
-        <AntDesign name="caretleft" size={18} color="darkred" />
+        {player.id === currentPlayer.id && (
+          <AntDesign name="caretleft" size={18} color="darkred" />
+        )}
       </View>
       <CricketScoreboardColumn player={player} />
       <Text style={[styles.scoreboardText, { flex: 1 }]}>{player.score}</Text>
@@ -33,7 +37,7 @@ const CricketScoreboardBody = (props: ICricketScoreboardBodyProps) => {
 export default CricketScoreboardBody;
 
 const styles = StyleSheet.create({
-  scoreboardText: { textAlign: "center", fontSize: 20 },
+  scoreboardText: { paddingLeft: 2, fontSize: 20 },
   playerRow: { flexDirection: "row", marginHorizontal: 5 },
   playerColumn: {
     flex: 2,

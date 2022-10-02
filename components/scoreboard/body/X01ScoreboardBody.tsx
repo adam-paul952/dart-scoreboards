@@ -8,10 +8,11 @@ import { Text, View } from "../../Themed";
 
 interface IX01ScoreboardBodyProps {
   playerList: IPlayer[];
+  currentPlayer: any;
 }
 
 const X01ScoreboardBody = (props: IX01ScoreboardBodyProps) => {
-  const { playerList } = props;
+  const { playerList, currentPlayer } = props;
 
   return (
     <>
@@ -24,10 +25,16 @@ const X01ScoreboardBody = (props: IX01ScoreboardBodyProps) => {
                 { flexDirection: "row", alignItems: "center" },
               ]}
             >
-              <Text style={[styles.scoreboardText, { flex: 2 }]}>
-                {player.name}
-              </Text>
-              <AntDesign name="caretleft" size={18} color="darkred" />
+              <View style={{ flex: 4 }}>
+                <Text style={[styles.scoreboardText, { marginLeft: 25 }]}>
+                  {player.name}
+                </Text>
+              </View>
+              <View style={{ flex: 0.5 }}>
+                {player.id === currentPlayer.id && (
+                  <AntDesign name="caretleft" size={18} color="darkred" />
+                )}
+              </View>
             </View>
             <Text style={[styles.scoreboardText, { flex: 1 }]}>0</Text>
             <Text style={[styles.scoreboardText, { flex: 1 }]}>

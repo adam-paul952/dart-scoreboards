@@ -41,13 +41,27 @@ const CreateMatch = () => {
       );
   };
 
+  // if any match is selected !== X01 assign blank score
+  const resetPlayerState = () => {
+    setPlayerList((prev: IPlayer[]) =>
+      prev.map((player) => {
+        player.score = 0;
+        player.scoreList = [];
+        return player;
+      })
+    );
+  };
+
   // handle conditions for setting state and navigation
   const onHandleSelect = () => {
     if (game !== null)
       if (game === "x01") {
         setX01Points();
         navigation.navigate(game);
-      } else navigation.navigate(game);
+      } else {
+        resetPlayerState();
+        navigation.navigate(game);
+      }
   };
 
   return (

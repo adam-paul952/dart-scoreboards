@@ -13,7 +13,7 @@ import useColorScheme from "../../../hooks/useColorScheme";
 
 interface IButtonItemProps {
   item: string;
-  onButtonPress: (inputValue: number | string) => void;
+  onButtonPress: (inputValue: string) => void;
   disabled?: boolean;
 }
 

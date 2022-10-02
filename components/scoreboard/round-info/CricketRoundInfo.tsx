@@ -3,13 +3,22 @@ import React from "react";
 import { StyleSheet } from "react-native";
 
 import { Text, TextInput, View } from "@components/Themed";
+import { IPlayer } from "@context/PlayerContext";
 
-const CricketRoundInfo = () => {
+interface ICricketRoundInfoProps {
+  currentPlayer: IPlayer;
+}
+
+const CricketRoundInfo = (props: ICricketRoundInfoProps) => {
+  const { currentPlayer } = props;
+
   return (
     <>
       <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
         <View style={{ width: "33%", paddingHorizontal: 5 }}>
-          <Text style={{ fontSize: 20, paddingHorizontal: 5 }}>Adam</Text>
+          <Text style={{ fontSize: 20, paddingHorizontal: 5 }}>
+            {currentPlayer.name}
+          </Text>
           <TextInput
             style={styles.scoreInput}
             editable={false}

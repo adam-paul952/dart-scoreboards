@@ -6,55 +6,55 @@ import { Text, View } from "@components/Themed";
 import { possibleOutShots } from "../constants/data/x01OutShots";
 import { FlatList } from "react-native-gesture-handler";
 
-const outShotHeader = ["Score", "Dart 1", " Dart 2", "Result"];
+const outShotHeader = ["Score", "Dart 1", " Dart 2", "Dart 3"];
 
 const X01OutChart = () => {
   const Item = ({ item }: { item: any }) => {
-    if (item.checkOut[0].includes("No Check Out Available")) return null;
-    else
-      return (
-        <View style={{ flexDirection: "row" }}>
-          <View
-            style={{
-              flex: 1,
-              borderRightColor: "gray",
-              borderRightWidth: 1,
-              borderBottomWidth: 1,
-              borderBottomColor: "gray",
-            }}
-          >
-            <Text style={{ fontSize: 20, textAlign: "center" }}>
-              {item.score}
-            </Text>
-          </View>
-          {item.checkOut
-            .toString()
-            .split(",")
-            .map((outshot: any, index: any) => {
-              return (
+    return (
+      <>
+        {item.checkOut.map((outshot: any, index: any) => {
+          if (outshot.includes("No Check Out")) return null;
+          else
+            return (
+              <View
+                key={index}
+                style={{
+                  flexDirection: "row",
+                  borderBottomWidth: 1,
+                  borderBottomColor: "gray",
+                }}
+              >
                 <View
-                  key={outshot[0]}
                   style={{
                     flex: 1,
-                    borderRightColor: "gray",
+                    alignItems: "center",
                     borderRightWidth: 1,
-                    borderBottomWidth: 1,
-                    borderBottomColor: "gray",
+                    borderRightColor: "gray",
+                    paddingHorizontal: 1,
+                    paddingVertical: 3,
                   }}
                 >
-                  <Text style={{ textAlign: "center", fontSize: 20 }}>
-                    {outshot}
-                  </Text>
+                  <Text style={{ fontSize: 20 }}>{item.score}</Text>
                 </View>
-              );
-            })}
-        </View>
-      );
+                {outshot.map((number: any, index: any) => {
+                  const key = (index + 1) * 1000;
+                  return (
+                    <View key={key} style={{ flex: 1, alignItems: "center" }}>
+                      <Text style={{ fontSize: 20 }}>{number}</Text>
+                    </View>
+                  );
+                })}
+              </View>
+            );
+        })}
+      </>
+    );
   };
+
   return (
-    <View>
+    <View style={{ flex: 1 }}>
       {/* Outshot header */}
-      <View style={{ flexDirection: "row" }}>
+      <View style={{ flexDirection: "row", paddingLeft: 3 }}>
         {outShotHeader.map((header) => {
           return (
             <View
@@ -65,12 +65,11 @@ const X01OutChart = () => {
                 borderRightWidth: 1,
                 borderBottomWidth: 1,
                 borderBottomColor: "gray",
-                padding: 3,
+                paddingVertical: 3,
+                alignItems: "center",
               }}
             >
-              <Text style={{ textAlign: "center", fontSize: 20 }}>
-                {header}
-              </Text>
+              <Text style={{ fontSize: 20 }}>{header}</Text>
             </View>
           );
         })}
@@ -82,6 +81,9 @@ const X01OutChart = () => {
           data={possibleOutShots}
           renderItem={Item}
           keyExtractor={(item) => item.score.toString()}
+          maxToRenderPerBatch={30}
+          updateCellsBatchingPeriod={75}
+          initialNumToRender={30}
         />
       </View>
       {/* end table body */}
@@ -92,3 +94,5 @@ const X01OutChart = () => {
 export default X01OutChart;
 
 const styles = StyleSheet.create({});
+
+// TODO: List needs to be further optimized

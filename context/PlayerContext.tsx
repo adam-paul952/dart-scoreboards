@@ -7,6 +7,14 @@ export interface IPlayer {
   selected: boolean;
   scoreList: Array<number>;
   lives: number;
+  stats: IPlayerStats;
+}
+
+export interface IPlayerStats {
+  highScore: number;
+  oneDartAverage: number;
+  darts: number;
+  // checkoutPercent: number;
 }
 
 const players = [
@@ -17,14 +25,26 @@ const players = [
     selected: true,
     scoreList: [],
     lives: 0,
+    stats: {
+      highScore: 0,
+      oneDartAverage: 0,
+      darts: 0,
+      // checkoutPercent: 0,
+    },
   },
   {
     id: 2,
     name: "Paul",
     score: 0,
     selected: true,
-    scoreList: [0, 0, 0, 0, 0, 0, 0],
+    scoreList: [],
     lives: 0,
+    stats: {
+      highScore: 0,
+      oneDartAverage: 0,
+      darts: 0,
+      // checkoutPercent: 0,
+    },
   },
 ];
 

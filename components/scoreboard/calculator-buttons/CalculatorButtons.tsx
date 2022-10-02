@@ -4,24 +4,44 @@ import { FlatList, StyleSheet } from "react-native";
 
 import ButtonItem from "./ButtonItem";
 
+import { regularButtons } from "@scoreboard/calculator-buttons/constants";
+import { cricketButtons } from "@scoreboard/calculator-buttons/constants";
+
 interface ICalculatorButtonsProps {
-  data: Array<string>;
+  variant: string;
   value?: string;
   setValue?: React.Dispatch<React.SetStateAction<string>>;
   disabled?: boolean;
+  onHandleSubmit: () => void;
+  onDeleteInput: () => void;
 }
+
 const CalculatorButtons = (props: ICalculatorButtonsProps) => {
-  const { data, value, setValue, disabled } = props;
+  const { value, setValue, disabled, onHandleSubmit, variant, onDeleteInput } =
+    props;
+
+  let data: string[] = [];
+
+  if (variant === "cricket") data = cricketButtons;
+  else data = regularButtons;
 
   // button on press
-  const onButtonPress = (inputValue: number | string) => {
+  const onButtonPress = (inputValue: string) => {
     if (setValue !== undefined) {
       if (inputValue === "Del") {
-        setValue("");
+        onDeleteInput();
         console.log("Deleted score");
-      } else if (inputValue === "Enter") console.log("Score is submitted");
-      else {
-        setValue((prev: any) => `${prev}${inputValue}`);
+      } else if (inputValue === "Enter") {
+        onHandleSubmit();
+        setValue("");
+        console.log("Score is submitted");
+      } else {
+        if (variant === "cricket") {
+          if (inputValue === "Bull") inputValue = "25";
+          value !== undefined && value.length === 0
+            ? setValue(`${inputValue}`)
+            : setValue((prev: string) => `${prev},${inputValue}`);
+        } else setValue((prev: string) => `${prev}${inputValue}`);
         console.log(inputValue);
       }
     }

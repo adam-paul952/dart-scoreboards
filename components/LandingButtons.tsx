@@ -24,10 +24,10 @@ const LandingPageButton = (props: ILandingButtonProps) => (
       props.buttonOverrideStyle,
       { backgroundColor: props.buttonBG },
     ]}
-    buttonChildrenStyle={{ backgroundColor: props.buttonBG }}
+    buttonChildrenStyle={{ backgroundColor: "transparent" }}
     buttonIconStyle={[
       styles.buttonIconStyle,
-      { backgroundColor: props.buttonBG },
+      { backgroundColor: "transparent" },
     ]}
     onPressOut={props.onPressOut}
   >
