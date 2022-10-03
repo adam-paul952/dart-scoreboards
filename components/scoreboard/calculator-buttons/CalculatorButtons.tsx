@@ -56,6 +56,7 @@ const CalculatorButtons = (props: ICalculatorButtonsProps) => {
           item={item}
           onButtonPress={onButtonPress}
           disabled={disabled}
+          variant={variant}
         />
       )}
       keyExtractor={(item) => item}

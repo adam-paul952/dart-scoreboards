@@ -10,6 +10,7 @@ import { IPlayer } from "@context/PlayerContext";
 interface ICricketScoreboardBodyProps {
   player: IPlayer;
   currentPlayer: IPlayer;
+  // hitTargets: Array<number>;
 }
 
 const CricketScoreboardBody = (props: ICricketScoreboardBodyProps) => {
@@ -29,7 +30,9 @@ const CricketScoreboardBody = (props: ICricketScoreboardBodyProps) => {
         )}
       </View>
       <CricketScoreboardColumn player={player} />
-      <Text style={[styles.scoreboardText, { flex: 1 }]}>{player.score}</Text>
+      <Text style={[styles.scoreboardText, { flex: 1, textAlign: "center" }]}>
+        {player.score}
+      </Text>
     </View>
   );
 };

@@ -9,7 +9,13 @@ import { AntDesign } from "@expo/vector-icons";
 import { IPlayer } from "@context/PlayerContext";
 import { View } from "../../Themed";
 
-const CricketScoreboardColumn = ({ player }: { player: IPlayer }) => {
+const CricketScoreboardColumn = ({
+  player,
+}: // hitTargets,
+{
+  player: IPlayer;
+  // hitTargets: Array<number>;
+}) => {
   const hitTargets = [
     player.scoreList.filter((hitNum) => hitNum === 20).length,
     player.scoreList.filter((hitNum) => hitNum === 19).length,
@@ -30,7 +36,7 @@ const CricketScoreboardColumn = ({ player }: { player: IPlayer }) => {
           name="slash-forward"
           size={24}
           color="black"
-          style={{ marginHorizontal: 6 }}
+          style={{ marginHorizontal: 6, transform: [{ rotate: "15deg" }] }}
         />
       );
     } else if (target === 2) {
@@ -63,7 +69,10 @@ const CricketScoreboardColumn = ({ player }: { player: IPlayer }) => {
     <>
       {hitTargets.map((target, index) => {
         return (
-          <View key={index} style={{ flex: 1, justifyContent: "center" }}>
+          <View
+            key={index}
+            style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
+          >
             {renderIcon(target)}
           </View>
         );

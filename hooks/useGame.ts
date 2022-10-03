@@ -24,7 +24,23 @@ const useGame = () => {
   // current player
   const [currentPlayer, setCurrentPlayer] = useState<IPlayer>(playerList[turn]);
 
-  return { turn, changeTurns, currentPlayer, round, changeRounds };
+  // calculate current player highscore
+  const getCurrentPlayerHighScore = () => {
+    currentPlayer.scoreList.forEach((score: number) => {
+      if (currentPlayer.stats.highScore < score)
+        currentPlayer.stats.highScore = score;
+    });
+  };
+
+  return {
+    turn,
+    changeTurns,
+    currentPlayer,
+    round,
+    setRound,
+    changeRounds,
+    getCurrentPlayerHighScore,
+  };
 };
 
 export default useGame;

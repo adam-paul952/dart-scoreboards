@@ -7,10 +7,11 @@ import { IPlayer } from "@context/PlayerContext";
 
 interface ICricketRoundInfoProps {
   currentPlayer: IPlayer;
+  round: number;
 }
 
 const CricketRoundInfo = (props: ICricketRoundInfoProps) => {
-  const { currentPlayer } = props;
+  const { currentPlayer, round } = props;
 
   return (
     <>
@@ -24,7 +25,7 @@ const CricketRoundInfo = (props: ICricketRoundInfoProps) => {
             editable={false}
             showSoftInputOnFocus={false}
             textAlign="center"
-            value="+0 pts"
+            value="+ 0 pts"
           />
         </View>
         <View style={{ width: "33%", paddingHorizontal: 5 }}>
@@ -55,7 +56,7 @@ const CricketRoundInfo = (props: ICricketRoundInfoProps) => {
           paddingVertical: 5,
         }}
       >
-        <Text style={{ fontSize: 15 }}>Round: 0</Text>
+        <Text style={{ fontSize: 15 }}>Round: {round}</Text>
         <Text>mks/r: --</Text>
         <Text>pts/r: --</Text>
         <Text>mks: --/21</Text>

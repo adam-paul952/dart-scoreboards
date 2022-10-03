@@ -1,9 +1,8 @@
 import React, { useEffect, useState } from "react";
-
 import { Alert, StyleSheet } from "react-native";
+import { useNavigation } from "@react-navigation/native";
 
 import { View } from "@components/Themed";
-import { useNavigation } from "@react-navigation/native";
 import { IPlayer, usePlayerState } from "../context/PlayerContext";
 import useGame from "../hooks/useGame";
 
@@ -12,10 +11,16 @@ import X01ScoreboardBody from "@scoreboard/body/X01ScoreboardBody";
 import X01PlayerInfo from "@scoreboard/round-info/X01PlayerInfo";
 import X01InputRow from "@components/scoreboard/X01InputRow";
 import CalculatorButtons from "@scoreboard/calculator-buttons/CalculatorButtons";
+import gameOverAlert from "@components/GameOverAlert";
 
 const X01 = () => {
   const { playerList, setPlayerList } = usePlayerState();
-  const { changeTurns, currentPlayer, changeRounds } = useGame();
+  const {
+    changeTurns,
+    currentPlayer,
+    changeRounds,
+    getCurrentPlayerHighScore,
+  } = useGame();
   const navigation = useNavigation();
 
   // state to manage score input
@@ -90,21 +95,7 @@ const X01 = () => {
     );
     // if current player is winner - game over
     if (currentPlayer.score === 0) {
-      Alert.alert(
-        "Game Over",
-        `${currentPlayer.name} has won the game!\n\nCongratulations!`,
-        [
-          {
-            text: "Create Match",
-            onPress: () => navigation.goBack(),
-            style: "cancel",
-          },
-          {
-            text: "Play Again",
-            onPress: () => resetGame(),
-          },
-        ]
-      );
+      gameOverAlert({ playerName: currentPlayer.name, resetGame, navigation });
     }
     return true;
   };
@@ -124,10 +115,7 @@ const X01 = () => {
 
   const handleStatsChange = () => {
     // determine if this is highest score
-    currentPlayer.scoreList.forEach((score: number) => {
-      if (currentPlayer.stats.highScore < score)
-        currentPlayer.stats.highScore = score;
-    });
+    getCurrentPlayerHighScore();
     currentPlayer.stats.darts += 3;
   };
 

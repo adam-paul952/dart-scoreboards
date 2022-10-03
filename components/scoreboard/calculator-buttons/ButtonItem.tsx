@@ -7,6 +7,7 @@ import {
   AntDesignIcon,
   FeatherIcon,
 } from "@components/button-icons/ButtonIcons";
+import { Text } from "@components/Themed";
 
 import Colors from "../../../constants/Colors";
 import useColorScheme from "../../../hooks/useColorScheme";
@@ -15,10 +16,11 @@ interface IButtonItemProps {
   item: string;
   onButtonPress: (inputValue: string) => void;
   disabled?: boolean;
+  variant: string;
 }
 
 const ButtonItem = (props: IButtonItemProps) => {
-  const { item, onButtonPress, disabled } = props;
+  const { item, onButtonPress, disabled, variant } = props;
 
   const colorScheme = useColorScheme();
   const color = Colors[colorScheme].text;
@@ -51,13 +53,35 @@ const ButtonItem = (props: IButtonItemProps) => {
       </CustomButton>
     );
   } else {
-    return (
-      <CustomButton
-        buttonStyle={styles.item}
-        title={item}
-        onPressOut={() => onButtonPress(item)}
-      />
-    );
+    if (variant === "cricket") {
+      return (
+        <CustomButton
+          buttonStyle={styles.item}
+          title={item}
+          onPressOut={() => onButtonPress(item)}
+          buttonChildrenStyle={{
+            backgroundColor: "transparent",
+          }}
+          // TODO: Use this to display number of mark on button
+          buttonIconStyle={{
+            backgroundColor: "transparent",
+            position: "absolute",
+            top: -10,
+            right: -33,
+            display: "none",
+          }}
+        >
+          <Text style={{ fontSize: 17 }}>x1</Text>
+        </CustomButton>
+      );
+    } else
+      return (
+        <CustomButton
+          buttonStyle={styles.item}
+          title={item}
+          onPressOut={() => onButtonPress(item)}
+        />
+      );
   }
 };
 

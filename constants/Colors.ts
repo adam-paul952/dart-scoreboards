@@ -9,6 +9,7 @@ export default {
     tabIconDefault: "#ccc",
     tabIconSelected: tintColorLight,
     buttonColor: "lightblue",
+    activePlayer: "lightgray",
   },
   dark: {
     text: "#fff",
@@ -17,5 +18,6 @@ export default {
     tabIconDefault: "#ccc",
     tabIconSelected: tintColorDark,
     buttonColor: "royalblue",
+    activePlayer: "",
   },
 };

@@ -1,3 +1,4 @@
+// cricket header
 const cricketHeader = [
   "Player",
   "20",
@@ -9,9 +10,23 @@ const cricketHeader = [
   "Bull",
   "Pts",
 ];
-
+// x01 header
 const x01Header = ["Player", "Legs", "Points"];
-
+// elimination header
 const eliminationHeader = ["Player", "Score", "Lives"];
+// baseball header
+const baseballHeader = [
+  "Player",
+  "1",
+  "2",
+  "3",
+  "4",
+  "5",
+  "6",
+  "7",
+  "8",
+  "9",
+  "Total",
+];
 
-export { cricketHeader, x01Header, eliminationHeader };
+export { cricketHeader, x01Header, eliminationHeader, baseballHeader };
