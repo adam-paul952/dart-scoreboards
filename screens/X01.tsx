@@ -16,15 +16,15 @@ import gameOverAlert from "@components/GameOverAlert";
 const X01 = () => {
   const { playerList, setPlayerList } = usePlayerState();
   const {
+    playerScore,
+    setPlayerScore,
+    onDeleteInput,
     changeTurns,
     currentPlayer,
     changeRounds,
     getCurrentPlayerHighScore,
   } = useGame();
   const navigation = useNavigation();
-
-  // state to manage score input
-  const [playerScore, setPlayerScore] = useState<string>("");
 
   // state to manage input error and disable buttons
   const [inputError, setInputError] = useState<boolean>(false);
@@ -117,10 +117,6 @@ const X01 = () => {
     // determine if this is highest score
     getCurrentPlayerHighScore();
     currentPlayer.stats.darts += 3;
-  };
-
-  const onDeleteInput = () => {
-    setPlayerScore("");
   };
 
   return (

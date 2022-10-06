@@ -15,14 +15,14 @@ const Elimination = () => {
   const { playerList } = usePlayerState();
   return (
     <View style={{ flex: 1, flexDirection: "column", paddingTop: 20 }}>
-      <EliminationHeader />
-      <>
+      <View style={{ flex: 2 }}>
+        <EliminationHeader />
         {playerList.map((player: IPlayer) => {
           return (
             <EliminationScoreboardBody key={player.name} player={player} />
           );
         })}
-      </>
+      </View>
       <>
         <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
           <View style={{ width: "33%", paddingHorizontal: 5 }}>
@@ -70,7 +70,11 @@ const Elimination = () => {
         </View>
       </>
       <View>
-        <CalculatorButtons data={regularButtons} />
+        <CalculatorButtons
+          variant="elimination"
+          onHandleSubmit={() => {}}
+          onDeleteInput={() => {}}
+        />
       </View>
     </View>
   );

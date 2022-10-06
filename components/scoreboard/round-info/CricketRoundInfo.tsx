@@ -8,10 +8,15 @@ import { IPlayer } from "@context/PlayerContext";
 interface ICricketRoundInfoProps {
   currentPlayer: IPlayer;
   round: number;
+  leadingScore: number;
+  marks: Array<number>;
 }
 
 const CricketRoundInfo = (props: ICricketRoundInfoProps) => {
-  const { currentPlayer, round } = props;
+  const { currentPlayer, round, leadingScore, marks } = props;
+
+  const scoreDifference = currentPlayer.score - leadingScore;
+  const numOfMarks = marks.reduce((a, b) => a + b, 0);
 
   return (
     <>
@@ -25,7 +30,7 @@ const CricketRoundInfo = (props: ICricketRoundInfoProps) => {
             editable={false}
             showSoftInputOnFocus={false}
             textAlign="center"
-            value="+ 0 pts"
+            value={`${scoreDifference} pts`}
           />
         </View>
         <View style={{ width: "33%", paddingHorizontal: 5 }}>
@@ -34,7 +39,7 @@ const CricketRoundInfo = (props: ICricketRoundInfoProps) => {
             style={styles.scoreInput}
             editable={false}
             showSoftInputOnFocus={false}
-            value="0"
+            value={numOfMarks.toString()}
             textAlign="center"
           />
         </View>

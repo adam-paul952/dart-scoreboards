@@ -4,6 +4,17 @@ import React, { useState } from "react";
 const useGame = () => {
   const { playerList } = usePlayerState();
 
+  // input score
+  const [playerScore, setPlayerScore] = useState<string>("");
+
+  // leading score
+  const [leadingScore, setLeadingScore] = useState<number>(0);
+
+  // delete input
+  const onDeleteInput = () => {
+    setPlayerScore("");
+  };
+
   // turn information
   const [turn, setTurn] = useState<number>(0);
 
@@ -33,6 +44,11 @@ const useGame = () => {
   };
 
   return {
+    playerScore,
+    setPlayerScore,
+    leadingScore,
+    setLeadingScore,
+    onDeleteInput,
     turn,
     changeTurns,
     currentPlayer,

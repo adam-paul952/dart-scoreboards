@@ -10,7 +10,6 @@ import { IPlayer } from "@context/PlayerContext";
 interface ICricketScoreboardBodyProps {
   player: IPlayer;
   currentPlayer: IPlayer;
-  // hitTargets: Array<number>;
 }
 
 const CricketScoreboardBody = (props: ICricketScoreboardBodyProps) => {

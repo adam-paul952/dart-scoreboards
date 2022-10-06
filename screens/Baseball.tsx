@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { Fragment, useEffect, useState } from "react";
 import { StyleSheet } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 
@@ -15,6 +15,11 @@ import gameOverAlert from "@components/GameOverAlert";
 const Baseball = () => {
   const { playerList, setPlayerList } = usePlayerState();
   const {
+    playerScore,
+    setPlayerScore,
+    leadingScore,
+    setLeadingScore,
+    onDeleteInput,
     turn,
     changeTurns,
     round,
@@ -24,6 +29,7 @@ const Baseball = () => {
     getCurrentPlayerHighScore,
   } = useGame();
   const navigation = useNavigation();
+
   // set initial player scorelist filled with 0 - mostly for display purposes
   useEffect(() => {
     setPlayerList((prev: IPlayer[]) =>
@@ -33,11 +39,6 @@ const Baseball = () => {
       })
     );
   }, []);
-
-  // input score
-  const [playerScore, setPlayerScore] = useState<string>("");
-  // leading score
-  const [leadingScore, setLeadingScore] = useState<number>(0);
 
   // handle score submit
   const onHandleSubmit = () => {
@@ -95,11 +96,6 @@ const Baseball = () => {
     getCurrentPlayerHighScore();
   };
 
-  // delete input
-  const onDeleteInput = () => {
-    setPlayerScore("");
-  };
-
   // reset game if playing again
   const resetGame = () => {
     setPlayerList((prev: IPlayer[]) =>
@@ -120,12 +116,12 @@ const Baseball = () => {
         <View>
           {playerList.map((player: IPlayer) => {
             return (
-              <React.Fragment key={player.id}>
+              <Fragment key={player.id}>
                 <BaseballScoreboardBody
                   player={player}
                   currentPlayer={currentPlayer.id}
                 />
-              </React.Fragment>
+              </Fragment>
             );
           })}
         </View>

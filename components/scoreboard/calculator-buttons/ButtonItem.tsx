@@ -17,10 +17,11 @@ interface IButtonItemProps {
   onButtonPress: (inputValue: string) => void;
   disabled?: boolean;
   variant: string;
+  hits?: number;
 }
 
 const ButtonItem = (props: IButtonItemProps) => {
-  const { item, onButtonPress, disabled, variant } = props;
+  const { item, onButtonPress, disabled, variant, hits } = props;
 
   const colorScheme = useColorScheme();
   const color = Colors[colorScheme].text;
@@ -62,16 +63,22 @@ const ButtonItem = (props: IButtonItemProps) => {
           buttonChildrenStyle={{
             backgroundColor: "transparent",
           }}
-          // TODO: Use this to display number of mark on button
-          buttonIconStyle={{
-            backgroundColor: "transparent",
-            position: "absolute",
-            top: -10,
-            right: -33,
-            display: "none",
-          }}
+          buttonIconStyle={[
+            hits === 0
+              ? { display: "none" }
+              : {
+                  display: "flex",
+                  backgroundColor: "#fff",
+                  position: "absolute",
+                  top: -8,
+                  right: -36,
+                  padding: 2,
+                  borderRadius: 30,
+                  width: "35%",
+                },
+          ]}
         >
-          <Text style={{ fontSize: 17 }}>x1</Text>
+          <Text style={{ fontSize: 17, textAlign: "center" }}>x{hits}</Text>
         </CustomButton>
       );
     } else
