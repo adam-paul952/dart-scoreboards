@@ -77,6 +77,7 @@ const ButtonItem = (props: IButtonItemProps) => {
                   width: "35%",
                 },
           ]}
+          disabled={disabled}
         >
           <Text style={{ fontSize: 17, textAlign: "center" }}>x{hits}</Text>
         </CustomButton>

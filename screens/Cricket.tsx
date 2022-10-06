@@ -29,6 +29,17 @@ const Cricket = () => {
   } = useGame();
   const navigation = useNavigation();
 
+  // disabled state for calculator buttons
+  const [disableButton, setDisableButton] = useState<Array<boolean>>([
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+  ]);
+
   // remove last element from playerScore
   const onDeleteInput = () => {
     setPlayerScore((prev) =>
@@ -45,7 +56,6 @@ const Cricket = () => {
       const newScore = parseInt(score, 10);
       !isNaN(newScore) && currentPlayer.scoreList.push(newScore);
     });
-    console.log(currentPlayer.scoreList);
     // calculate score
     const newScore = handleScoreChange(currentPlayer.scoreList);
     // determine if player has highest score
@@ -61,14 +71,17 @@ const Cricket = () => {
         }
       })
     );
-    const declareWinner = targets.map((target) => {
-      return currentPlayer.scoreList.filter((num) => num === target).length;
-    });
-    if (
-      declareWinner.every((hit) => hit >= 3) &&
-      currentPlayer.score >= leadingScore
-    ) {
+    // check current player array for maximum marks
+    const declareWinner = targets
+      .map((target) => {
+        return currentPlayer.scoreList.filter((num) => num === target).length;
+      })
+      .every((hit) => hit >= 3);
+    // if player has all marks and leading score
+    if (declareWinner && currentPlayer.score >= leadingScore) {
+      // alert game over
       gameOverAlert({ playerName: currentPlayer.name, resetGame, navigation });
+      // else change turns and rounds
     } else {
       // change turns
       changeTurns();
@@ -77,12 +90,18 @@ const Cricket = () => {
     }
   };
 
+  // reset game
   const resetGame = () => {
     setPlayerList((prev: IPlayer[]) =>
       prev.map((player) => {
         player.score = 0;
         player.scoreList = [];
         return player;
+      })
+    );
+    setDisableButton((prev) =>
+      prev.map((value) => {
+        return (value = false);
       })
     );
     setLeadingScore(0);
@@ -102,18 +121,47 @@ const Cricket = () => {
 
   // disable buttons if all players have number closed
   const disableInputButtons = () => {
+    // loop over target array
     for (let i = 0; i < targets.length; i++) {
+      // map over playerList
       let checkNumOfMarks = playerList.map((player: IPlayer) => {
-        if (currentPlayer.id === player.id) return player;
-        else {
-          return player.scoreList.filter((hitNum) => hitNum === targets[i])
-            .length;
+        // if player.id is equal to currentPlayer
+        if (player.id === currentPlayer.id) {
+          // make shallow copy of scorelist
+          let hitArray = [...player.scoreList];
+          // convert current marks to array and push into copy of player scorelist
+          playerScore
+            .split(",")
+            .forEach(
+              (num) =>
+                !isNaN(parseInt(num, 10)) && hitArray.push(parseInt(num, 10))
+            );
+          // filter updated scorelist copy to determine if number should be closed
+          return hitArray.filter((hitNum) => hitNum === targets[i]).length;
         }
+        // if player is not current player then no need to update or copy playerlist - marks are set
+        return player.scoreList.filter((hitNum) => hitNum === targets[i])
+          .length;
       });
-      let marks = checkNumOfMarks.every((mark: number) => mark >= 3);
-      console.log(marks);
+      // for each target we check against current marks
+      const markClosed = checkNumOfMarks.every((num: number) => num >= 3);
+      // if the marks are closed
+      if (markClosed) {
+        setDisableButton((prev) =>
+          prev.map((value, index) => {
+            // if the index is equal to the index in targets we set mark disabled
+            if (index === i) return (value = true);
+            // or just return the value
+            else return value;
+          })
+        );
+      }
     }
   };
+
+  useEffect(() => {
+    disableInputButtons();
+  }, [playerScore, playerList]);
 
   // calculate hits for button display
   const calculateHits = (array: Array<string>) => [
@@ -156,6 +204,7 @@ const Cricket = () => {
           onHandleSubmit={onHandleSubmit}
           onDeleteInput={onDeleteInput}
           hitTargets={calculateHits(playerScore.split(","))}
+          disabled={disableButton}
         />
       </View>
     </View>
@@ -167,3 +216,14 @@ export default Cricket;
 const styles = StyleSheet.create({
   container: { flex: 1, flexDirection: "column", paddingTop: 20 },
 });
+
+/* TODO:
+ * - Players should not to be able to score any more then 9 marks per round
+ * - Round Info:
+ *   - Marks per round
+ *   - Points per round
+ *   - Total Marks
+ *   - Turn Points display
+ * - Styling for all components
+ * - Probably should look at the functions to see if can be refactored or reused - there is a lot of manipulating arrays
+ */

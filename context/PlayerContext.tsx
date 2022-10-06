@@ -17,41 +17,41 @@ export interface IPlayerStats {
   // checkoutPercent: number;
 }
 
-const players = [
-  {
-    id: 1,
-    name: "Adam",
-    score: 0,
-    selected: true,
-    scoreList: [],
-    lives: 0,
-    stats: {
-      highScore: 0,
-      oneDartAverage: 0,
-      darts: 0,
-      // checkoutPercent: 0,
-    },
-  },
-  {
-    id: 2,
-    name: "Paul",
-    score: 0,
-    selected: true,
-    scoreList: [],
-    lives: 0,
-    stats: {
-      highScore: 0,
-      oneDartAverage: 0,
-      darts: 0,
-      // checkoutPercent: 0,
-    },
-  },
-];
+// const players = [
+//   {
+//     id: 1,
+//     name: "Adam",
+//     score: 0,
+//     selected: true,
+//     scoreList: [],
+//     lives: 0,
+//     stats: {
+//       highScore: 0,
+//       oneDartAverage: 0,
+//       darts: 0,
+//       // checkoutPercent: 0,
+//     },
+//   },
+//   {
+//     id: 2,
+//     name: "Paul",
+//     score: 0,
+//     selected: true,
+//     scoreList: [],
+//     lives: 0,
+//     stats: {
+//       highScore: 0,
+//       oneDartAverage: 0,
+//       darts: 0,
+//       // checkoutPercent: 0,
+//     },
+//   },
+// ];
 
 const PlayerStateContext = createContext({} as any);
 
 const PlayerListProvider = ({ children }: { children: React.ReactNode }) => {
-  const [playerList, setPlayerList] = useState<IPlayer[]>(players);
+  const [playerList, setPlayerList] = useState<IPlayer[]>([]);
 
   const onAddPlayer = (player: IPlayer) => {
     setPlayerList([...playerList, player]);

@@ -25,6 +25,11 @@ const CreatePlayer = () => {
     scoreList: [],
     lives: 0,
     selected: true,
+    stats: {
+      highScore: 0,
+      oneDartAverage: 0,
+      darts: 0,
+    },
   };
   const { onAddPlayer } = usePlayerState();
   const navigation = useNavigation();

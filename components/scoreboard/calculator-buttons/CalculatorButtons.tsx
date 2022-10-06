@@ -11,7 +11,7 @@ interface ICalculatorButtonsProps {
   variant: string;
   value?: string;
   setValue?: React.Dispatch<React.SetStateAction<string>>;
-  disabled?: boolean;
+  disabled?: boolean | Array<boolean>;
   onHandleSubmit: () => void;
   onDeleteInput: () => void;
   hitTargets?: Array<number>;
@@ -41,25 +41,21 @@ const CalculatorButtons = (props: ICalculatorButtonsProps) => {
       if (inputValue === "Del") {
         // delete input function
         onDeleteInput();
-        // console.log("Deleted score");
         // if button === "Enter"
       } else if (inputValue === "Enter") {
         // handleSubmit function
         onHandleSubmit();
         setValue("");
-        // console.log("Score is submitted");
         // all other buttons
       } else {
         // check if game is cricket
         if (variant === "cricket") {
           // assign value to Bull
           if (inputValue === "Bull") inputValue = "25";
-          // console.log(`ButtonItem Index: ${data.indexOf(inputValue)}`);
           value !== undefined && value.length === 0
             ? setValue(`${inputValue}`)
             : setValue((prev: string) => `${prev},${inputValue}`);
         } else setValue((prev: string) => `${prev}${inputValue}`);
-        // console.log(inputValue);
       }
     }
   };
@@ -75,12 +71,36 @@ const CalculatorButtons = (props: ICalculatorButtonsProps) => {
     return hit;
   };
 
+  // for cricket assign disabled buttons after all players hit three marks
+  const assignDisabled = (index?: number) => {
+    // set default disable to false
+    let isDisabled = false;
+    // check if disabled prop is provided
+    if (disabled !== undefined) {
+      // if just boolean value return value
+      if (typeof disabled !== "object") return (isDisabled = disabled);
+      // else boolean[] from cricket
+      else {
+        // filter disabled[] set value equal to button index
+        disabled.filter((value, idx) => {
+          // first values index will be the same as boolean array
+          if (index === idx) isDisabled = value;
+          // if last element assign to index 7 bull button
+          else if (index === 7) isDisabled = value;
+        });
+        // return isDisabled
+        return isDisabled;
+      }
+      // if disabled prop isn't defined return false
+    } else return isDisabled;
+  };
+
   const renderItem = ({ item, index }: { item: string; index: number }) => {
     return hitTargets !== undefined ? (
       <ButtonItem
         item={item}
         onButtonPress={onButtonPress}
-        disabled={disabled}
+        disabled={assignDisabled(index)}
         variant={variant}
         hits={assignHits(index)}
       />
@@ -88,7 +108,7 @@ const CalculatorButtons = (props: ICalculatorButtonsProps) => {
       <ButtonItem
         item={item}
         onButtonPress={onButtonPress}
-        disabled={disabled}
+        disabled={assignDisabled()}
         variant={variant}
       />
     );
