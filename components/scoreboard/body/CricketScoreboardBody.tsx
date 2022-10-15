@@ -7,6 +7,9 @@ import CricketScoreboardColumn from "./CricketScoreboardColumn";
 import { Text, View } from "../../Themed";
 import { IPlayer } from "@context/PlayerContext";
 
+import useColorScheme from "../../../hooks/useColorScheme";
+import Colors from "../../../constants/Colors";
+
 interface ICricketScoreboardBodyProps {
   player: IPlayer;
   currentPlayer: IPlayer;
@@ -14,6 +17,8 @@ interface ICricketScoreboardBodyProps {
 
 const CricketScoreboardBody = (props: ICricketScoreboardBodyProps) => {
   const { player, currentPlayer } = props;
+
+  const colorScheme = useColorScheme();
 
   return (
     <View style={styles.playerRow}>
@@ -28,7 +33,10 @@ const CricketScoreboardBody = (props: ICricketScoreboardBodyProps) => {
           <AntDesign name="caretleft" size={18} color="darkred" />
         )}
       </View>
-      <CricketScoreboardColumn player={player} />
+      <CricketScoreboardColumn
+        player={player}
+        colorScheme={Colors[colorScheme].text}
+      />
       <Text style={[styles.scoreboardText, { flex: 1, textAlign: "center" }]}>
         {player.score}
       </Text>

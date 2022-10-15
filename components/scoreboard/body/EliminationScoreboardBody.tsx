@@ -8,20 +8,28 @@ import { IPlayer } from "@context/PlayerContext";
 
 interface IEliminationScoreboardBodyProps {
   player: IPlayer;
+  currentPlayer: number;
 }
 
 const EliminationScoreboardBody = (props: IEliminationScoreboardBodyProps) => {
-  const { player } = props;
+  const { player, currentPlayer } = props;
   return (
-    <View style={styles.bodyRow}>
+    <View
+      style={[
+        player.lives === 0 ? { backgroundColor: "lightgray" } : {},
+        styles.bodyRow,
+      ]}
+    >
       <View style={styles.playerColumn}>
         <View style={styles.turnIndicatorColumn}>
-          <AntDesign
-            style={styles.turnIndicator}
-            name="caretright"
-            size={20}
-            color="darkred"
-          />
+          {currentPlayer === player.id && (
+            <AntDesign
+              style={styles.turnIndicator}
+              name="caretright"
+              size={20}
+              color="darkred"
+            />
+          )}
         </View>
         <View style={styles.playerNameColumn}>
           <Text style={styles.playerText} key={player.id}>
@@ -42,20 +50,29 @@ const EliminationScoreboardBody = (props: IEliminationScoreboardBodyProps) => {
 export default EliminationScoreboardBody;
 
 const styles = StyleSheet.create({
-  bodyRow: { flexDirection: "row", justifyContent: "space-evenly" },
+  bodyRow: {
+    flexDirection: "row",
+    justifyContent: "space-evenly",
+  },
   playerColumn: {
     flexDirection: "row",
     flex: 1,
     borderRightColor: "gray",
     borderRightWidth: 1,
     marginLeft: 2,
+    backgroundColor: "transparent",
   },
-  turnIndicatorColumn: { flex: 0.2, paddingRight: 25 },
+  turnIndicatorColumn: {
+    flex: 0.2,
+    paddingRight: 10,
+    backgroundColor: "transparent",
+  },
   turnIndicator: { textAlign: "right", marginTop: 4 },
   playerNameColumn: {
     flex: 0.8,
+    backgroundColor: "transparent",
   },
-  scoreColumn: { flex: 1 },
+  scoreColumn: { flex: 1, backgroundColor: "transparent" },
   playerText: { textAlign: "left", fontSize: 20 },
   scoreText: { textAlign: "center", fontSize: 20 },
 });

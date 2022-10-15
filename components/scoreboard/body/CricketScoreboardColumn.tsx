@@ -11,9 +11,11 @@ import { View } from "../../Themed";
 
 const CricketScoreboardColumn = ({
   player,
+  colorScheme,
 }: // hitTargets,
 {
   player: IPlayer;
+  colorScheme: string;
   // hitTargets: Array<number>;
 }) => {
   const hitTargets = [
@@ -35,7 +37,7 @@ const CricketScoreboardColumn = ({
           accessibilityLabel="One Point"
           name="slash-forward"
           size={24}
-          color="black"
+          color={colorScheme}
           style={{ marginHorizontal: 6, transform: [{ rotate: "15deg" }] }}
         />
       );
@@ -47,7 +49,7 @@ const CricketScoreboardColumn = ({
           accessibilityLabel="Two Points"
           name="x"
           size={24}
-          color="black"
+          color={colorScheme}
           style={{ marginHorizontal: 6 }}
         />
       );
@@ -58,7 +60,7 @@ const CricketScoreboardColumn = ({
           accessibilityLabel="3 Points"
           name="closecircleo"
           size={24}
-          color="black"
+          color={colorScheme}
           style={{ marginHorizontal: 6 }}
         />
       );

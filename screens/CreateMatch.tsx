@@ -40,6 +40,16 @@ const CreateMatch = () => {
         })
       );
   };
+  // if elimination - set lives to player
+  const setEliminationLives = () => {
+    if (points !== null)
+      setPlayerList((prev: IPlayer[]) =>
+        prev.map((player) => {
+          player.lives = points;
+          return player;
+        })
+      );
+  };
 
   // if any match is selected !== X01 assign blank score
   const resetPlayerState = () => {
@@ -56,7 +66,12 @@ const CreateMatch = () => {
   const onHandleSelect = () => {
     if (game !== null)
       if (game === "x01") {
+        resetPlayerState();
         setX01Points();
+        navigation.navigate(game);
+      } else if (game === "elimination") {
+        resetPlayerState();
+        setEliminationLives();
         navigation.navigate(game);
       } else {
         resetPlayerState();

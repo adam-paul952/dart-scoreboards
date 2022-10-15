@@ -25,10 +25,17 @@
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "package": "com.adam.paul.dartscoreboards",
+      "versionCode": 1
     },
     "web": {
       "favicon": "./assets/images/favicon.png"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "58a690c2-b322-4ce2-8844-fe831398a2d5"
+      }
     }
   }
 }
