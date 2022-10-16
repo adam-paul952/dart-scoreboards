@@ -6,6 +6,7 @@ import ButtonItem from "./ButtonItem";
 
 import { regularButtons } from "@scoreboard/calculator-buttons/constants";
 import { cricketButtons } from "@scoreboard/calculator-buttons/constants";
+import { IPlayer, usePlayerState } from "@context/PlayerContext";
 
 interface ICalculatorButtonsProps {
   variant: string;
@@ -28,10 +29,27 @@ const CalculatorButtons = (props: ICalculatorButtonsProps) => {
     hitTargets,
   } = props;
 
+  const { playerList, selectedPlayers } = usePlayerState();
+
   let data: string[] = [];
   // assign calculator buttons
   if (variant === "cricket") data = cricketButtons;
-  else data = regularButtons;
+  else if (variant === "killer") {
+    data = selectedPlayers
+      .map((player: IPlayer) => {
+        return player.score.toString();
+      })
+      .sort();
+    // fill in empty spaces with disabled block for visual display
+    if (data.length % 3 === 0) data.push("Del", "", "Enter");
+    else if (data.length % 2 === 0 || data.length % 5 === 0) {
+      data.splice(data.length - 1, 0, "");
+      data.push("Del", "", "Enter");
+    } else {
+      data.splice(data.length - 1, 0, "Del");
+      data.splice(data.length, 0, "Enter");
+    }
+  } else data = regularButtons;
 
   // button on press
   const onButtonPress = (inputValue: string) => {
@@ -119,7 +137,7 @@ const CalculatorButtons = (props: ICalculatorButtonsProps) => {
       data={data}
       numColumns={3}
       renderItem={renderItem}
-      keyExtractor={(item) => item}
+      keyExtractor={(item, index) => (item === "" ? index.toString() : item)}
     />
   );
 };

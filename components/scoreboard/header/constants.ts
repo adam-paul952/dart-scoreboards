@@ -29,4 +29,12 @@ const baseballHeader = [
   "Total",
 ];
 
-export { cricketHeader, x01Header, eliminationHeader, baseballHeader };
+const killerHeader = ["Player", "Target", " Lives", "Killer"];
+
+export {
+  cricketHeader,
+  x01Header,
+  eliminationHeader,
+  baseballHeader,
+  killerHeader,
+};

@@ -7,16 +7,16 @@ import { IPlayer } from "@context/PlayerContext";
 import { Text, View } from "../../Themed";
 
 interface IX01ScoreboardBodyProps {
-  playerList: IPlayer[];
+  selectedPlayers: IPlayer[];
   currentPlayer: any;
 }
 
 const X01ScoreboardBody = (props: IX01ScoreboardBodyProps) => {
-  const { playerList, currentPlayer } = props;
+  const { selectedPlayers, currentPlayer } = props;
 
   return (
     <>
-      {playerList.map((player: IPlayer) => {
+      {selectedPlayers.map((player: IPlayer) => {
         return (
           <View key={player.id} style={styles.playerRow}>
             <View

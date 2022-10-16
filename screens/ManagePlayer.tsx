@@ -9,7 +9,8 @@ import CustomButton from "@components/CustomButton";
 import { useNavigation } from "@react-navigation/native";
 
 const ManagePlayerScreen = () => {
-  const { playerList, setPlayerList, onDeletePlayer } = usePlayerState();
+  const { playerList, setPlayerList, onDeletePlayer, setSelectedPlayers } =
+    usePlayerState();
   const navigation = useNavigation();
 
   const togglePlayerSelect = (id: number) => {
@@ -19,6 +20,11 @@ const ManagePlayerScreen = () => {
           player.selected = !player.selected;
         }
         return player;
+      })
+    );
+    setSelectedPlayers((prev: IPlayer[]) =>
+      prev.filter((player) => {
+        if (player.selected === true) return player;
       })
     );
   };

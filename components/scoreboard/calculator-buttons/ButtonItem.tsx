@@ -26,6 +26,15 @@ const ButtonItem = (props: IButtonItemProps) => {
   const colorScheme = useColorScheme();
   const color = Colors[colorScheme].text;
 
+  if (item === "") {
+    return (
+      <CustomButton
+        buttonStyle={[styles.item, { opacity: 1 }]}
+        disabled
+        title={item}
+      />
+    );
+  }
   if (item === "Del") {
     return (
       <CustomButton

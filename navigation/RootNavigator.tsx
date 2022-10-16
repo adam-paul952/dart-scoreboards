@@ -27,6 +27,7 @@ import Killer from "../screens/Killer";
 import Statistics from "../screens/Statistics";
 import ResumeGame from "../screens/ResumeGame";
 import X01OutChart from "../screens/X01OutChart";
+import KillerSetup from "../screens/KillerSetup";
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
@@ -141,6 +142,14 @@ const RootNavigator = () => {
           name="x01-outchart"
           component={X01OutChart}
           options={{ title: "X01 Out Chart" }}
+        />
+        <Stack.Screen
+          name="killer-setup"
+          component={KillerSetup}
+          options={{
+            title: "Killer Setup",
+            // headerBackVisible: false
+          }}
         />
       </Stack.Group>
     </Stack.Navigator>

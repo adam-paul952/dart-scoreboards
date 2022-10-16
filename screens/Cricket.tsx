@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { StyleSheet } from "react-native";
+import { useNavigation } from "@react-navigation/native";
 
 import { IPlayer, usePlayerState } from "../context/PlayerContext";
 import useGame from "../hooks/useGame";
@@ -10,12 +11,11 @@ import CricketScoreboardBody from "@scoreboard/body/CricketScoreboardBody";
 import CricketRoundInfo from "@scoreboard/round-info/CricketRoundInfo";
 import CalculatorButtons from "@scoreboard/calculator-buttons/CalculatorButtons";
 import gameOverAlert from "@components/GameOverAlert";
-import { useNavigation } from "@react-navigation/native";
 
 const targets = [20, 19, 18, 17, 16, 15, 25];
 
 const Cricket = () => {
-  const { playerList, setPlayerList } = usePlayerState();
+  const { selectedPlayers, setSelectedPlayers } = usePlayerState();
   const {
     playerScore,
     setPlayerScore,
@@ -61,7 +61,7 @@ const Cricket = () => {
     // determine if player has highest score
     newScore > leadingScore && setLeadingScore(newScore);
     // set player state with updated values
-    setPlayerList((prev: IPlayer[]) =>
+    setSelectedPlayers((prev: IPlayer[]) =>
       prev.map((player) => {
         if (player.id !== currentPlayer.id) return player;
         else {
@@ -92,7 +92,7 @@ const Cricket = () => {
 
   // reset game
   const resetGame = () => {
-    setPlayerList((prev: IPlayer[]) =>
+    setSelectedPlayers((prev: IPlayer[]) =>
       prev.map((player) => {
         player.score = 0;
         player.scoreList = [];
@@ -124,7 +124,7 @@ const Cricket = () => {
     // loop over target array
     for (let i = 0; i < targets.length; i++) {
       // map over playerList
-      let checkNumOfMarks = playerList.map((player: IPlayer) => {
+      let checkNumOfMarks = selectedPlayers.map((player: IPlayer) => {
         // if player.id is equal to currentPlayer
         if (player.id === currentPlayer.id) {
           // make shallow copy of scorelist
@@ -161,7 +161,7 @@ const Cricket = () => {
 
   useEffect(() => {
     disableInputButtons();
-  }, [playerScore, playerList]);
+  }, [playerScore, selectedPlayers]);
 
   // calculate hits for button display
   const calculateHits = (array: Array<string>) => [
@@ -179,7 +179,7 @@ const Cricket = () => {
       <View style={{ flex: 2 }}>
         <CricketHeader />
         <>
-          {playerList.map((player: IPlayer) => {
+          {selectedPlayers.map((player: IPlayer) => {
             return (
               <CricketScoreboardBody
                 key={player.id}

@@ -3,6 +3,7 @@
  * https://reactnavigation.org/docs/typescript/
  */
 
+import { IPlayer } from "@context/PlayerContext";
 import { BottomTabScreenProps } from "@react-navigation/bottom-tabs";
 import {
   CompositeScreenProps,
@@ -26,10 +27,11 @@ export type RootStackParamList = {
   cricket: undefined;
   elimination: undefined;
   x01: undefined;
-  killer: undefined;
+  killer: { playerTargets: Array<number> };
   statistics: undefined;
   "resume-game": undefined;
   "x01-outchart": undefined;
+  "killer-setup": undefined;
 };
 
 export type RootStackScreenProps<Screen extends keyof RootStackParamList> =

@@ -1,7 +1,5 @@
 import { Alert } from "react-native";
 
-// import { useNavigation } from "@react-navigation/native";
-
 const gameOverAlert = ({
   playerName,
   resetGame,
@@ -11,14 +9,13 @@ const gameOverAlert = ({
   resetGame: () => void;
   navigation: any;
 }) => {
-  //   const navigation = useNavigation();
   return Alert.alert(
     "Game Over",
     `${playerName} has won the game!\n\nCongratulations!`,
     [
       {
         text: "Create Match",
-        onPress: () => navigation.goBack(),
+        onPress: () => navigation.navigate("create-match"),
         style: "cancel",
       },
       { text: "Play Again", onPress: () => resetGame() },

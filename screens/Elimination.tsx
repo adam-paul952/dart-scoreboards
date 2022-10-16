@@ -14,7 +14,7 @@ import CalculatorButtons from "@scoreboard/calculator-buttons/CalculatorButtons"
 import gameOverAlert from "@components/GameOverAlert";
 
 const Elimination = () => {
-  const { playerList, setPlayerList } = usePlayerState();
+  const { selectedPlayers, setSelectedPlayers } = usePlayerState();
   const {
     currentPlayer,
     playerScore,
@@ -54,7 +54,7 @@ const Elimination = () => {
     getCurrentPlayerHighScore();
     // if it's the first turn of the game and the player doesn't score - player doesn't lose a life
     if (round === 1 && turn === 0 && roundScore === 0) {
-      setPlayerList((prev: IPlayer[]) =>
+      setSelectedPlayers((prev: IPlayer[]) =>
         prev.map((player) => {
           if (player.id === currentPlayer.id) {
             player.score = roundScore;
@@ -68,7 +68,7 @@ const Elimination = () => {
       // set leading score to new score
       setLeadingScore(roundScore);
       // set player's score to current score
-      setPlayerList((prev: IPlayer[]) =>
+      setSelectedPlayers((prev: IPlayer[]) =>
         prev.map((player) => {
           if (player.id === currentPlayer.id) {
             player.score = roundScore;
@@ -78,7 +78,7 @@ const Elimination = () => {
       );
     } else {
       setLeadingScore(roundScore);
-      setPlayerList((prev: IPlayer[]) =>
+      setSelectedPlayers((prev: IPlayer[]) =>
         prev.map((player) => {
           if (player.id === currentPlayer.id) {
             player.score = roundScore;
@@ -91,11 +91,11 @@ const Elimination = () => {
     changeTurns();
     changeRounds();
     // if only one player left with lives game is over
-    const checkForWinningPlayer: number = playerList.filter(
+    const checkForWinningPlayer: number = selectedPlayers.filter(
       (player: IPlayer) => player.lives > 0
     ).length;
     if (checkForWinningPlayer === 1) {
-      playerList.forEach((player: IPlayer) => {
+      selectedPlayers.forEach((player: IPlayer) => {
         if (player.lives > 0) winner = player.name;
       });
       // alert game over with winner name
@@ -109,7 +109,7 @@ const Elimination = () => {
 
   // reset game if playing again
   const resetGame = () => {
-    setPlayerList((prev: IPlayer[]) =>
+    setSelectedPlayers((prev: IPlayer[]) =>
       prev.map((player) => {
         player.score = 0;
         player.scoreList = [];
@@ -129,7 +129,7 @@ const Elimination = () => {
         {/* scoreboard header */}
         <EliminationHeader />
         {/* scoreboard body */}
-        {playerList.map((player: IPlayer) => {
+        {selectedPlayers.map((player: IPlayer) => {
           return (
             <EliminationScoreboardBody
               key={player.name}
@@ -152,7 +152,7 @@ const Elimination = () => {
         <CalculatorButtons
           variant="elimination"
           onHandleSubmit={() => onHandleSubmit()}
-          onDeleteInput={() => onDeleteInput()}
+          onDeleteInput={() => onDeleteInput("elimination")}
           setValue={setPlayerScore}
         />
       </View>

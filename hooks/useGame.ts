@@ -1,8 +1,8 @@
 import { usePlayerState, IPlayer } from "@context/PlayerContext";
-import React, { useState } from "react";
+import { useState } from "react";
 
 const useGame = () => {
-  const { playerList } = usePlayerState();
+  const { selectedPlayers, setSelectedPlayers } = usePlayerState();
 
   // input score
   const [playerScore, setPlayerScore] = useState<string>("");
@@ -11,8 +11,15 @@ const useGame = () => {
   const [leadingScore, setLeadingScore] = useState<number>(0);
 
   // delete input
-  const onDeleteInput = () => {
-    setPlayerScore("");
+  const onDeleteInput = (variant: string) => {
+    if (variant === "killer")
+      setPlayerScore((prev) =>
+        prev
+          .split("")
+          .splice(0, prev.split("").length - 1)
+          .toString()
+      );
+    else setPlayerScore("");
   };
 
   // turn information
@@ -20,8 +27,8 @@ const useGame = () => {
 
   // change turns
   const changeTurns = () => {
-    setTurn((prev) => (prev + 1) % playerList.length);
-    setCurrentPlayer(playerList[(turn + 1) % playerList.length]);
+    setTurn((prev) => (prev + 1) % selectedPlayers.length);
+    setCurrentPlayer(selectedPlayers[(turn + 1) % selectedPlayers.length]);
   };
 
   // round information
@@ -29,11 +36,13 @@ const useGame = () => {
 
   // change rounds
   const changeRounds = () => {
-    turn === playerList.length - 1 && setRound((prev) => prev + 1);
+    turn === selectedPlayers.length - 1 && setRound((prev) => prev + 1);
   };
 
   // current player
-  const [currentPlayer, setCurrentPlayer] = useState<IPlayer>(playerList[turn]);
+  const [currentPlayer, setCurrentPlayer] = useState<IPlayer>(
+    selectedPlayers[turn]
+  );
 
   // calculate current player highscore
   const getCurrentPlayerHighScore = () => {
@@ -50,8 +59,10 @@ const useGame = () => {
     setLeadingScore,
     onDeleteInput,
     turn,
+    setTurn,
     changeTurns,
     currentPlayer,
+    setCurrentPlayer,
     round,
     setRound,
     changeRounds,

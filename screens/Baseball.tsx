@@ -13,7 +13,7 @@ import BaseballRoundInfo from "@components/scoreboard/round-info/BaseballRoundIn
 import gameOverAlert from "@components/GameOverAlert";
 
 const Baseball = () => {
-  const { playerList, setPlayerList } = usePlayerState();
+  const { selectedPlayers, setSelectedPlayers } = usePlayerState();
   const {
     playerScore,
     setPlayerScore,
@@ -32,7 +32,7 @@ const Baseball = () => {
 
   // set initial player scorelist filled with 0 - mostly for display purposes
   useEffect(() => {
-    setPlayerList((prev: IPlayer[]) =>
+    setSelectedPlayers((prev: IPlayer[]) =>
       prev.map((player) => {
         player.scoreList = new Array(9).fill(0);
         return player;
@@ -54,7 +54,7 @@ const Baseball = () => {
     changeTurns();
     changeRounds();
     // assign new totals to current player
-    setPlayerList((prev: IPlayer[]) =>
+    setSelectedPlayers((prev: IPlayer[]) =>
       prev.map((player) => {
         if (player.id !== currentPlayer.id) return player;
         player.score = overallScore;
@@ -65,8 +65,8 @@ const Baseball = () => {
     // if current player score is greater then leading score, set leading score
     currentPlayer.score > leadingScore && setLeadingScore(currentPlayer.score);
     // if round is = 9 and turn is last turn check for duplicates or winner
-    if (round === 9 && turn === playerList.length - 1) {
-      const scores = playerList.map((player: IPlayer) => {
+    if (round === 9 && turn === selectedPlayers.length - 1) {
+      const scores = selectedPlayers.map((player: IPlayer) => {
         return { name: player.score, score: player.score };
       });
       // find duplicates in high score to determine if game is over
@@ -79,7 +79,7 @@ const Baseball = () => {
       } else {
         let winner: string = "";
         // find winner's name
-        playerList.forEach((player: IPlayer) => {
+        selectedPlayers.forEach((player: IPlayer) => {
           if (player.score === leadingScore) winner = player.name;
         });
         // alert game over with winner name
@@ -98,7 +98,7 @@ const Baseball = () => {
 
   // reset game if playing again
   const resetGame = () => {
-    setPlayerList((prev: IPlayer[]) =>
+    setSelectedPlayers((prev: IPlayer[]) =>
       prev.map((player) => {
         player.score = 0;
         player.scoreList = new Array(9).fill(0);
@@ -114,7 +114,7 @@ const Baseball = () => {
       <View style={{ flex: 2 }}>
         <BaseballHeader />
         <View>
-          {playerList.map((player: IPlayer) => {
+          {selectedPlayers.map((player: IPlayer) => {
             return (
               <Fragment key={player.id}>
                 <BaseballScoreboardBody
@@ -136,7 +136,7 @@ const Baseball = () => {
         <CalculatorButtons
           variant="baseball"
           onHandleSubmit={onHandleSubmit}
-          onDeleteInput={onDeleteInput}
+          onDeleteInput={() => onDeleteInput("baseball")}
           setValue={setPlayerScore}
         />
       </View>

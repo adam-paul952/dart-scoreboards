@@ -1,13 +1,13 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
+import { StyleSheet } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 
-import { StyleSheet } from "react-native";
-// import { Dropdown } from "react-native-element-dropdown";
+import { IPlayer, usePlayerState } from "../context/PlayerContext";
+
+import { View } from "../components/Themed";
 import CustomButton from "../components/CustomButton";
 import Dropdown from "../components/Dropdown";
 
-import { Text, View } from "../components/Themed";
-import { IPlayer, usePlayerState } from "../context/PlayerContext";
 import {
   baseballData,
   x01Data,
@@ -16,7 +16,7 @@ import {
 
 const CreateMatch = () => {
   const navigation = useNavigation();
-  const { playerList, setPlayerList } = usePlayerState();
+  const { setSelectedPlayers } = usePlayerState();
   // game to be selected
   const [game, setGame] = useState<null>(null);
   // x01 points - elimination lives
@@ -33,17 +33,18 @@ const CreateMatch = () => {
   // if x01 is selected set points to player
   const setX01Points = () => {
     if (points !== null)
-      setPlayerList((prev: IPlayer[]) =>
+      setSelectedPlayers((prev: IPlayer[]) =>
         prev.map((player) => {
           player.score = points;
           return player;
         })
       );
   };
+
   // if elimination - set lives to player
   const setEliminationLives = () => {
     if (points !== null)
-      setPlayerList((prev: IPlayer[]) =>
+      setSelectedPlayers((prev: IPlayer[]) =>
         prev.map((player) => {
           player.lives = points;
           return player;
@@ -51,12 +52,13 @@ const CreateMatch = () => {
       );
   };
 
-  // if any match is selected !== X01 assign blank score
   const resetPlayerState = () => {
-    setPlayerList((prev: IPlayer[]) =>
+    setSelectedPlayers((prev: IPlayer[]) =>
       prev.map((player) => {
         player.score = 0;
         player.scoreList = [];
+        player.lives = 0;
+        player.killer = false;
         return player;
       })
     );
@@ -73,6 +75,9 @@ const CreateMatch = () => {
         resetPlayerState();
         setEliminationLives();
         navigation.navigate(game);
+      } else if (game === "killer") {
+        resetPlayerState();
+        navigation.navigate("killer-setup");
       } else {
         resetPlayerState();
         navigation.navigate(game);

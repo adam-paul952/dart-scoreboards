@@ -7,6 +7,7 @@ export interface IPlayer {
   selected: boolean;
   scoreList: Array<number>;
   lives: number;
+  killer: boolean;
   stats: IPlayerStats;
 }
 
@@ -25,6 +26,7 @@ const players = [
     selected: true,
     scoreList: [],
     lives: 0,
+    killer: false,
     stats: {
       highScore: 0,
       oneDartAverage: 0,
@@ -39,6 +41,7 @@ const players = [
     selected: true,
     scoreList: [],
     lives: 0,
+    killer: false,
     stats: {
       highScore: 0,
       oneDartAverage: 0,
@@ -53,6 +56,7 @@ const players = [
     selected: true,
     scoreList: [],
     lives: 0,
+    killer: false,
     stats: {
       highScore: 0,
       oneDartAverage: 0,
@@ -67,6 +71,8 @@ const PlayerStateContext = createContext({} as any);
 const PlayerListProvider = ({ children }: { children: React.ReactNode }) => {
   const [playerList, setPlayerList] = useState<IPlayer[]>(players);
 
+  const [selectedPlayers, setSelectedPlayers] = useState<IPlayer[]>(playerList);
+
   const onAddPlayer = (player: IPlayer) => {
     setPlayerList([...playerList, player]);
   };
@@ -79,7 +85,14 @@ const PlayerListProvider = ({ children }: { children: React.ReactNode }) => {
 
   return (
     <PlayerStateContext.Provider
-      value={{ playerList, setPlayerList, onAddPlayer, onDeletePlayer }}
+      value={{
+        playerList,
+        setPlayerList,
+        onAddPlayer,
+        onDeletePlayer,
+        selectedPlayers,
+        setSelectedPlayers,
+      }}
     >
       {children}
     </PlayerStateContext.Provider>
@@ -89,9 +102,17 @@ const PlayerListProvider = ({ children }: { children: React.ReactNode }) => {
 const usePlayerState = () => {
   const context = useContext(PlayerStateContext);
   if (context === undefined) {
-    throw new Error("usePlayerState must be used within PlayerStateProvideo");
+    throw new Error("usePlayerState must be used within PlayerStateProvider");
   }
   return context;
 };
 
 export { PlayerListProvider, usePlayerState };
+
+/* TODO:
+ *  - Replace all occurances of playerlist with selected player list:
+ *      - ensures only players selected will be used in a game
+ *  - Use Playerlist to store and get information from Async Storage
+ *      - that will enable player persistence between app reloads/closures
+ *      - that information will be used  only on ManagePlayers screen/Statistics screen
+ */

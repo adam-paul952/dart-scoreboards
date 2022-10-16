@@ -24,6 +24,7 @@ const CreatePlayer = () => {
     score: 0,
     scoreList: [],
     lives: 0,
+    killer: false,
     selected: true,
     stats: {
       highScore: 0,

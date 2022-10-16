@@ -14,7 +14,7 @@ import CalculatorButtons from "@scoreboard/calculator-buttons/CalculatorButtons"
 import gameOverAlert from "@components/GameOverAlert";
 
 const X01 = () => {
-  const { playerList, setPlayerList } = usePlayerState();
+  const { selectedPlayers, setSelectedPlayers } = usePlayerState();
   const {
     playerScore,
     setPlayerScore,
@@ -78,7 +78,7 @@ const X01 = () => {
     // seperate function handle changing of a player in-game stats
     handleStatsChange();
     // set playerlist with currentplayer totals
-    setPlayerList((prev: IPlayer[]) =>
+    setSelectedPlayers((prev: IPlayer[]) =>
       prev.map((player) => {
         // if current player isn't equal to player return
         if (currentPlayer.id !== player.id) return player;
@@ -102,7 +102,7 @@ const X01 = () => {
 
   // reset game if playing again
   const resetGame = () => {
-    setPlayerList((prev: IPlayer[]) =>
+    setSelectedPlayers((prev: IPlayer[]) =>
       prev.map((player) => {
         player.score = x01Points;
         player.scoreList = [];
@@ -124,7 +124,7 @@ const X01 = () => {
       <View style={styles.headerRow}>
         <X01Header />
         <X01ScoreboardBody
-          playerList={playerList}
+          selectedPlayers={selectedPlayers}
           currentPlayer={currentPlayer}
         />
       </View>
@@ -142,7 +142,7 @@ const X01 = () => {
             setValue={setPlayerScore}
             disabled={disabled}
             onHandleSubmit={onHandleSubmit}
-            onDeleteInput={onDeleteInput}
+            onDeleteInput={() => onDeleteInput("x01")}
           />
         </View>
       </>
