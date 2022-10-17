@@ -19,7 +19,7 @@ import { usePlayerState } from "../context/PlayerContext";
 
 const CreatePlayer = () => {
   const initialState = {
-    id: Math.floor(Math.random() * 10000),
+    // id: Math.floor(Math.random() * 10000),
     name: "",
     score: 0,
     scoreList: [],

@@ -75,7 +75,7 @@ const Killer = ({ route }: KillerProps) => {
         else if (player.lives === 0) {
           setPlayerIsOut((prev) => [
             ...prev,
-            { id: player.id, name: player.name },
+            { id: player.id!, name: player.name },
           ]);
         }
       });
@@ -143,7 +143,7 @@ const Killer = ({ route }: KillerProps) => {
               <KillerScoreboardBody
                 key={player.name}
                 player={player}
-                currentPlayer={currentPlayer.id}
+                currentPlayer={currentPlayer.id!}
               />
             );
           })}

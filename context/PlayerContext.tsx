@@ -1,7 +1,15 @@
-import { createContext, useContext, useState } from "react";
+import { createContext, useContext, useEffect, useState } from "react";
+
+import {
+  createTable,
+  getPlayers,
+  onnAddPlayerToDb,
+  dropTable,
+  onDeletePlayerFromDb,
+} from "../db-api";
 
 export interface IPlayer {
-  id: number;
+  id?: number;
   name: string;
   score: number;
   selected: boolean;
@@ -18,70 +26,26 @@ export interface IPlayerStats {
   // checkoutPercent: number;
 }
 
-const players = [
-  {
-    id: 1,
-    name: "Adam",
-    score: 0,
-    selected: true,
-    scoreList: [],
-    lives: 0,
-    killer: false,
-    stats: {
-      highScore: 0,
-      oneDartAverage: 0,
-      darts: 0,
-      // checkoutPercent: 0,
-    },
-  },
-  {
-    id: 2,
-    name: "Paul",
-    score: 0,
-    selected: true,
-    scoreList: [],
-    lives: 0,
-    killer: false,
-    stats: {
-      highScore: 0,
-      oneDartAverage: 0,
-      darts: 0,
-      // checkoutPercent: 0,
-    },
-  },
-  {
-    id: 3,
-    name: "Raelene",
-    score: 0,
-    selected: true,
-    scoreList: [],
-    lives: 0,
-    killer: false,
-    stats: {
-      highScore: 0,
-      oneDartAverage: 0,
-      darts: 0,
-      // checkoutPercent: 0,
-    },
-  },
-];
-
 const PlayerStateContext = createContext({} as any);
 
 const PlayerListProvider = ({ children }: { children: React.ReactNode }) => {
-  const [playerList, setPlayerList] = useState<IPlayer[]>(players);
+  const [playerList, setPlayerList] = useState<IPlayer[]>([]);
 
   const [selectedPlayers, setSelectedPlayers] = useState<IPlayer[]>(playerList);
 
   const onAddPlayer = (player: IPlayer) => {
-    setPlayerList([...playerList, player]);
+    // dropTable();
+    onnAddPlayerToDb(player, setPlayerList);
   };
 
   const onDeletePlayer = (id: number) => {
-    setPlayerList(() =>
-      playerList.filter((player: IPlayer) => player.id !== id)
-    );
+    onDeletePlayerFromDb(id, setPlayerList, playerList);
   };
+
+  useEffect(() => {
+    createTable();
+    getPlayers(setPlayerList);
+  }, []);
 
   return (
     <PlayerStateContext.Provider

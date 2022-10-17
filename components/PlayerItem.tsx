@@ -29,7 +29,10 @@ const PlayerItem: React.FC<IPlayerItemProps> = ({
         buttonStyle={styles.buttonStyle}
         onPressOut={() => togglePlayerSelect(player.id)}
       />
-      <Checkbox value={player.selected} />
+      <Checkbox
+        value={player.selected}
+        onChange={() => togglePlayerSelect(player.id)}
+      />
       <CustomButton
         title="delete"
         buttonStyle={styles.delButtonStyle}
