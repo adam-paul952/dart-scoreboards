@@ -22,11 +22,7 @@ const ManagePlayerScreen = () => {
         return player;
       })
     );
-    setSelectedPlayers((prev: IPlayer[]) =>
-      prev.filter((player) => {
-        if (player.selected === true) return player;
-      })
-    );
+    setSelectedPlayers(playerList);
   };
 
   const disableButton = () => {

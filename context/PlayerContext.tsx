@@ -3,7 +3,7 @@ import { createContext, useContext, useEffect, useState } from "react";
 import {
   createTable,
   getPlayers,
-  onnAddPlayerToDb,
+  onAddPlayerToDb,
   dropTable,
   onDeletePlayerFromDb,
 } from "../db-api";
@@ -20,10 +20,12 @@ export interface IPlayer {
 }
 
 export interface IPlayerStats {
+  gamesWon: number;
+  gamesLost: number;
+  gamesPlayed: number;
   highScore: number;
   oneDartAverage: number;
   darts: number;
-  // checkoutPercent: number;
 }
 
 const PlayerStateContext = createContext({} as any);
@@ -31,11 +33,11 @@ const PlayerStateContext = createContext({} as any);
 const PlayerListProvider = ({ children }: { children: React.ReactNode }) => {
   const [playerList, setPlayerList] = useState<IPlayer[]>([]);
 
-  const [selectedPlayers, setSelectedPlayers] = useState<IPlayer[]>(playerList);
+  const [selectedPlayers, setSelectedPlayers] = useState<IPlayer[]>([]);
 
   const onAddPlayer = (player: IPlayer) => {
-    // dropTable();
-    onnAddPlayerToDb(player, setPlayerList);
+    // dropTable(setPlayerList);
+    onAddPlayerToDb(player, setPlayerList);
   };
 
   const onDeletePlayer = (id: number) => {
@@ -46,6 +48,22 @@ const PlayerListProvider = ({ children }: { children: React.ReactNode }) => {
     createTable();
     getPlayers(setPlayerList);
   }, []);
+
+  useEffect(() => {
+    const assignSelectedPlayers = () => {
+      setSelectedPlayers((prev) =>
+        prev.filter((player) => {
+          if (player.selected === true) return player;
+        })
+      );
+    };
+
+    assignSelectedPlayers();
+  }, [playerList]);
+
+  useEffect(() => {
+    console.log(`PlayerList: `, playerList);
+  }, [playerList]);
 
   return (
     <PlayerStateContext.Provider
