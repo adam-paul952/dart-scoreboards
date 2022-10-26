@@ -4,9 +4,10 @@ import { useNavigation } from "@react-navigation/native";
 
 import { IPlayer, usePlayerState } from "../context/PlayerContext";
 
-import { View } from "../components/Themed";
+import { Text, View } from "../components/Themed";
 import CustomButton from "../components/CustomButton";
 import Dropdown from "../components/Dropdown";
+import ActivePlayerList from "@components/ActivePlayerList";
 
 import {
   baseballData,
@@ -16,7 +17,8 @@ import {
 
 const CreateMatch = () => {
   const navigation = useNavigation();
-  const { setSelectedPlayers } = usePlayerState();
+  const { selectedPlayers, setSelectedPlayers, togglePlayerSelect } =
+    usePlayerState();
   // game to be selected
   const [game, setGame] = useState<null>(null);
   // x01 points - elimination lives
@@ -86,28 +88,50 @@ const CreateMatch = () => {
 
   return (
     <View style={styles.container}>
-      <Dropdown
-        data={baseballData}
-        label="Choose Game:"
-        value={game}
-        setValue={setGame}
-      />
-      {game === "x01" && (
+      <View
+        style={{
+          minHeight: "20%",
+        }}
+      >
         <Dropdown
-          data={x01Data}
-          label="Points:"
-          value={points}
-          setValue={setPoints}
+          data={baseballData}
+          label="Choose Game:"
+          value={game}
+          setValue={setGame}
         />
-      )}
-      {game === "elimination" && (
-        <Dropdown
-          data={eliminationData}
-          label="Lives:"
-          value={points}
-          setValue={setPoints}
+        {game === "x01" && (
+          <Dropdown
+            data={x01Data}
+            label="Points:"
+            value={points}
+            setValue={setPoints}
+          />
+        )}
+        {game === "elimination" && (
+          <Dropdown
+            data={eliminationData}
+            label="Lives:"
+            value={points}
+            setValue={setPoints}
+          />
+        )}
+      </View>
+      <View style={{ flexGrow: 1, paddingVertical: 10 }}>
+        <Text
+          style={{
+            fontSize: 25,
+            textDecorationLine: "underline",
+            paddingBottom: 5,
+          }}
+        >
+          Players to play:
+        </Text>
+        <ActivePlayerList
+          selectedPlayers={selectedPlayers}
+          setSelectedPlayers={setSelectedPlayers}
+          togglePlayerSelect={togglePlayerSelect}
         />
-      )}
+      </View>
       <View style={styles.buttonContainer}>
         <CustomButton
           title="Continue to Game"
@@ -127,9 +151,14 @@ export default CreateMatch;
 const styles = StyleSheet.create({
   container: { flex: 1, flexDirection: "column" },
   buttonContainer: {
-    flex: 8,
-    flexDirection: "column",
-    justifyContent: "flex-end",
+    alignSelf: "center",
+    width: "100%",
+    position: "absolute",
+    bottom: 0,
   },
-  buttonStyle: { marginBottom: 20, width: "80%", alignSelf: "center" },
+  buttonStyle: {
+    marginBottom: 20,
+    width: "80%",
+    alignSelf: "center",
+  },
 });

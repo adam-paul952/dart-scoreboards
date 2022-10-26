@@ -1,12 +1,6 @@
 import { createContext, useContext, useEffect, useState } from "react";
 
-import {
-  createTable,
-  getPlayers,
-  onAddPlayerToDb,
-  dropTable,
-  onDeletePlayerFromDb,
-} from "../db-api";
+import useSqlite from "../hooks/useSqlite";
 
 export interface IPlayer {
   id?: number;
@@ -26,22 +20,37 @@ export interface IPlayerStats {
   highScore: number;
   oneDartAverage: number;
   darts: number;
+  winPercent: number;
 }
 
 const PlayerStateContext = createContext({} as any);
 
 const PlayerListProvider = ({ children }: { children: React.ReactNode }) => {
+  const { createTable, getPlayers, onAddPlayerToDb, onDeletePlayerFromDb } =
+    useSqlite();
+
   const [playerList, setPlayerList] = useState<IPlayer[]>([]);
 
   const [selectedPlayers, setSelectedPlayers] = useState<IPlayer[]>([]);
 
   const onAddPlayer = (player: IPlayer) => {
-    // dropTable(setPlayerList);
     onAddPlayerToDb(player, setPlayerList);
   };
 
   const onDeletePlayer = (id: number) => {
     onDeletePlayerFromDb(id, setPlayerList, playerList);
+  };
+
+  const togglePlayerSelect = (id: number) => {
+    setPlayerList(() =>
+      playerList.map((player: IPlayer) => {
+        if (player.id === id) {
+          player.selected = !player.selected;
+        }
+        return player;
+      })
+    );
+    setSelectedPlayers(playerList);
   };
 
   useEffect(() => {
@@ -51,18 +60,16 @@ const PlayerListProvider = ({ children }: { children: React.ReactNode }) => {
 
   useEffect(() => {
     const assignSelectedPlayers = () => {
-      setSelectedPlayers((prev) =>
-        prev.filter((player) => {
-          if (player.selected === true) return player;
+      setSelectedPlayers(
+        playerList.filter((player) => {
+          if (player.selected === true) {
+            return player;
+          }
         })
       );
     };
 
     assignSelectedPlayers();
-  }, [playerList]);
-
-  useEffect(() => {
-    console.log(`PlayerList: `, playerList);
   }, [playerList]);
 
   return (
@@ -74,6 +81,7 @@ const PlayerListProvider = ({ children }: { children: React.ReactNode }) => {
         onDeletePlayer,
         selectedPlayers,
         setSelectedPlayers,
+        togglePlayerSelect,
       }}
     >
       {children}

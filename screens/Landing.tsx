@@ -1,6 +1,6 @@
 import React from "react";
 
-import { StyleSheet } from "react-native";
+import { Alert, StyleSheet } from "react-native";
 
 import LandingPageButton from "../components/LandingButtons";
 import { View } from "../components/Themed";
@@ -36,7 +36,13 @@ const Landing = () => {
   const color = Colors[colorScheme].text;
 
   const alertUserNoPlayers = () => {
-    if (playerList.length === 0) alert("Please create a player first");
+    if (playerList.length < 2)
+      Alert.alert("", "Please create a player first", [
+        {
+          text: "Create Players",
+          onPress: () => navigation.navigate("create-player"),
+        },
+      ]);
     else navigation.navigate("create-match");
   };
 

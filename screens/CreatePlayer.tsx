@@ -33,6 +33,7 @@ const CreatePlayer = () => {
       gamesPlayed: 0,
       gamesWon: 0,
       gamesLost: 0,
+      winPercent: 0,
     },
   };
   const { onAddPlayer } = usePlayerState();

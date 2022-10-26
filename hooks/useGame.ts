@@ -45,10 +45,9 @@ const useGame = () => {
   );
 
   // calculate current player highscore
-  const getCurrentPlayerHighScore = () => {
-    currentPlayer.scoreList.forEach((score: number) => {
-      if (currentPlayer.stats.highScore < score)
-        currentPlayer.stats.highScore = score;
+  const assignCurrentPlayerHighScore = (player: IPlayer) => {
+    player.scoreList.forEach((score: number) => {
+      if (player.stats.highScore < score) player.stats.highScore = score;
     });
   };
 
@@ -66,7 +65,7 @@ const useGame = () => {
     round,
     setRound,
     changeRounds,
-    getCurrentPlayerHighScore,
+    assignCurrentPlayerHighScore,
   };
 };
 

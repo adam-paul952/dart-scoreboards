@@ -13,7 +13,7 @@ import BaseballRoundInfo from "@components/scoreboard/round-info/BaseballRoundIn
 import gameOverAlert from "@components/GameOverAlert";
 
 const Baseball = () => {
-  const { selectedPlayers, setSelectedPlayers } = usePlayerState();
+  const { selectedPlayers, setSelectedPlayers, playerList } = usePlayerState();
   const {
     playerScore,
     setPlayerScore,
@@ -26,7 +26,7 @@ const Baseball = () => {
     setRound,
     changeRounds,
     currentPlayer,
-    getCurrentPlayerHighScore,
+    assignCurrentPlayerHighScore,
   } = useGame();
   const navigation = useNavigation();
 
@@ -50,7 +50,7 @@ const Baseball = () => {
     currentPlayer.scoreList[round - 1] = roundScore;
     // calculate total by reducing scorelist
     const overallScore = currentPlayer.scoreList.reduce((a, b) => a + b);
-    onUpDateStats();
+    assignCurrentPlayerHighScore(currentPlayer);
     changeTurns();
     changeRounds();
     // assign new totals to current player
@@ -66,34 +66,53 @@ const Baseball = () => {
     currentPlayer.score > leadingScore && setLeadingScore(currentPlayer.score);
     // if round is = 9 and turn is last turn check for duplicates or winner
     if (round === 9 && turn === selectedPlayers.length - 1) {
-      const scores = selectedPlayers.map((player: IPlayer) => {
-        return { name: player.score, score: player.score };
-      });
-      // find duplicates in high score to determine if game is over
-      const duplicates = scores.some(
-        (item: any, index: number) => scores.indexOf(item) !== index
+      // const scores: IPlayer[] = selectedPlayers.map((player: IPlayer) => {
+      //   return { name: player.score, score: player.score };
+      const scores: IPlayer[] = selectedPlayers.filter(
+        (player: IPlayer) => player.score === leadingScore
+      );
+      console.log(`scores: `, scores);
+      // find duplicates in highest score to determine if game is over
+      const duplicates: boolean = scores.some(
+        (item: IPlayer, index: number) => scores.indexOf(item) !== index
       );
       // TODO: if player's have a tie then continue on in game
-      if (duplicates) {
+      if (scores.length > 1) {
         alert("Extra Innings!");
       } else {
-        let winner: string = "";
+        let winner: { id: number | undefined; name: string } = {
+          id: 0,
+          name: "",
+        };
         // find winner's name
         selectedPlayers.forEach((player: IPlayer) => {
-          if (player.score === leadingScore) winner = player.name;
+          if (player.score === leadingScore)
+            winner = { id: player.id, name: player.name };
         });
+        console.log(winner);
+        if (winner) {
+          selectedPlayers.map((player: IPlayer) => {
+            if (player.id === winner.id) {
+              // assign winner to baseball and global stats
+              player.stats.gamesWon += 1;
+              player.stats.gamesPlayed += 1;
+              console.log(`Winner stats: `, player.stats);
+            } else {
+              // assign losing stats
+              player.stats.gamesLost += 1;
+              player.stats.gamesPlayed += 1;
+              console.log(`Losing stats: `, player.stats);
+            }
+          });
+        }
         // alert game over with winner name
         gameOverAlert({
-          playerName: winner,
+          playerName: winner.name,
           resetGame,
           navigation,
         });
       }
     }
-  };
-  // update player stats
-  const onUpDateStats = () => {
-    getCurrentPlayerHighScore();
   };
 
   // reset game if playing again
@@ -119,7 +138,7 @@ const Baseball = () => {
               <Fragment key={player.id}>
                 <BaseballScoreboardBody
                   player={player}
-                  currentPlayer={currentPlayer.id}
+                  currentPlayer={currentPlayer.id!}
                 />
               </Fragment>
             );

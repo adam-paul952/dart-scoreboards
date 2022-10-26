@@ -1,29 +1,18 @@
 import React from "react";
-
 import { FlatList, StyleSheet } from "react-native";
+import { useNavigation } from "@react-navigation/native";
+
+import { IPlayer, usePlayerState } from "@context/PlayerContext";
+import useSqlite from "../hooks/useSqlite";
 
 import { Text, View } from "@components/Themed";
 import PlayerItem from "@components/PlayerItem";
-import { IPlayer, usePlayerState } from "@context/PlayerContext";
 import CustomButton from "@components/CustomButton";
-import { useNavigation } from "@react-navigation/native";
 
 const ManagePlayerScreen = () => {
-  const { playerList, setPlayerList, onDeletePlayer, setSelectedPlayers } =
-    usePlayerState();
+  const { playerList, onDeletePlayer, togglePlayerSelect } = usePlayerState();
+  const { updateSelectedPlayerlist } = useSqlite();
   const navigation = useNavigation();
-
-  const togglePlayerSelect = (id: number) => {
-    setPlayerList(() =>
-      playerList.map((player: IPlayer) => {
-        if (player.id === id) {
-          player.selected = !player.selected;
-        }
-        return player;
-      })
-    );
-    setSelectedPlayers(playerList);
-  };
 
   const disableButton = () => {
     const selected = playerList.filter(
@@ -72,6 +61,12 @@ const ManagePlayerScreen = () => {
           buttonStyle={styles.buttonStyle}
           disabled={disableButton()}
           onPressOut={() => {
+            playerList.forEach((player: IPlayer) => {
+              let selected;
+              if (player.selected === true) selected = 1;
+              else selected = 0;
+              updateSelectedPlayerlist({ selected, id: player.id! });
+            });
             navigation.navigate("create-match");
           }}
         />
@@ -91,8 +86,6 @@ const styles = StyleSheet.create({
   },
   filledListContainer: { paddingTop: 20 },
   buttonStyle: {
-    borderWidth: 1,
-    borderColor: "gray",
     marginBottom: 20,
     width: "90%",
     alignSelf: "center",
