@@ -2,6 +2,16 @@ import { createContext, useContext, useEffect, useState } from "react";
 
 import useSqlite from "../hooks/useSqlite";
 
+interface PlayerContext {
+  playerList: IPlayer[];
+  setPlayerList: React.Dispatch<React.SetStateAction<IPlayer[]>>;
+  onAddPlayer: (player: IPlayer) => void;
+  onDeletePlayer: (id: number) => void;
+  selectedPlayers: IPlayer[];
+  setSelectedPlayers: React.Dispatch<React.SetStateAction<IPlayer[]>>;
+  togglePlayerSelect: (id: number) => void;
+}
+
 export interface IPlayer {
   id?: number;
   name: string;
@@ -20,10 +30,9 @@ export interface IPlayerStats {
   highScore: number;
   oneDartAverage: number;
   darts: number;
-  winPercent: number;
 }
 
-const PlayerStateContext = createContext({} as any);
+const PlayerStateContext = createContext({} as PlayerContext);
 
 const PlayerListProvider = ({ children }: { children: React.ReactNode }) => {
   const { createTable, getPlayers, onAddPlayerToDb, onDeletePlayerFromDb } =
@@ -53,22 +62,22 @@ const PlayerListProvider = ({ children }: { children: React.ReactNode }) => {
     setSelectedPlayers(playerList);
   };
 
+  const assignSelectedPlayers = () => {
+    setSelectedPlayers(
+      playerList.filter((player) => {
+        if (player.selected === true) {
+          return player;
+        }
+      })
+    );
+  };
+
   useEffect(() => {
     createTable();
     getPlayers(setPlayerList);
   }, []);
 
   useEffect(() => {
-    const assignSelectedPlayers = () => {
-      setSelectedPlayers(
-        playerList.filter((player) => {
-          if (player.selected === true) {
-            return player;
-          }
-        })
-      );
-    };
-
     assignSelectedPlayers();
   }, [playerList]);
 
@@ -98,11 +107,3 @@ const usePlayerState = () => {
 };
 
 export { PlayerListProvider, usePlayerState };
-
-/* TODO:
- *  - Replace all occurances of playerlist with selected player list:
- *      - ensures only players selected will be used in a game
- *  - Use Playerlist to store and get information from Async Storage
- *      - that will enable player persistence between app reloads/closures
- *      - that information will be used  only on ManagePlayers screen/Statistics screen
- */

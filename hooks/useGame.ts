@@ -51,6 +51,8 @@ const useGame = () => {
     });
   };
 
+  const [playerIsOut, setPlayerIsOut] = useState<any[]>([]);
+
   return {
     playerScore,
     setPlayerScore,
@@ -66,6 +68,8 @@ const useGame = () => {
     setRound,
     changeRounds,
     assignCurrentPlayerHighScore,
+    playerIsOut,
+    setPlayerIsOut,
   };
 };
 

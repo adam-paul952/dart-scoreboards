@@ -16,6 +16,9 @@ import {
   insertNewBaseballRow,
   insertNewPlayerStats,
   dropBaseballStats,
+  updatePlayerBaseballStats,
+  getBaseballStatsAll,
+  updatePlayerOverallStats,
 } from "../db-api/stats.statements";
 
 import {
@@ -24,6 +27,7 @@ import {
 } from "../db-api/resumeGame.statements";
 
 import { IPlayer } from "@context/PlayerContext";
+import { PlayerStats, BaseballStats } from "../screens/Statistics";
 
 const useSqlite = () => {
   const createTable = () => {
@@ -65,7 +69,7 @@ const useSqlite = () => {
           (_, { rows: { _array } }) => {
             setPlayersFunc(
               _array.map((item) => {
-                onGetPlayerStats(item, setPlayersFunc);
+                // onGetPlayerStats(item, setPlayersFunc);
                 item.id,
                   item.name,
                   item.selected === 1
@@ -75,6 +79,14 @@ const useSqlite = () => {
                   (item.scoreList = []),
                   (item.lives = 0),
                   (item.killer = false);
+                item.stats = {
+                  darts: 0,
+                  highscore: 0,
+                  gamesWon: 0,
+                  gamesLost: 0,
+                  gamesPlayed: 0,
+                  oneDartAverage: 0,
+                };
                 return item;
               })
             );
@@ -98,21 +110,13 @@ const useSqlite = () => {
     );
   };
 
-  const onGetPlayerStats = (player: any, setPlayersFunc: any) => {
+  const onGetPlayerStats = (statsArray: any) => {
     db.transaction((tx) => {
       tx.executeSql(
         getStatsForPlayer,
-        [player.id],
+        [],
         (_, { rows: { _array } }) => {
-          setPlayersFunc((prev: IPlayer[]) =>
-            prev.map((item) => {
-              if (item.id === player.id) {
-                item.stats = _array[0];
-                item.stats.darts = 0;
-              }
-              return item;
-            })
-          );
+          statsArray(() => _array.map((item) => item));
         },
         (_, error) => {
           console.log(dbError, error);
@@ -120,7 +124,6 @@ const useSqlite = () => {
         }
       );
     });
-    return player.stats;
   };
 
   const onAddPlayerToDb = (
@@ -271,6 +274,86 @@ const useSqlite = () => {
       }
     );
   };
+
+  const onUpdatePlayerStats = (player: IPlayer, game?: string) => {
+    db.transaction(
+      (tx) => {
+        if (game === "baseball") {
+          tx.executeSql(
+            updatePlayerBaseballStats,
+            [
+              player.stats.gamesPlayed,
+              player.stats.gamesWon,
+              player.stats.gamesLost,
+              player.stats.highScore,
+              player.id!,
+            ],
+            (_, error) => {
+              console.log(error);
+              return false;
+            }
+          );
+        }
+        tx.executeSql(
+          updatePlayerOverallStats,
+          [
+            player.stats.gamesPlayed,
+            player.stats.gamesWon,
+            player.stats.gamesLost,
+            player.id!,
+          ],
+          (_, error) => {
+            console.log(error);
+            return false;
+          }
+        );
+      },
+      (error) => {
+        console.log(dbError, error);
+      },
+      () => {
+        console.log(`successfully updated player stats`);
+      }
+    );
+  };
+
+  const onGetAllPlayerBaseballStats = (
+    statsArray:
+      | React.Dispatch<React.SetStateAction<PlayerStats[]>>
+      | React.Dispatch<React.SetStateAction<BaseballStats[]>>
+  ) => {
+    db.transaction(
+      (tx) => {
+        tx.executeSql(
+          getBaseballStatsAll,
+          [],
+          (_, { rows: { _array } }) => {
+            statsArray(() => _array.map((item) => item));
+          },
+          (_, error) => {
+            console.log(error);
+            return false;
+          }
+        );
+      },
+      (error) => {
+        console.log(dbError, error);
+      },
+      () => {
+        console.log(`successfully read all player baseball stats`);
+      }
+    );
+  };
+
+  const calculateWinPercent = (
+    gamesWon: number,
+    gamesPlayed: number
+  ): number => {
+    let score = (gamesWon / gamesPlayed) * 100;
+    if (isNaN(score)) return 0;
+    else return score;
+  };
+
   return {
     createTable,
     getPlayers,
@@ -278,6 +361,10 @@ const useSqlite = () => {
     dropTable,
     onDeletePlayerFromDb,
     updateSelectedPlayerlist,
+    onUpdatePlayerStats,
+    onGetAllPlayerBaseballStats,
+    onGetPlayerStats,
+    calculateWinPercent,
   };
 };
 

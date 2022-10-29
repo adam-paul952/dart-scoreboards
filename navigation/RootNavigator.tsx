@@ -28,6 +28,7 @@ import Statistics from "../screens/Statistics";
 import ResumeGame from "../screens/ResumeGame";
 import X01OutChart from "../screens/X01OutChart";
 import KillerSetup from "../screens/KillerSetup";
+import DisplayStatistics from "../screens/statistics/DisplayStatistics";
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
@@ -150,6 +151,11 @@ const RootNavigator = () => {
             title: "Killer Setup",
             // headerBackVisible: false
           }}
+        />
+        <Stack.Screen
+          name="display-statistics"
+          component={DisplayStatistics}
+          options={{ title: "Statistics" }}
         />
       </Stack.Group>
     </Stack.Navigator>

@@ -3,17 +3,18 @@ import { StyleSheet } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 
 import useGame from "../hooks/useGame";
+import useSqlite from "../hooks/useSqlite";
 import { IPlayer, usePlayerState } from "../context/PlayerContext";
+
 import { View } from "../components/Themed";
 import BaseballHeader from "@components/scoreboard/header/BaseballHeader";
-
 import BaseballScoreboardBody from "@components/scoreboard/body/BaseballScoreboardBody";
 import CalculatorButtons from "@components/scoreboard/calculator-buttons/CalculatorButtons";
 import BaseballRoundInfo from "@components/scoreboard/round-info/BaseballRoundInfo";
 import gameOverAlert from "@components/GameOverAlert";
 
 const Baseball = () => {
-  const { selectedPlayers, setSelectedPlayers, playerList } = usePlayerState();
+  const { selectedPlayers, setSelectedPlayers } = usePlayerState();
   const {
     playerScore,
     setPlayerScore,
@@ -27,7 +28,10 @@ const Baseball = () => {
     changeRounds,
     currentPlayer,
     assignCurrentPlayerHighScore,
+    playerIsOut,
+    setPlayerIsOut,
   } = useGame();
+  const { onUpdatePlayerStats } = useSqlite();
   const navigation = useNavigation();
 
   // set initial player scorelist filled with 0 - mostly for display purposes
@@ -66,18 +70,18 @@ const Baseball = () => {
     currentPlayer.score > leadingScore && setLeadingScore(currentPlayer.score);
     // if round is = 9 and turn is last turn check for duplicates or winner
     if (round === 9 && turn === selectedPlayers.length - 1) {
-      // const scores: IPlayer[] = selectedPlayers.map((player: IPlayer) => {
-      //   return { name: player.score, score: player.score };
       const scores: IPlayer[] = selectedPlayers.filter(
         (player: IPlayer) => player.score === leadingScore
       );
       console.log(`scores: `, scores);
-      // find duplicates in highest score to determine if game is over
-      const duplicates: boolean = scores.some(
-        (item: IPlayer, index: number) => scores.indexOf(item) !== index
-      );
       // TODO: if player's have a tie then continue on in game
       if (scores.length > 1) {
+        selectedPlayers.forEach((player: IPlayer) => {
+          if (playerIsOut.some((value) => value.name === player.name)) return;
+          else if (player.score < leadingScore) {
+            setPlayerIsOut((prev) => [...prev, player]);
+          }
+        });
         alert("Extra Innings!");
       } else {
         let winner: { id: number | undefined; name: string } = {
@@ -97,11 +101,13 @@ const Baseball = () => {
               player.stats.gamesWon += 1;
               player.stats.gamesPlayed += 1;
               console.log(`Winner stats: `, player.stats);
+              onUpdatePlayerStats(player, "baseball");
             } else {
               // assign losing stats
               player.stats.gamesLost += 1;
               player.stats.gamesPlayed += 1;
               console.log(`Losing stats: `, player.stats);
+              onUpdatePlayerStats(player, "baseball");
             }
           });
         }
@@ -127,6 +133,16 @@ const Baseball = () => {
     setRound(1);
     setLeadingScore(0);
   };
+
+  useEffect(() => {
+    if (playerIsOut.length >= 1)
+      playerIsOut.forEach((player) => {
+        if (player.name === currentPlayer.name) {
+          changeTurns();
+          changeRounds();
+        }
+      });
+  }, [currentPlayer]);
 
   return (
     <View style={styles.container}>

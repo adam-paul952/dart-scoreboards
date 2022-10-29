@@ -1,20 +1,32 @@
 import React from "react";
-
 import { ScrollView, StyleSheet } from "react-native";
-import { View } from "@components/Themed";
+import { useNavigation } from "@react-navigation/native";
 
+import useColorScheme from "../hooks/useColorScheme";
+import Colors from "../constants/Colors";
+import window from "../constants/Layout";
+
+import { View } from "@components/Themed";
 import LandingPageButton from "@components/LandingButtons";
 import {
   AntDesignIcon,
+  FontAwesome5Icon,
   MaterialCommunityIcon,
 } from "@components/button-icons/ButtonIcons";
 
-import { useNavigation } from "@react-navigation/native";
-import Colors from "../constants/Colors";
-import useColorScheme from "../hooks/useColorScheme";
-
-import window from "../constants/Layout";
 const height = window.window.height;
+
+export interface PlayerStats {
+  id: number;
+  name: string;
+  games_won: number;
+  games_lost: number;
+  games_played: number;
+}
+
+export interface BaseballStats extends PlayerStats {
+  highscore: number;
+}
 
 const Statistics = () => {
   const navigation = useNavigation();
@@ -22,15 +34,30 @@ const Statistics = () => {
   const colorScheme = useColorScheme();
   const buttonBG = Colors[colorScheme].buttonColor;
   const color = Colors[colorScheme].text;
+
+  const navigateToStats = (game: string) => {
+    navigation.navigate("display-statistics", { variant: game });
+  };
+
   return (
     <View style={styles.container}>
       <ScrollView>
         <View style={styles.buttonRow}>
           <LandingPageButton
+            variant="Overall"
+            buttonBG={buttonBG}
+            color={color}
+            buttonOverrideStyle={styles.buttonStyle}
+            onPressOut={() => navigateToStats("overall")}
+          >
+            <FontAwesome5Icon name="list" size={40} color={color} />
+          </LandingPageButton>
+          <LandingPageButton
             variant="Baseball"
             buttonBG={buttonBG}
             color={color}
             buttonOverrideStyle={styles.buttonStyle}
+            onPressOut={() => navigateToStats("baseball")}
           >
             <MaterialCommunityIcon
               name="baseball-bat"
@@ -38,6 +65,8 @@ const Statistics = () => {
               color={color}
             />
           </LandingPageButton>
+        </View>
+        <View style={styles.buttonRow}>
           <LandingPageButton
             variant="Cricket"
             buttonBG={buttonBG}
@@ -46,8 +75,6 @@ const Statistics = () => {
           >
             <AntDesignIcon name="closecircleo" size={40} color={color} />
           </LandingPageButton>
-        </View>
-        <View style={styles.buttonRow}>
           <LandingPageButton
             variant="Elimination"
             buttonBG={buttonBG}
@@ -60,6 +87,8 @@ const Statistics = () => {
               color={color}
             />
           </LandingPageButton>
+        </View>
+        <View style={styles.buttonRow}>
           <LandingPageButton
             variant="Killer"
             buttonBG={buttonBG}
@@ -72,8 +101,6 @@ const Statistics = () => {
               color={color}
             />
           </LandingPageButton>
-        </View>
-        <View style={styles.buttonRow}>
           <LandingPageButton
             variant="X01"
             buttonBG={buttonBG}

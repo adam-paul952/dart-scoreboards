@@ -6,10 +6,11 @@ import { Text, View } from "../components/Themed";
 
 import CustomButton from "@components/CustomButton";
 
-import { createTable, dropTable } from "../db-api";
+import useSqlite from "../hooks/useSqlite";
 
 const UserSettings = () => {
   const { setPlayerList } = usePlayerState();
+  const { createTable, dropTable } = useSqlite();
 
   const onDeleteAllPlayerInfo = () => {
     Alert.alert(
