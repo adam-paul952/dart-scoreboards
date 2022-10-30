@@ -33,19 +33,24 @@ const CreatePlayer = () => {
       gamesPlayed: 0,
       gamesWon: 0,
       gamesLost: 0,
-      winPercent: 0,
     },
   };
   const { onAddPlayer } = usePlayerState();
   const navigation = useNavigation();
+
+  const routes = navigation.getState()?.routes;
 
   const [playerName, setPlayerName] = useState(initialState);
   const { name } = playerName;
 
   const addPlayer = () => {
     onAddPlayer(playerName);
-
-    navigation.goBack();
+    if (routes[routes.length - 2].name === "Root")
+      navigation.reset({
+        index: 1,
+        routes: [{ name: "Root" }, { name: "manage-players" }],
+      });
+    else navigation.goBack();
   };
 
   return (

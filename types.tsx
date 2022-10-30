@@ -32,8 +32,6 @@ export type RootStackParamList = {
   "x01-outchart": undefined;
   "killer-setup": undefined;
   "display-statistics": { variant: string };
-  "overall-stats": undefined;
-  "baseball-stats": undefined;
 };
 
 export type RootStackScreenProps<Screen extends keyof RootStackParamList> =

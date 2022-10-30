@@ -9,14 +9,22 @@ export interface StatisticsHeaderProps {
 
 const overallHeader = ["Name", "GP", "GW", "GL", "Win %"];
 const baseballHeader = ["Name", "GP", "GW", "GL", "Win %", "HS"];
+const x01Header = ["Name", "GP", "GW", "GL", "Win %", "HS", "1DaAvg"];
 
 const StatisticsHeader = (props: StatisticsHeaderProps) => {
   const { variant } = props;
 
   let header: string[] = [];
 
-  if (variant === "baseball") header = baseballHeader;
-  else if (variant === "overall") header = overallHeader;
+  if (
+    variant === "baseball" ||
+    variant === "cricket" ||
+    variant === "elimination" ||
+    variant === "killer"
+  )
+    header = baseballHeader;
+  else if (variant === "x01") header = x01Header;
+  else header = overallHeader;
 
   return (
     <>

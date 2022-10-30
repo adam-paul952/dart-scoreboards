@@ -1,6 +1,9 @@
 import React from "react";
-
 import { Alert, StyleSheet } from "react-native";
+import { useNavigation } from "@react-navigation/native";
+
+import { usePlayerState } from "../context/PlayerContext";
+import useColorScheme from "../hooks/useColorScheme";
 
 import LandingPageButton from "../components/LandingButtons";
 import { View } from "../components/Themed";
@@ -10,11 +13,7 @@ import {
   MaterialCommunityIcon,
 } from "../components/button-icons/ButtonIcons";
 
-import { usePlayerState } from "../context/PlayerContext";
-import { useNavigation } from "@react-navigation/native";
 import Colors from "../constants/Colors";
-import useColorScheme from "../hooks/useColorScheme";
-
 import window from "../constants/Layout";
 const width = window.window.width;
 

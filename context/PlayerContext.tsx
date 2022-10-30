@@ -35,7 +35,7 @@ export interface IPlayerStats {
 const PlayerStateContext = createContext({} as PlayerContext);
 
 const PlayerListProvider = ({ children }: { children: React.ReactNode }) => {
-  const { createTable, getPlayers, onAddPlayerToDb, onDeletePlayerFromDb } =
+  const { createTable, getPlayerlist, onAddPlayerToDb, onDeletePlayerFromDb } =
     useSqlite();
 
   const [playerList, setPlayerList] = useState<IPlayer[]>([]);
@@ -74,7 +74,7 @@ const PlayerListProvider = ({ children }: { children: React.ReactNode }) => {
 
   useEffect(() => {
     createTable();
-    getPlayers(setPlayerList);
+    getPlayerlist(setPlayerList);
   }, []);
 
   useEffect(() => {

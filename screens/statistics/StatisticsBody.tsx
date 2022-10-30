@@ -4,8 +4,9 @@ import { StyleSheet } from "react-native";
 import { Text, View } from "@components/Themed";
 
 import { StatisticsHeaderProps } from "./StatisticsHeader";
+import { PlayerStats, BaseballStats, X01Stats } from "../../screens/Statistics";
 interface StatisticsBodyProps extends StatisticsHeaderProps {
-  stats: any;
+  stats: X01Stats[];
   calculateWinPercent: (gamesWon: number, gamesPlayed: number) => number;
 }
 
@@ -14,7 +15,7 @@ const StatisticsBody = (props: StatisticsBodyProps) => {
 
   return (
     <>
-      {stats.map((player: any) => {
+      {stats.map((player) => {
         return (
           <View
             key={player.id}
@@ -33,11 +34,16 @@ const StatisticsBody = (props: StatisticsBodyProps) => {
             <Text style={{ flex: 1, textAlign: "center" }}>
               {calculateWinPercent(player.games_won, player.games_played)} %
             </Text>
-            {variant === "baseball" ? (
+            {variant === "baseball" ||
+            variant === "cricket" ||
+            variant === "elimination" ||
+            variant === "killer" ||
+            variant === "x01" ? (
               <Text style={{ flex: 1, textAlign: "center" }}>
                 {player.highscore}
               </Text>
             ) : null}
+            {variant === "x01" ? <Text>{player.oneDartAverage}</Text> : null}
           </View>
         );
       })}

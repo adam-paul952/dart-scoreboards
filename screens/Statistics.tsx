@@ -27,6 +27,10 @@ export interface PlayerStats {
 export interface BaseballStats extends PlayerStats {
   highscore: number;
 }
+export interface X01Stats extends PlayerStats {
+  oneDartAverage: number;
+  highscore: number;
+}
 
 const Statistics = () => {
   const navigation = useNavigation();
@@ -72,6 +76,7 @@ const Statistics = () => {
             buttonBG={buttonBG}
             color={color}
             buttonOverrideStyle={styles.buttonStyle}
+            onPressOut={() => navigateToStats("cricket")}
           >
             <AntDesignIcon name="closecircleo" size={40} color={color} />
           </LandingPageButton>
@@ -80,6 +85,7 @@ const Statistics = () => {
             buttonBG={buttonBG}
             color={color}
             buttonOverrideStyle={styles.buttonStyle}
+            onPressOut={() => navigateToStats("elimination")}
           >
             <MaterialCommunityIcon
               name="circle-off-outline"
@@ -94,6 +100,7 @@ const Statistics = () => {
             buttonBG={buttonBG}
             color={color}
             buttonOverrideStyle={styles.buttonStyle}
+            onPressOut={() => navigateToStats("killer")}
           >
             <MaterialCommunityIcon
               name="target-account"
@@ -106,6 +113,7 @@ const Statistics = () => {
             buttonBG={buttonBG}
             color={color}
             buttonOverrideStyle={styles.buttonStyle}
+            onPressOut={() => navigateToStats("x01")}
           >
             <MaterialCommunityIcon
               name="bullseye-arrow"

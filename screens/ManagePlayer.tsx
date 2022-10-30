@@ -61,7 +61,7 @@ const ManagePlayerScreen = () => {
           buttonStyle={styles.buttonStyle}
           disabled={disableButton()}
           onPressOut={() => {
-            playerList.forEach((player: IPlayer) => {
+            playerList.forEach((player) => {
               let selected;
               if (player.selected === true) selected = 1;
               else selected = 0;

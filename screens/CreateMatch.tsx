@@ -86,6 +86,29 @@ const CreateMatch = () => {
       }
   };
 
+  const shufflePlayerList = (
+    array: IPlayer[],
+    setArray: React.Dispatch<React.SetStateAction<IPlayer[]>>
+  ) => {
+    let currentIndex = array.length,
+      randomIndex;
+    let newArray = [...array];
+
+    // While there remain elements to shuffle...
+    while (currentIndex !== 0) {
+      // Pick a remaining element...
+      randomIndex = Math.floor(Math.random() * currentIndex);
+      currentIndex--;
+
+      // And swap it with the current element.
+      [newArray[currentIndex], newArray[randomIndex]] = [
+        newArray[randomIndex],
+        newArray[currentIndex],
+      ];
+    }
+    setArray(() => newArray);
+  };
+
   return (
     <View style={styles.container}>
       <View
@@ -117,15 +140,34 @@ const CreateMatch = () => {
         )}
       </View>
       <View style={{ flexGrow: 1, paddingVertical: 10 }}>
-        <Text
+        <View
           style={{
-            fontSize: 25,
-            textDecorationLine: "underline",
-            paddingBottom: 5,
+            flexDirection: "row",
+            justifyContent: "space-between",
+            alignItems: "center",
           }}
         >
-          Players to play:
-        </Text>
+          <Text
+            style={{
+              fontSize: 25,
+              textDecorationLine: "underline",
+              paddingBottom: 5,
+            }}
+          >
+            Players to play:
+          </Text>
+          <CustomButton
+            title="Shuffle"
+            buttonStyle={{
+              backgroundColor: "transparent",
+              paddingRight: 10,
+              paddingBottom: 10,
+            }}
+            onPressIn={() =>
+              shufflePlayerList(selectedPlayers, setSelectedPlayers)
+            }
+          />
+        </View>
         <ActivePlayerList
           selectedPlayers={selectedPlayers}
           setSelectedPlayers={setSelectedPlayers}
@@ -149,7 +191,7 @@ const CreateMatch = () => {
 export default CreateMatch;
 
 const styles = StyleSheet.create({
-  container: { flex: 1, flexDirection: "column" },
+  container: { flex: 1, flexDirection: "column", padding: 5 },
   buttonContainer: {
     alignSelf: "center",
     width: "100%",
