@@ -32,18 +32,22 @@ const StatisticsBody = (props: StatisticsBodyProps) => {
               {player.games_lost}
             </Text>
             <Text style={{ flex: 1, textAlign: "center" }}>
-              {calculateWinPercent(player.games_won, player.games_played)} %
+              {calculateWinPercent(
+                player.games_won,
+                player.games_played
+              ).toFixed(2)}
+              %
             </Text>
-            {variant === "baseball" ||
-            variant === "cricket" ||
-            variant === "elimination" ||
-            variant === "killer" ||
-            variant === "x01" ? (
+            {variant !== "overall" ? (
               <Text style={{ flex: 1, textAlign: "center" }}>
                 {player.highscore}
               </Text>
             ) : null}
-            {variant === "x01" ? <Text>{player.oneDartAverage}</Text> : null}
+            {variant === "x01" ? (
+              <Text style={{ flex: 1, textAlign: "center" }}>
+                {player.one_dart_average}
+              </Text>
+            ) : null}
           </View>
         );
       })}

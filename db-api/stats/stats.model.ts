@@ -76,12 +76,12 @@ export const onInsertNewRow = ({
   );
 
 // READ
-export const onGetPlayerStats = ({
+export const onGetPlayerStats = <T>({
   transaction,
   table,
   args = [],
   setStateFunc,
-}: SqlControllerProps<X01Stats>) => {
+}: SqlControllerProps<T>) => {
   let sqlStatement = "";
 
   if (
@@ -91,9 +91,9 @@ export const onGetPlayerStats = ({
     table === "killer"
   )
     sqlStatement = `
-    SELECT playerlist.id, playerlist.name,
-      ${table}_stats.games_won, ${table}_stats.games_lost, 
-      ${table}_stats.games_played, ${table}_stats.highscore
+    SELECT ${table}_stats.games_played, ${table}_stats.games_won, 
+      ${table}_stats.games_lost, ${table}_stats.highscore, 
+      playerlist.id, playerlist.name
     FROM playerlist 
     INNER JOIN ${table}_stats ON (${table}_stats.player_id = playerlist.id)
     `;
@@ -107,8 +107,8 @@ export const onGetPlayerStats = ({
     `;
   else
     sqlStatement = `
-    SELECT playerlist.id, playerlist.name, stats.games_won, 
-      stats.games_lost, stats.games_played, stats.one_dart_average
+    SELECT stats.games_played, stats.games_won, 
+    stats.games_lost, stats.one_dart_average, playerlist.id, playerlist.name 
     FROM playerlist 
     INNER JOIN stats ON (stats.player_id = playerlist.id)
     `;
@@ -116,7 +116,7 @@ export const onGetPlayerStats = ({
   if (setStateFunc !== undefined)
     transaction.executeSql(
       sqlStatement,
-      args,
+      [],
       (_, { rows: { _array } }) => {
         setStateFunc(() => _array.map((item) => item));
       },
@@ -150,7 +150,7 @@ export const onUpdatePlayerStats = ({
   transaction,
   table,
   args,
-}: SqlControllerProps<null>) =>
+}: SqlControllerProps<null>) => {
   transaction.executeSql(
     `UPDATE ${table} 
     SET games_played = (?), games_won = (?), games_lost = (?),
@@ -164,6 +164,7 @@ export const onUpdatePlayerStats = ({
       return false;
     }
   );
+};
 
 // DELETE
 export const onDropTables = ({

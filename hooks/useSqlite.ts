@@ -23,8 +23,8 @@ const useSqlite = () => {
     setPlayersFunc: React.Dispatch<React.SetStateAction<IPlayer[]>>
   ) => playerlist.getPlayers(setPlayersFunc);
 
-  const onGetPlayerStats = (
-    statsArray: React.Dispatch<React.SetStateAction<X01Stats[]>>,
+  const onGetPlayerStats = <T>(
+    statsArray: React.Dispatch<React.SetStateAction<T[]>>,
     game?: string
   ) => stats.getPlayerStats(game, statsArray);
 
@@ -49,7 +49,7 @@ const useSqlite = () => {
         player.id,
       ];
 
-      stats.updatePlayerStats(game, statsToUpdate, player);
+      stats.updatePlayerStats(game, statsToUpdate);
     }
   };
 

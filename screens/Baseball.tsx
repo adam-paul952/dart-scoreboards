@@ -1,5 +1,5 @@
 import React, { Fragment, useEffect, useState } from "react";
-import { StyleSheet } from "react-native";
+import { InteractionManager, StyleSheet } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 
 import useGame from "../hooks/useGame";
@@ -14,7 +14,13 @@ import BaseballRoundInfo from "@components/scoreboard/round-info/BaseballRoundIn
 import gameOverAlert from "@components/GameOverAlert";
 
 const Baseball = () => {
-  const { selectedPlayers, setSelectedPlayers } = usePlayerState();
+  const {
+    selectedPlayers,
+    setSelectedPlayers,
+    overallStats,
+    setOverallStats,
+    setBaseballStats,
+  } = usePlayerState();
   const {
     playerScore,
     setPlayerScore,
@@ -95,20 +101,33 @@ const Baseball = () => {
         });
         console.log(winner);
         if (winner) {
-          selectedPlayers.map((player: IPlayer) => {
-            if (player.id === winner.id) {
-              // assign winner to baseball and global stats
-              player.stats.gamesWon += 1;
-              player.stats.gamesPlayed += 1;
-              console.log(`Winner stats: `, player.stats);
-              onUpdatePlayerStats(player, "baseball");
-            } else {
-              // assign losing stats
-              player.stats.gamesLost += 1;
-              player.stats.gamesPlayed += 1;
-              console.log(`Losing stats: `, player.stats);
-              onUpdatePlayerStats(player, "baseball");
-            }
+          selectedPlayers.forEach((player: IPlayer) => {
+            setOverallStats((prev) =>
+              prev.map((item) => {
+                if (item.id === player.id && item.id !== winner.id) {
+                  item.games_played += 1;
+                  item.games_lost += 1;
+                  console.log(`Losing stats: `, player.stats);
+                } else if (item.id === player.id && item.id === winner.id) {
+                  item.games_won += 1;
+                  item.games_played += 1;
+                  console.log(`Winner stats: `, player.stats);
+                }
+                return item;
+              })
+            );
+            setBaseballStats((prev: any) =>
+              prev.map((item: any) => {
+                if (item.id === player.id && item.id !== winner.id) {
+                  item.games_played += 1;
+                  item.games_lost += 1;
+                } else if (item.id === player.id && item.id === winner.id) {
+                  item.games_won += 1;
+                  item.games_played += 1;
+                }
+                return item;
+              })
+            );
           });
         }
         // alert game over with winner name
@@ -127,6 +146,10 @@ const Baseball = () => {
       prev.map((player) => {
         player.score = 0;
         player.scoreList = new Array(9).fill(0);
+        player.stats.highScore = 0;
+        player.stats.gamesWon = 0;
+        player.stats.gamesLost = 0;
+        player.stats.gamesPlayed = 0;
         return player;
       })
     );

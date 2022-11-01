@@ -43,7 +43,7 @@ export const onGetPlayers = ({
                 (item.killer = false);
               item.stats = {
                 darts: 0,
-                highscore: 0,
+                highScore: 0,
                 gamesWon: 0,
                 gamesLost: 0,
                 gamesPlayed: 0,

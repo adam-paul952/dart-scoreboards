@@ -1,5 +1,5 @@
-import { IPlayer } from "@context/PlayerContext";
-import db, { dbError, SqlControllerProps } from "..";
+import { IPlayer, OverallStats } from "@context/PlayerContext";
+import db, { dbError } from "..";
 import {
   onCreateIndividualStats,
   onCreateStatsTable,
@@ -11,7 +11,7 @@ import {
   onUpdatePlayerStats,
 } from "./stats.model";
 
-import { PlayerStats, BaseballStats, X01Stats } from "../../screens/Statistics";
+import { X01Stats } from "../../screens/Statistics";
 
 // CREATE
 export const createTables = () =>
@@ -57,9 +57,9 @@ export const insertNewStatsRow = (newId: number) =>
   );
 
 // READ
-export const getPlayerStats = (
+export const getPlayerStats = <T>(
   game: string | undefined,
-  setStateFunc: React.Dispatch<React.SetStateAction<X01Stats[]>>
+  setStateFunc: React.Dispatch<React.SetStateAction<T[]>>
 ) =>
   db.transaction(
     (tx) => {
@@ -72,32 +72,35 @@ export const getPlayerStats = (
   );
 
 //UPDATE
+export const updateOverallPlayerStats = (
+  statsToUpdate: (string | number | null)[]
+) =>
+  db.transaction((tx) => {
+    onUpdateOverallStats({
+      transaction: tx,
+      table: "stats",
+      args: statsToUpdate,
+    });
+  });
+
 export const updatePlayerStats = (
   game: string,
-  statsToUpdate: (string | number | null)[],
-  player: IPlayer
-) =>
+  statsToUpdate: (string | number | null)[]
+) => {
   db.transaction(
     (tx) => {
-      if (game === "baseball") {
-        statsToUpdate.splice(-2, 1, player.stats.highScore);
-        onUpdatePlayerStats({
-          transaction: tx,
-          table: "baseball_stats",
-          args: statsToUpdate,
-        });
-      }
-
-      onUpdateOverallStats({
+      onUpdatePlayerStats({
         transaction: tx,
-        table: "stats",
+        table: `${game}_stats`,
         args: statsToUpdate,
       });
+      // }
     },
     (error) => {
       console.log(dbError, error);
     }
   );
+};
 
 //DELETE
 export const dropTables = () =>

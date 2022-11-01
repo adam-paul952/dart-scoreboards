@@ -86,13 +86,9 @@ const CreateMatch = () => {
       }
   };
 
-  const shufflePlayerList = (
-    array: IPlayer[],
-    setArray: React.Dispatch<React.SetStateAction<IPlayer[]>>
-  ) => {
+  const shufflePlayerList = (array: IPlayer[]) => {
     let currentIndex = array.length,
       randomIndex;
-    let newArray = [...array];
 
     // While there remain elements to shuffle...
     while (currentIndex !== 0) {
@@ -101,12 +97,13 @@ const CreateMatch = () => {
       currentIndex--;
 
       // And swap it with the current element.
-      [newArray[currentIndex], newArray[randomIndex]] = [
-        newArray[randomIndex],
-        newArray[currentIndex],
+      [array[currentIndex], array[randomIndex]] = [
+        array[randomIndex],
+        array[currentIndex],
       ];
     }
-    setArray(() => newArray);
+
+    return array;
   };
 
   return (
@@ -164,7 +161,9 @@ const CreateMatch = () => {
               paddingBottom: 10,
             }}
             onPressIn={() =>
-              shufflePlayerList(selectedPlayers, setSelectedPlayers)
+              setSelectedPlayers((prev) =>
+                shufflePlayerList(prev).map((player) => player)
+              )
             }
           />
         </View>

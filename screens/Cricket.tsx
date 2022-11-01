@@ -1,9 +1,10 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { StyleSheet } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 
 import { IPlayer, usePlayerState } from "../context/PlayerContext";
 import useGame from "../hooks/useGame";
+import useSqlite from "../hooks/useSqlite";
 import { View } from "../components/Themed";
 
 import CricketHeader from "@scoreboard/header/CricketHeader";
@@ -15,7 +16,12 @@ import gameOverAlert from "@components/GameOverAlert";
 const targets = [20, 19, 18, 17, 16, 15, 25];
 
 const Cricket = () => {
-  const { selectedPlayers, setSelectedPlayers } = usePlayerState();
+  const {
+    selectedPlayers,
+    setSelectedPlayers,
+    setOverallStats,
+    setCricketStats,
+  } = usePlayerState();
   const {
     playerScore,
     setPlayerScore,
@@ -26,8 +32,13 @@ const Cricket = () => {
     setRound,
     changeRounds,
     currentPlayer,
+    assignCurrentPlayerHighScore,
+    turn,
   } = useGame();
   const navigation = useNavigation();
+  const { onUpdatePlayerStats } = useSqlite();
+
+  const previousTurn = useRef(-1);
 
   // disabled state for calculator buttons
   const [disableButton, setDisableButton] = useState<Array<boolean>>([
@@ -51,6 +62,7 @@ const Cricket = () => {
   };
 
   const onHandleSubmit = () => {
+    previousTurn.current = turn;
     // convert string array into numbers and push into current player scoreList
     playerScore.split(",").forEach((score) => {
       const newScore = parseInt(score, 10);
@@ -61,12 +73,14 @@ const Cricket = () => {
     // determine if player has highest score
     newScore > leadingScore && setLeadingScore(newScore);
     // set player state with updated values
-    setSelectedPlayers((prev: IPlayer[]) =>
+    setSelectedPlayers((prev) =>
       prev.map((player) => {
         if (player.id !== currentPlayer.id) return player;
         else {
           player.scoreList = currentPlayer.scoreList;
           player.score = newScore;
+          if (player.stats.highScore < newScore)
+            player.stats.highScore = newScore;
           return player;
         }
       })
@@ -79,6 +93,44 @@ const Cricket = () => {
       .every((hit) => hit >= 3);
     // if player has all marks and leading score
     if (declareWinner && currentPlayer.score >= leadingScore) {
+      selectedPlayers.forEach((player) => {
+        setOverallStats((prev: any) =>
+          prev.map((item: any) => {
+            if (item.id === player.id && item.id !== currentPlayer.id) {
+              item.games_played += 1;
+              item.games_lost += 1;
+              console.log(`Losing stats: `, player.stats);
+            } else if (item.id === player.id && item.id === currentPlayer.id) {
+              item.games_won += 1;
+              item.games_played += 1;
+              console.log(`Winner stats: `, player.stats);
+            }
+            return item;
+          })
+        );
+        setCricketStats((prev: any) =>
+          prev.map((item: any) => {
+            if (item.id === player.id && item.id !== currentPlayer.id) {
+              item.games_played += 1;
+              item.games_lost += 1;
+            } else if (item.id === player.id && item.id === currentPlayer.id) {
+              item.games_won += 1;
+              item.games_played += 1;
+            }
+            return item;
+          })
+        );
+        // player.stats.gamesPlayed += 1;
+        // if (player.id === currentPlayer.id) {
+        //   player.stats.gamesWon += 1;
+        //   console.log(`Winner Stats: `, player.stats);
+        //   onUpdatePlayerStats(player, "cricket");
+        // } else {
+        //   player.stats.gamesLost += 1;
+        //   console.log(`Losing Stats: `, player.stats);
+        //   onUpdatePlayerStats(player, "cricket");
+        // }
+      });
       // alert game over
       gameOverAlert({ playerName: currentPlayer.name, resetGame, navigation });
       // else change turns and rounds
@@ -92,10 +144,14 @@ const Cricket = () => {
 
   // reset game
   const resetGame = () => {
-    setSelectedPlayers((prev: IPlayer[]) =>
+    setSelectedPlayers((prev) =>
       prev.map((player) => {
         player.score = 0;
         player.scoreList = [];
+        player.stats.gamesPlayed = 0;
+        player.stats.gamesWon = 0;
+        player.stats.gamesLost = 0;
+        player.stats.highScore = 0;
         return player;
       })
     );
@@ -121,42 +177,45 @@ const Cricket = () => {
 
   // disable buttons if all players have number closed
   const disableInputButtons = () => {
-    // loop over target array
-    for (let i = 0; i < targets.length; i++) {
-      // map over playerList
-      let checkNumOfMarks = selectedPlayers.map((player: IPlayer) => {
-        // if player.id is equal to currentPlayer
-        if (player.id === currentPlayer.id) {
-          // make shallow copy of scorelist
-          let hitArray = [...player.scoreList];
-          // convert current marks to array and push into copy of player scorelist
-          playerScore
-            .split(",")
-            .forEach(
-              (num) =>
-                !isNaN(parseInt(num, 10)) && hitArray.push(parseInt(num, 10))
-            );
-          // filter updated scorelist copy to determine if number should be closed
-          return hitArray.filter((hitNum) => hitNum === targets[i]).length;
+    if (previousTurn.current !== turn)
+      // loop over target array
+      for (let i = 0; i < targets.length; i++) {
+        // map over playerList
+        let checkNumOfMarks = selectedPlayers.map((player) => {
+          // if player.id is equal to currentPlayer
+          if (player.id === currentPlayer.id) {
+            // make shallow copy of scorelist
+            let hitArray = [...player.scoreList];
+            // convert current marks to array and push into copy of player scorelist
+            playerScore
+              .split(",")
+              .forEach(
+                (num) =>
+                  !isNaN(parseInt(num, 10)) && hitArray.push(parseInt(num, 10))
+              );
+            // filter updated scorelist copy to determine if number should be closed
+            return hitArray.filter((hitNum) => hitNum === targets[i]).length;
+          }
+          // if player is not current player then no need to update or copy playerlist - marks are set
+          return player.scoreList.filter((hitNum) => hitNum === targets[i])
+            .length;
+        });
+        // console.log(targets[i], checkNumOfMarks);
+        // for each target we check against current marks
+        const markClosed = checkNumOfMarks.every((num: number) => num >= 3);
+        // if the marks are closed
+        if (markClosed) {
+          setDisableButton((prev) =>
+            prev.map((value, index) => {
+              // if the index is equal to the index in targets we set mark disabled
+              if (index === i) return (value = true);
+              // or just return the value
+              else return value;
+            })
+          );
         }
-        // if player is not current player then no need to update or copy playerlist - marks are set
-        return player.scoreList.filter((hitNum) => hitNum === targets[i])
-          .length;
-      });
-      // for each target we check against current marks
-      const markClosed = checkNumOfMarks.every((num: number) => num >= 3);
-      // if the marks are closed
-      if (markClosed) {
-        setDisableButton((prev) =>
-          prev.map((value, index) => {
-            // if the index is equal to the index in targets we set mark disabled
-            if (index === i) return (value = true);
-            // or just return the value
-            else return value;
-          })
-        );
       }
-    }
+    else return;
   };
 
   useEffect(() => {

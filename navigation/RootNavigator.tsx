@@ -10,6 +10,8 @@ import {
   FontAwesome5Icon,
 } from "../components/button-icons/ButtonIcons";
 
+import { MaterialCommunityIcons } from "@expo/vector-icons";
+
 import { Pressable } from "react-native";
 import Colors from "../constants/Colors";
 import useColorScheme from "../hooks/useColorScheme";
@@ -29,6 +31,7 @@ import ResumeGame from "../screens/ResumeGame";
 import X01OutChart from "../screens/X01OutChart";
 import KillerSetup from "../screens/KillerSetup";
 import DisplayStatistics from "../screens/statistics/DisplayStatistics";
+import UndoModal from "@components/UndoModal";
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
@@ -85,7 +88,26 @@ const RootNavigator = () => {
         <Stack.Screen
           name="baseball"
           component={Baseball}
-          options={{ title: "Baseball" }}
+          options={({
+            navigation,
+            route,
+          }: RootStackScreenProps<"baseball">) => ({
+            title: "Baseball",
+            headerRight: () => (
+              <Pressable
+                style={({ pressed }) => ({
+                  opacity: pressed ? 0.5 : 1,
+                })}
+                onPressIn={() => navigation.navigate("undo-modal")}
+              >
+                <MaterialCommunityIcons
+                  name="undo-variant"
+                  size={24}
+                  color={Colors[colorScheme].text}
+                />
+              </Pressable>
+            ),
+          })}
         />
         <Stack.Screen
           name="cricket"
@@ -156,6 +178,13 @@ const RootNavigator = () => {
           name="display-statistics"
           component={DisplayStatistics}
           options={{ title: "Statistics" }}
+        />
+      </Stack.Group>
+      <Stack.Group screenOptions={{ presentation: "transparentModal" }}>
+        <Stack.Screen
+          name="undo-modal"
+          component={UndoModal}
+          options={{ title: "" }}
         />
       </Stack.Group>
     </Stack.Navigator>

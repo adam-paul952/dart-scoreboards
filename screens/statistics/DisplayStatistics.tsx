@@ -11,7 +11,7 @@ import StatisticsBody from "./StatisticsBody";
 import type { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { RootStackParamList } from "types";
 
-import { PlayerStats, BaseballStats, X01Stats } from "../../screens/Statistics";
+import { X01Stats } from "../../screens/Statistics";
 type DisplayStatisticsProps = NativeStackScreenProps<
   RootStackParamList,
   "display-statistics"
@@ -19,7 +19,8 @@ type DisplayStatisticsProps = NativeStackScreenProps<
 
 const DisplayStatistics = ({ route }: DisplayStatisticsProps) => {
   const { variant } = route.params;
-  const { playerList } = usePlayerState();
+  const { playerList, overallStats, baseballStats, cricketStats } =
+    usePlayerState();
   const { onGetPlayerStats, calculateWinPercent } = useSqlite();
 
   const [stats, setStats] = useState<X01Stats[]>([]);
@@ -27,12 +28,12 @@ const DisplayStatistics = ({ route }: DisplayStatisticsProps) => {
   useEffect(() => {
     playerList.forEach((player: IPlayer) => {
       if (player.id !== undefined)
-        if (variant === "baseball") onGetPlayerStats(setStats, variant);
-        else if (variant === "cricket") onGetPlayerStats(setStats, variant);
+        if (variant === "baseball") setStats(baseballStats);
+        else if (variant === "cricket") setStats(cricketStats);
         else if (variant === "elimination") onGetPlayerStats(setStats, variant);
         else if (variant === "killer") onGetPlayerStats(setStats, variant);
         else if (variant === "x01") onGetPlayerStats(setStats, variant);
-        else onGetPlayerStats(setStats);
+        else setStats(overallStats);
     });
   }, []);
 

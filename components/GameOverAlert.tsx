@@ -15,7 +15,10 @@ const gameOverAlert = ({
     [
       {
         text: "Create Match",
-        onPress: () => navigation.navigate("create-match"),
+        onPress: () => {
+          resetGame();
+          navigation.navigate("create-match");
+        },
         style: "cancel",
       },
       { text: "Play Again", onPress: () => resetGame() },

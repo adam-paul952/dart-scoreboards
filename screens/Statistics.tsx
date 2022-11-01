@@ -28,7 +28,7 @@ export interface BaseballStats extends PlayerStats {
   highscore: number;
 }
 export interface X01Stats extends PlayerStats {
-  oneDartAverage: number;
+  one_dart_average: number;
   highscore: number;
 }
 
