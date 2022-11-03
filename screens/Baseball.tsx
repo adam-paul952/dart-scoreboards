@@ -1,23 +1,24 @@
-import React, { Fragment, useEffect, useState } from "react";
-import { InteractionManager, StyleSheet } from "react-native";
+import React, { Fragment, useEffect, useRef } from "react";
+import { StyleSheet } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 
 import useGame from "../hooks/useGame";
-import useSqlite from "../hooks/useSqlite";
+import useUndoRedo from "../hooks/useUndoRedo";
 import { IPlayer, usePlayerState } from "../context/PlayerContext";
 
 import { View } from "../components/Themed";
-import BaseballHeader from "@components/scoreboard/header/BaseballHeader";
-import BaseballScoreboardBody from "@components/scoreboard/body/BaseballScoreboardBody";
-import CalculatorButtons from "@components/scoreboard/calculator-buttons/CalculatorButtons";
-import BaseballRoundInfo from "@components/scoreboard/round-info/BaseballRoundInfo";
+import BaseballHeader from "@scoreboard/header/BaseballHeader";
+import BaseballScoreboardBody from "@scoreboard/body/BaseballScoreboardBody";
+import CalculatorButtons from "@scoreboard/calculator-buttons/CalculatorButtons";
+import BaseballRoundInfo from "@scoreboard/round-info/BaseballRoundInfo";
 import gameOverAlert from "@components/GameOverAlert";
+import CustomButton from "@components/CustomButton";
+import ButtonItem from "@components/scoreboard/calculator-buttons/ButtonItem";
 
 const Baseball = () => {
   const {
     selectedPlayers,
     setSelectedPlayers,
-    overallStats,
     setOverallStats,
     setBaseballStats,
   } = usePlayerState();
@@ -36,9 +37,23 @@ const Baseball = () => {
     assignCurrentPlayerHighScore,
     playerIsOut,
     setPlayerIsOut,
+    setTurn,
+    setCurrentPlayer,
   } = useGame();
-  const { onUpdatePlayerStats } = useSqlite();
   const navigation = useNavigation();
+
+  const [
+    playerState,
+    { set: setCurrentState, undo: undoTurn, redo: redoTurn, canUndo, canRedo },
+  ] = useUndoRedo({
+    turn: 0,
+    round: 1,
+    player: { ...currentPlayer },
+    nextPlayer: {},
+    leadingScore: 0,
+  });
+
+  const { present: presentPlayer } = playerState;
 
   // set initial player scorelist filled with 0 - mostly for display purposes
   useEffect(() => {
@@ -60,7 +75,7 @@ const Baseball = () => {
     currentPlayer.scoreList[round - 1] = roundScore;
     // calculate total by reducing scorelist
     const overallScore = currentPlayer.scoreList.reduce((a, b) => a + b);
-    assignCurrentPlayerHighScore(currentPlayer);
+    // assignCurrentPlayerHighScore(currentPlayer);
     changeTurns();
     changeRounds();
     // assign new totals to current player
@@ -167,6 +182,23 @@ const Baseball = () => {
       });
   }, [currentPlayer]);
 
+  const onUndo = () => {
+    undoTurn();
+    setSelectedPlayers((prev) =>
+      prev.map((player) => {
+        if (player.id === presentPlayer.player.id) {
+          return presentPlayer.player;
+        } else {
+          return player;
+        }
+      })
+    );
+    setCurrentPlayer(presentPlayer.player);
+    setTurn(presentPlayer.turn);
+    setRound(presentPlayer.round);
+    setLeadingScore(presentPlayer.leadingScore);
+  };
+
   return (
     <View style={styles.container}>
       <View style={{ flex: 2 }}>
@@ -184,6 +216,14 @@ const Baseball = () => {
           })}
         </View>
       </View>
+      <View style={{ flexDirection: "row", justifyContent: "space-around" }}>
+        <CustomButton
+          buttonStyle={{ width: "25%" }}
+          title="Undo"
+          onPressIn={() => onUndo()}
+          disabled={!canUndo}
+        />
+      </View>
       <View>
         <BaseballRoundInfo
           currentPlayer={currentPlayer}
@@ -193,7 +233,24 @@ const Baseball = () => {
         />
         <CalculatorButtons
           variant="baseball"
-          onHandleSubmit={onHandleSubmit}
+          onHandleSubmit={() => {
+            // assign state to undo redo
+            setCurrentState({
+              turn,
+              round,
+              player: {
+                ...currentPlayer,
+                scoreList: [...currentPlayer.scoreList],
+              },
+              leadingScore: leadingScore,
+              nextPlayer: JSON.parse(
+                JSON.stringify(
+                  selectedPlayers[(turn + 1) % selectedPlayers.length]
+                )
+              ),
+            });
+            onHandleSubmit();
+          }}
           onDeleteInput={() => onDeleteInput("baseball")}
           setValue={setPlayerScore}
         />

@@ -28,7 +28,9 @@ const useGame = () => {
   // change turns
   const changeTurns = () => {
     setTurn((prev) => (prev + 1) % selectedPlayers.length);
-    setCurrentPlayer(selectedPlayers[(turn + 1) % selectedPlayers.length]);
+    setCurrentPlayer(
+      () => selectedPlayers[(turn + 1) % selectedPlayers.length]
+    );
   };
 
   // round information
