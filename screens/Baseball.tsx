@@ -1,4 +1,4 @@
-import React, { Fragment, useEffect, useRef } from "react";
+import React, { Fragment, useEffect } from "react";
 import { StyleSheet } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 
@@ -13,7 +13,6 @@ import CalculatorButtons from "@scoreboard/calculator-buttons/CalculatorButtons"
 import BaseballRoundInfo from "@scoreboard/round-info/BaseballRoundInfo";
 import gameOverAlert from "@components/GameOverAlert";
 import CustomButton from "@components/CustomButton";
-import ButtonItem from "@components/scoreboard/calculator-buttons/ButtonItem";
 
 const Baseball = () => {
   const {
@@ -75,7 +74,7 @@ const Baseball = () => {
     currentPlayer.scoreList[round - 1] = roundScore;
     // calculate total by reducing scorelist
     const overallScore = currentPlayer.scoreList.reduce((a, b) => a + b);
-    // assignCurrentPlayerHighScore(currentPlayer);
+    assignCurrentPlayerHighScore(currentPlayer);
     changeTurns();
     changeRounds();
     // assign new totals to current player
@@ -94,7 +93,7 @@ const Baseball = () => {
       const scores: IPlayer[] = selectedPlayers.filter(
         (player: IPlayer) => player.score === leadingScore
       );
-      console.log(`scores: `, scores);
+      // console.log(`scores: `, scores);
       // TODO: if player's have a tie then continue on in game
       if (scores.length > 1) {
         selectedPlayers.forEach((player: IPlayer) => {
@@ -116,17 +115,17 @@ const Baseball = () => {
         });
         console.log(winner);
         if (winner) {
-          selectedPlayers.forEach((player: IPlayer) => {
+          selectedPlayers.forEach((player) => {
             setOverallStats((prev) =>
               prev.map((item) => {
                 if (item.id === player.id && item.id !== winner.id) {
                   item.games_played += 1;
                   item.games_lost += 1;
-                  console.log(`Losing stats: `, player.stats);
+                  // console.log(`Losing stats: `, player.stats);
                 } else if (item.id === player.id && item.id === winner.id) {
                   item.games_won += 1;
                   item.games_played += 1;
-                  console.log(`Winner stats: `, player.stats);
+                  // console.log(`Winner stats: `, player.stats);
                 }
                 return item;
               })

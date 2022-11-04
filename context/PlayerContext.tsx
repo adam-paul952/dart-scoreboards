@@ -20,6 +20,12 @@ interface PlayerContext {
   setBaseballStats: any;
   cricketStats: any[];
   setCricketStats: any;
+  eliminationStats: any[];
+  setEliminationStats: any;
+  killerStats: any[];
+  setKillerStats: any;
+  x01Stats: any[];
+  setX01Stats: any;
 }
 
 export interface IPlayer {
@@ -143,6 +149,21 @@ const PlayerListProvider = ({ children }: { children: React.ReactNode }) => {
     updateStatsArray(cricketStats, updatePlayerStats, "cricket");
   }, [cricketStats]);
 
+  useEffect(() => {
+    // console.log(eliminationStats);
+    updateStatsArray(eliminationStats, updatePlayerStats, "elimination");
+  }, [eliminationStats]);
+
+  useEffect(() => {
+    // console.log(killerStats);
+    updateStatsArray(killerStats, updatePlayerStats, "killer");
+  }, [killerStats]);
+
+  useEffect(() => {
+    // console.log(x01Stats);
+    updateStatsArray(x01Stats, updatePlayerStats, "x01");
+  }, [x01Stats]);
+
   return (
     <PlayerStateContext.Provider
       value={{
@@ -159,6 +180,12 @@ const PlayerListProvider = ({ children }: { children: React.ReactNode }) => {
         setBaseballStats,
         cricketStats,
         setCricketStats,
+        eliminationStats,
+        setEliminationStats,
+        killerStats,
+        setKillerStats,
+        x01Stats,
+        setX01Stats,
       }}
     >
       {children}

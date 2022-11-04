@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { StyleSheet } from "react-native";
-
 import { useNavigation } from "@react-navigation/native";
-import useGame from "../hooks/useGame";
+
 import { IPlayer, usePlayerState } from "../context/PlayerContext";
+import useGame from "../hooks/useGame";
+import useUndoRedo from "../hooks/useUndoRedo";
 
 import { View } from "../components/Themed";
 import EliminationHeader from "@components/scoreboard/header/EliminationHeader";
@@ -12,9 +13,15 @@ import EliminationRoundInfo from "@components/scoreboard/round-info/EliminationR
 import CalculatorButtons from "@scoreboard/calculator-buttons/CalculatorButtons";
 
 import gameOverAlert from "@components/GameOverAlert";
+import CustomButton from "@components/CustomButton";
 
 const Elimination = () => {
-  const { selectedPlayers, setSelectedPlayers } = usePlayerState();
+  const {
+    selectedPlayers,
+    setSelectedPlayers,
+    setOverallStats,
+    setEliminationStats,
+  } = usePlayerState();
   const {
     currentPlayer,
     playerScore,
@@ -27,12 +34,23 @@ const Elimination = () => {
     changeTurns,
     changeRounds,
     turn,
-    getCurrentPlayerHighScore,
+    assignCurrentPlayerHighScore,
   } = useGame();
   const navigation = useNavigation();
+  const [playerState, { set: setCurrentState, undo: undoTurn, canUndo }] =
+    useUndoRedo({
+      turn: 0,
+      round: 1,
+      player: { ...currentPlayer },
+      nextPlayer: {},
+      leadingScore: 0,
+    });
 
   // set variables
-  let winner = "";
+  let winner: { id: number | undefined; name: string } = {
+    id: undefined,
+    name: "",
+  };
   let roundScore = 0;
   const [eliminationLives] = useState(currentPlayer.lives);
 
@@ -51,7 +69,7 @@ const Elimination = () => {
     if (isNaN(roundScore)) roundScore = 0;
     // assign score to scorelist
     currentPlayer.scoreList.push(roundScore);
-    getCurrentPlayerHighScore();
+    assignCurrentPlayerHighScore(currentPlayer);
     // if it's the first turn of the game and the player doesn't score - player doesn't lose a life
     if (round === 1 && turn === 0 && roundScore === 0) {
       setSelectedPlayers((prev: IPlayer[]) =>
@@ -96,15 +114,52 @@ const Elimination = () => {
     ).length;
     if (checkForWinningPlayer === 1) {
       selectedPlayers.forEach((player: IPlayer) => {
-        if (player.lives > 0) winner = player.name;
+        if (player.lives > 0) {
+          winner = { id: player.id, name: player.name };
+          if (winner) {
+            setOverallStats((prev) =>
+              prev.map((item) => {
+                if (item.id === player.id && item.id !== winner.id) {
+                  item.games_played += 1;
+                  item.games_lost += 1;
+                  console.log(`Losing Stats: `, player.stats);
+                } else if (item.id === player.id && item.id === winner.id) {
+                  item.games_won += 1;
+                  item.games_played += 1;
+                  console.log(`Winner stats: `, player.stats);
+                }
+                return item;
+              })
+            );
+            setEliminationStats((prev: any) =>
+              prev.map((item: any) => {
+                if (item.id === player.id && item.id !== winner.id) {
+                  item.games_played += 1;
+                  item.games_lost += 1;
+                  console.log(`Losing Stats: `, player.stats);
+                } else if (item.id === player.id && item.id === winner.id) {
+                  item.games_won += 1;
+                  item.games_played += 1;
+                  console.log(`Winner stats: `, player.stats);
+                }
+                return item;
+              })
+            );
+          }
+        }
       });
+
       // alert game over with winner name
       gameOverAlert({
-        playerName: winner,
+        playerName: winner.name,
         resetGame,
         navigation,
       });
     }
+  };
+
+  const onUndo = () => {
+    undoTurn();
   };
 
   // reset game if playing again
@@ -134,12 +189,18 @@ const Elimination = () => {
             <EliminationScoreboardBody
               key={player.name}
               player={player}
-              currentPlayer={currentPlayer.id}
+              currentPlayer={currentPlayer.id!}
             />
           );
         })}
       </View>
       {/* end scoreboard container */}
+      <CustomButton
+        title="Undo"
+        buttonStyle={{ width: "25%", alignSelf: "center" }}
+        onPressIn={() => onUndo()}
+        disabled={!canUndo}
+      />
       {/* round info */}
       <EliminationRoundInfo
         currentPlayer={currentPlayer}

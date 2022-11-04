@@ -1,4 +1,3 @@
-import { IPlayer, OverallStats } from "@context/PlayerContext";
 import db, { dbError } from "..";
 import {
   onCreateIndividualStats,
@@ -10,8 +9,6 @@ import {
   onUpdateOverallStats,
   onUpdatePlayerStats,
 } from "./stats.model";
-
-import { X01Stats } from "../../screens/Statistics";
 
 // CREATE
 export const createTables = () =>

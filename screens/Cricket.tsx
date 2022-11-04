@@ -5,13 +5,15 @@ import { useNavigation } from "@react-navigation/native";
 import { IPlayer, usePlayerState } from "../context/PlayerContext";
 import useGame from "../hooks/useGame";
 import useSqlite from "../hooks/useSqlite";
-import { View } from "../components/Themed";
+import useUndoRedo from "../hooks/useUndoRedo";
 
+import { View } from "../components/Themed";
 import CricketHeader from "@scoreboard/header/CricketHeader";
 import CricketScoreboardBody from "@scoreboard/body/CricketScoreboardBody";
 import CricketRoundInfo from "@scoreboard/round-info/CricketRoundInfo";
 import CalculatorButtons from "@scoreboard/calculator-buttons/CalculatorButtons";
 import gameOverAlert from "@components/GameOverAlert";
+import CustomButton from "@components/CustomButton";
 
 const targets = [20, 19, 18, 17, 16, 15, 25];
 
@@ -20,6 +22,7 @@ const Cricket = () => {
     selectedPlayers,
     setSelectedPlayers,
     setOverallStats,
+    cricketStats,
     setCricketStats,
   } = usePlayerState();
   const {
@@ -34,10 +37,36 @@ const Cricket = () => {
     currentPlayer,
     assignCurrentPlayerHighScore,
     turn,
+    setCurrentPlayer,
+    setTurn,
   } = useGame();
   const navigation = useNavigation();
   const { onUpdatePlayerStats } = useSqlite();
 
+  const [playerState, { set: setCurrentState, undo: undoTurn, canUndo }] =
+    useUndoRedo({
+      turn: 0,
+      round: 1,
+      player: { ...currentPlayer },
+      nextPlayer: {},
+      leadingScore: 0,
+      disabledButtons: [] as boolean[],
+    });
+
+  const { past: pastTurn, present: presentTurn } = playerState;
+
+  // useEffect(() => {
+  //   console.log(`-------New State--------`);
+  //   console.log(`Past Turn: `);
+  //   console.log(pastTurn);
+  //   console.log(`----------------------`);
+  //   console.log(`Present Turn: `);
+  //   console.log(presentTurn);
+  //   console.log(`---------------------`);
+  //   console.log("");
+  // }, [playerState]);
+
+  // assign a ref to turn to enable or disable calculator buttons that are closed
   const previousTurn = useRef(-1);
 
   // disabled state for calculator buttons
@@ -93,46 +122,7 @@ const Cricket = () => {
       .every((hit) => hit >= 3);
     // if player has all marks and leading score
     if (declareWinner && currentPlayer.score >= leadingScore) {
-      selectedPlayers.forEach((player) => {
-        setOverallStats((prev: any) =>
-          prev.map((item: any) => {
-            if (item.id === player.id && item.id !== currentPlayer.id) {
-              item.games_played += 1;
-              item.games_lost += 1;
-              console.log(`Losing stats: `, player.stats);
-            } else if (item.id === player.id && item.id === currentPlayer.id) {
-              item.games_won += 1;
-              item.games_played += 1;
-              console.log(`Winner stats: `, player.stats);
-            }
-            return item;
-          })
-        );
-        setCricketStats((prev: any) =>
-          prev.map((item: any) => {
-            if (item.id === player.id && item.id !== currentPlayer.id) {
-              item.games_played += 1;
-              item.games_lost += 1;
-            } else if (item.id === player.id && item.id === currentPlayer.id) {
-              item.games_won += 1;
-              item.games_played += 1;
-            }
-            return item;
-          })
-        );
-        // player.stats.gamesPlayed += 1;
-        // if (player.id === currentPlayer.id) {
-        //   player.stats.gamesWon += 1;
-        //   console.log(`Winner Stats: `, player.stats);
-        //   onUpdatePlayerStats(player, "cricket");
-        // } else {
-        //   player.stats.gamesLost += 1;
-        //   console.log(`Losing Stats: `, player.stats);
-        //   onUpdatePlayerStats(player, "cricket");
-        // }
-      });
-      // alert game over
-      gameOverAlert({ playerName: currentPlayer.name, resetGame, navigation });
+      onDeclareWinner();
       // else change turns and rounds
     } else {
       // change turns
@@ -140,6 +130,40 @@ const Cricket = () => {
       // changeRounds
       changeRounds();
     }
+  };
+
+  const onDeclareWinner = () => {
+    selectedPlayers.forEach((player) => {
+      setOverallStats((prev: any) =>
+        prev.map((item: any) => {
+          if (item.id === player.id && item.id !== currentPlayer.id) {
+            item.games_played += 1;
+            item.games_lost += 1;
+            // console.log(`Losing stats: `, player.stats);
+          } else if (item.id === player.id && item.id === currentPlayer.id) {
+            item.games_won += 1;
+            item.games_played += 1;
+            // console.log(`Winner stats: `, player.stats);
+          }
+          return item;
+        })
+      );
+      setCricketStats((prev: any) =>
+        prev.map((item: any) => {
+          if (item.id === player.id && item.id !== currentPlayer.id) {
+            item.games_played += 1;
+            item.games_lost += 1;
+          } else if (item.id === player.id && item.id === currentPlayer.id) {
+            item.games_won += 1;
+            item.games_played += 1;
+          }
+          return item;
+        })
+      );
+    });
+
+    // alert game over
+    gameOverAlert({ playerName: currentPlayer.name, resetGame, navigation });
   };
 
   // reset game
@@ -218,6 +242,25 @@ const Cricket = () => {
     else return;
   };
 
+  const onUndoTurn = () => {
+    undoTurn();
+    setSelectedPlayers((prev) =>
+      prev.map((player) => {
+        if (player.id === presentTurn.player.id) {
+          return presentTurn.player;
+        } else {
+          return player;
+        }
+      })
+    );
+
+    setCurrentPlayer(presentTurn.player);
+    setTurn(presentTurn.turn);
+    setRound(presentTurn.round);
+    setLeadingScore(presentTurn.leadingScore);
+    setDisableButton(presentTurn.disabledButtons);
+  };
+
   useEffect(() => {
     disableInputButtons();
   }, [playerScore, selectedPlayers]);
@@ -249,6 +292,12 @@ const Cricket = () => {
           })}
         </>
       </View>
+      <CustomButton
+        title="Undo"
+        buttonStyle={{ width: "25%", alignSelf: "center" }}
+        onPress={() => onUndoTurn()}
+        disabled={!canUndo}
+      />
       <View>
         <CricketRoundInfo
           currentPlayer={currentPlayer}
@@ -260,7 +309,24 @@ const Cricket = () => {
           variant="cricket"
           value={playerScore}
           setValue={setPlayerScore}
-          onHandleSubmit={onHandleSubmit}
+          onHandleSubmit={() => {
+            setCurrentState({
+              turn,
+              round,
+              player: {
+                ...currentPlayer,
+                scoreList: [...currentPlayer.scoreList],
+              },
+              leadingScore: leadingScore,
+              nextPlayer: JSON.parse(
+                JSON.stringify(
+                  selectedPlayers[(turn + 1) % selectedPlayers.length]
+                )
+              ),
+              disabledButtons: [...disableButton],
+            });
+            onHandleSubmit();
+          }}
           onDeleteInput={onDeleteInput}
           hitTargets={calculateHits(playerScore.split(","))}
           disabled={disableButton}

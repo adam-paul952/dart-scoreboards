@@ -4,7 +4,7 @@ import { StyleSheet } from "react-native";
 import { usePlayerState, IPlayer } from "@context/PlayerContext";
 import useSqlite from "../../hooks/useSqlite";
 
-import { View } from "@components/Themed";
+import { Text, View } from "@components/Themed";
 import StatisticsHeader from "./StatisticsHeader";
 import StatisticsBody from "./StatisticsBody";
 
@@ -19,9 +19,16 @@ type DisplayStatisticsProps = NativeStackScreenProps<
 
 const DisplayStatistics = ({ route }: DisplayStatisticsProps) => {
   const { variant } = route.params;
-  const { playerList, overallStats, baseballStats, cricketStats } =
-    usePlayerState();
-  const { onGetPlayerStats, calculateWinPercent } = useSqlite();
+  const {
+    playerList,
+    overallStats,
+    baseballStats,
+    cricketStats,
+    eliminationStats,
+    killerStats,
+    x01Stats,
+  } = usePlayerState();
+  const { calculateWinPercent } = useSqlite();
 
   const [stats, setStats] = useState<X01Stats[]>([]);
 
@@ -30,9 +37,9 @@ const DisplayStatistics = ({ route }: DisplayStatisticsProps) => {
       if (player.id !== undefined)
         if (variant === "baseball") setStats(baseballStats);
         else if (variant === "cricket") setStats(cricketStats);
-        else if (variant === "elimination") onGetPlayerStats(setStats, variant);
-        else if (variant === "killer") onGetPlayerStats(setStats, variant);
-        else if (variant === "x01") onGetPlayerStats(setStats, variant);
+        else if (variant === "elimination") setStats(eliminationStats);
+        else if (variant === "killer") setStats(killerStats);
+        else if (variant === "x01") setStats(x01Stats);
         else setStats(overallStats);
     });
   }, []);
@@ -49,13 +56,21 @@ const DisplayStatistics = ({ route }: DisplayStatisticsProps) => {
       >
         <StatisticsHeader variant={variant} />
       </View>
-      <View style={{ paddingTop: 5 }}>
-        <StatisticsBody
-          variant={variant}
-          stats={stats}
-          calculateWinPercent={calculateWinPercent}
-        />
-      </View>
+      {stats.length < 1 ? (
+        <View
+          style={{ flex: 0.5, justifyContent: "center", alignItems: "center" }}
+        >
+          <Text style={{ fontSize: 20 }}>No games have been played yet</Text>
+        </View>
+      ) : (
+        <View style={{ paddingTop: 5 }}>
+          <StatisticsBody
+            variant={variant}
+            stats={stats}
+            calculateWinPercent={calculateWinPercent}
+          />
+        </View>
+      )}
     </View>
   );
 };

@@ -93,20 +93,20 @@ const RootNavigator = () => {
             route,
           }: RootStackScreenProps<"baseball">) => ({
             title: "Baseball",
-            headerRight: () => (
-              <Pressable
-                style={({ pressed }) => ({
-                  opacity: pressed ? 0.5 : 1,
-                })}
-                onPressIn={() => navigation.navigate("undo-modal")}
-              >
-                <MaterialCommunityIcons
-                  name="undo-variant"
-                  size={24}
-                  color={Colors[colorScheme].text}
-                />
-              </Pressable>
-            ),
+            // headerRight: () => (
+            //   <Pressable
+            //     style={({ pressed }) => ({
+            //       opacity: pressed ? 0.5 : 1,
+            //     })}
+            //     onPressIn={() => navigation.navigate("undo-modal")}
+            //   >
+            //     <MaterialCommunityIcons
+            //       name="undo-variant"
+            //       size={24}
+            //       color={Colors[colorScheme].text}
+            //     />
+            //   </Pressable>
+            // ),
           })}
         />
         <Stack.Screen
