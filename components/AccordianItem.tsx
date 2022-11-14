@@ -1,12 +1,16 @@
 import React, { useRef, useState } from "react";
-
 import { Animated, LayoutAnimation, Pressable } from "react-native";
-import { Text, View } from "./Themed";
-import RulesDescription from "./RulesDescription";
 import { Entypo } from "@expo/vector-icons";
 
-const AccordianItem = ({ item }: { item: any }) => {
+import { Text, View } from "./Themed";
+import RulesDescription from "./RulesDescription";
+import useColorScheme from "../hooks/useColorScheme";
+
+import Colors from "../constants/Colors";
+
+const AccordianItem = ({ item }: { item: { game: string } }) => {
   const [expanded, setExpanded] = useState(false);
+  const colorScheme = useColorScheme();
 
   const animationControl = useRef(new Animated.Value(0)).current;
 
@@ -39,6 +43,7 @@ const AccordianItem = ({ item }: { item: any }) => {
       type: LayoutAnimation.Types.easeInEaseOut,
     },
   };
+
   return (
     <View style={{ overflow: "hidden" }}>
       <Pressable onPressOut={() => toggleListItem()}>
@@ -52,7 +57,11 @@ const AccordianItem = ({ item }: { item: any }) => {
         >
           <Text style={{ fontSize: 20 }}>{item.game}</Text>
           <Animated.View style={{ transform: [{ rotateZ: arrowTransform }] }}>
-            <Entypo name="chevron-thin-right" size={24} color="black" />
+            <Entypo
+              name="chevron-thin-right"
+              size={24}
+              color={Colors[colorScheme].text}
+            />
           </Animated.View>
         </View>
       </Pressable>

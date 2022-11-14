@@ -5,6 +5,7 @@ import { useNavigation } from "@react-navigation/native";
 import { IPlayer, usePlayerState } from "../context/PlayerContext";
 import useGame from "../hooks/useGame";
 import useUndoRedo from "../hooks/useUndoRedo";
+import usePlayerStats from "../hooks/usePlayerStats";
 
 import { View } from "../components/Themed";
 import EliminationHeader from "@components/scoreboard/header/EliminationHeader";
@@ -16,12 +17,8 @@ import gameOverAlert from "@components/GameOverAlert";
 import CustomButton from "@components/CustomButton";
 
 const Elimination = () => {
-  const {
-    selectedPlayers,
-    setSelectedPlayers,
-    setOverallStats,
-    setEliminationStats,
-  } = usePlayerState();
+  const { selectedPlayers, setSelectedPlayers } = usePlayerState();
+  const { setOverallStats, setEliminationStats } = usePlayerStats();
   const {
     currentPlayer,
     playerScore,
@@ -35,6 +32,9 @@ const Elimination = () => {
     changeRounds,
     turn,
     assignCurrentPlayerHighScore,
+    setCurrentPlayer,
+    setTurn,
+    nextPlayer,
   } = useGame();
   const navigation = useNavigation();
   const [playerState, { set: setCurrentState, undo: undoTurn, canUndo }] =
@@ -45,6 +45,8 @@ const Elimination = () => {
       nextPlayer: {},
       leadingScore: 0,
     });
+
+  const { present: presentTurn } = playerState;
 
   // set variables
   let winner: { id: number | undefined; name: string } = {
@@ -122,11 +124,11 @@ const Elimination = () => {
                 if (item.id === player.id && item.id !== winner.id) {
                   item.games_played += 1;
                   item.games_lost += 1;
-                  console.log(`Losing Stats: `, player.stats);
+                  // console.log(`Losing Stats: `, player.stats);
                 } else if (item.id === player.id && item.id === winner.id) {
                   item.games_won += 1;
                   item.games_played += 1;
-                  console.log(`Winner stats: `, player.stats);
+                  // console.log(`Winner stats: `, player.stats);
                 }
                 return item;
               })
@@ -136,11 +138,11 @@ const Elimination = () => {
                 if (item.id === player.id && item.id !== winner.id) {
                   item.games_played += 1;
                   item.games_lost += 1;
-                  console.log(`Losing Stats: `, player.stats);
+                  // console.log(`Losing Stats: `, player.stats);
                 } else if (item.id === player.id && item.id === winner.id) {
                   item.games_won += 1;
                   item.games_played += 1;
-                  console.log(`Winner stats: `, player.stats);
+                  // console.log(`Winner stats: `, player.stats);
                 }
                 return item;
               })
@@ -160,6 +162,19 @@ const Elimination = () => {
 
   const onUndo = () => {
     undoTurn();
+    setSelectedPlayers((prev) =>
+      prev.map((player) => {
+        if (player.id === presentTurn.player.id) {
+          return presentTurn.player;
+        } else {
+          return player;
+        }
+      })
+    );
+    setCurrentPlayer(presentTurn.player);
+    setTurn(presentTurn.turn);
+    setRound(presentTurn.round);
+    setLeadingScore(presentTurn.leadingScore);
   };
 
   // reset game if playing again
@@ -212,7 +227,16 @@ const Elimination = () => {
       <View>
         <CalculatorButtons
           variant="elimination"
-          onHandleSubmit={() => onHandleSubmit()}
+          onHandleSubmit={() => {
+            setCurrentState({
+              turn,
+              round,
+              player: JSON.parse(JSON.stringify(currentPlayer)),
+              leadingScore,
+              nextPlayer: JSON.parse(JSON.stringify(nextPlayer)),
+            });
+            onHandleSubmit();
+          }}
           onDeleteInput={() => onDeleteInput("elimination")}
           setValue={setPlayerScore}
         />

@@ -1,13 +1,8 @@
 import React from "react";
 import { StyleSheet } from "react-native";
+
+import { View } from "@components/Themed";
 import CustomAccordian from "@components/Accordian";
-
-import { Text, View } from "@components/Themed";
-
-// import CustomAccordian from "../components/Accordian";
-// import RulesDescription from "../components/RulesDescription";
-
-const games = ["Baseball", "X01", "Cricket", "Elimination", "Killer"];
 
 const Rules = () => {
   return (
@@ -22,12 +17,5 @@ export default Rules;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-  },
-  title: {
-    fontSize: 20,
-    fontWeight: "bold",
-    marginLeft: "5%",
-    marginVertical: "5%",
-    alignSelf: "center",
   },
 });

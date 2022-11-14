@@ -8,7 +8,7 @@ export const createTable = () =>
       onCreateTable({ transaction: tx, table: "resumeGames" });
     },
     (error) => {
-      console.log(dbError, error);
+      // console.log(dbError, error);
     }
   );
 // READ
@@ -20,6 +20,6 @@ export const dropTable = () =>
   db.transaction(
     (tx) => onDropTable({ transaction: tx, table: "resumeGames" }),
     (error) => {
-      console.log(dbError, error);
+      // console.log(dbError, error);
     }
   );

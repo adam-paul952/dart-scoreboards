@@ -4,9 +4,9 @@ import { StyleSheet } from "react-native";
 import { Text, View } from "@components/Themed";
 
 import { StatisticsHeaderProps } from "./StatisticsHeader";
-import { PlayerStats, BaseballStats, X01Stats } from "../../screens/Statistics";
+
 interface StatisticsBodyProps extends StatisticsHeaderProps {
-  stats: X01Stats[];
+  stats: any[];
   calculateWinPercent: (gamesWon: number, gamesPlayed: number) => number;
 }
 
@@ -17,21 +17,12 @@ const StatisticsBody = (props: StatisticsBodyProps) => {
     <>
       {stats.map((player) => {
         return (
-          <View
-            key={player.id}
-            style={{ flexDirection: "row", paddingVertical: 3 }}
-          >
-            <Text style={{ flex: 1, textAlign: "center" }}>{player.name}</Text>
-            <Text style={{ flex: 1, textAlign: "center" }}>
-              {player.games_played}
-            </Text>
-            <Text style={{ flex: 1, textAlign: "center" }}>
-              {player.games_won}
-            </Text>
-            <Text style={{ flex: 1, textAlign: "center" }}>
-              {player.games_lost}
-            </Text>
-            <Text style={{ flex: 1, textAlign: "center" }}>
+          <View key={player.id} style={styles.statsListRow}>
+            <Text style={styles.statsListText}>{player.name}</Text>
+            <Text style={styles.statsListText}>{player.games_played}</Text>
+            <Text style={styles.statsListText}>{player.games_won}</Text>
+            <Text style={styles.statsListText}>{player.games_lost}</Text>
+            <Text style={styles.statsListText}>
               {calculateWinPercent(
                 player.games_won,
                 player.games_played
@@ -39,12 +30,10 @@ const StatisticsBody = (props: StatisticsBodyProps) => {
               %
             </Text>
             {variant !== "overall" ? (
-              <Text style={{ flex: 1, textAlign: "center" }}>
-                {player.highscore}
-              </Text>
+              <Text style={styles.statsListText}>{player.highscore}</Text>
             ) : null}
             {variant === "x01" ? (
-              <Text style={{ flex: 1, textAlign: "center" }}>
+              <Text style={styles.statsListText}>
                 {player.one_dart_average}
               </Text>
             ) : null}
@@ -57,4 +46,7 @@ const StatisticsBody = (props: StatisticsBodyProps) => {
 
 export default StatisticsBody;
 
-const styles = StyleSheet.create({});
+const styles = StyleSheet.create({
+  statsListRow: { flexDirection: "row", paddingVertical: 3 },
+  statsListText: { flex: 1, textAlign: "center" },
+});

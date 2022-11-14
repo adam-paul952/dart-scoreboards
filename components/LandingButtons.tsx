@@ -1,39 +1,39 @@
 import React from "react";
-
 import { StyleSheet } from "react-native";
+
+import useColorScheme from "../hooks/useColorScheme";
 import CustomButton from "./CustomButton";
 
+import Colors from "../constants/Colors";
 import window from "../constants/Layout";
 const height = window.window.height;
 
 interface ILandingButtonProps {
-  variant: string;
+  variant: "New Game" | "Resume Game" | "Manage Players" | "Stats";
   children: React.ReactNode;
-  buttonBG?: string;
-  color?: string;
-  onPressOut?: () => void;
-  buttonOverrideStyle?: any;
+  onPressOut: () => void;
 }
 
-const LandingPageButton = (props: ILandingButtonProps) => (
-  <CustomButton
-    title={props.variant}
-    textStyle={styles.buttonTextStyle}
-    buttonStyle={[
-      styles.buttonStyle,
-      props.buttonOverrideStyle,
-      { backgroundColor: props.buttonBG },
-    ]}
-    buttonChildrenStyle={{ backgroundColor: "transparent" }}
-    buttonIconStyle={[
-      styles.buttonIconStyle,
-      { backgroundColor: "transparent" },
-    ]}
-    onPressOut={props.onPressOut}
-  >
-    {props.children}
-  </CustomButton>
-);
+const LandingPageButton = (props: ILandingButtonProps) => {
+  const colorScheme = useColorScheme();
+  const buttonBG = Colors[colorScheme].buttonColor;
+
+  return (
+    <CustomButton
+      title={props.variant}
+      textStyle={styles.buttonTextStyle}
+      buttonStyle={[styles.buttonStyle, { backgroundColor: buttonBG }]}
+      buttonChildrenStyle={{ backgroundColor: "transparent" }}
+      buttonIconStyle={[
+        styles.buttonIconStyle,
+        { backgroundColor: "transparent" },
+      ]}
+      onPressOut={props.onPressOut}
+    >
+      {props.children}
+    </CustomButton>
+  );
+};
 
 export default LandingPageButton;
 

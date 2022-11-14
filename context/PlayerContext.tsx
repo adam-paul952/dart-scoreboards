@@ -1,10 +1,6 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
 
 import useSqlite from "../hooks/useSqlite";
-import {
-  updateOverallPlayerStats,
-  updatePlayerStats,
-} from "../db-api/stats/stats.controller";
 
 interface PlayerContext {
   playerList: IPlayer[];
@@ -14,18 +10,6 @@ interface PlayerContext {
   selectedPlayers: IPlayer[];
   setSelectedPlayers: React.Dispatch<React.SetStateAction<IPlayer[]>>;
   togglePlayerSelect: (id: number) => void;
-  overallStats: any[];
-  setOverallStats: React.Dispatch<React.SetStateAction<any[]>>;
-  baseballStats: any[];
-  setBaseballStats: any;
-  cricketStats: any[];
-  setCricketStats: any;
-  eliminationStats: any[];
-  setEliminationStats: any;
-  killerStats: any[];
-  setKillerStats: any;
-  x01Stats: any[];
-  setX01Stats: any;
 }
 
 export interface IPlayer {
@@ -48,15 +32,6 @@ export interface IPlayerStats {
   darts: number;
 }
 
-export interface OverallStats {
-  id: number;
-  name: string;
-  games_won: number;
-  games_lost: number;
-  games_played: number;
-  one_dart_average: number;
-}
-
 const PlayerStateContext = createContext({} as PlayerContext);
 
 const PlayerListProvider = ({ children }: { children: React.ReactNode }) => {
@@ -72,12 +47,10 @@ const PlayerListProvider = ({ children }: { children: React.ReactNode }) => {
 
   const [selectedPlayers, setSelectedPlayers] = useState<IPlayer[]>([]);
 
-  const [overallStats, setOverallStats] = useState<OverallStats[]>([]);
-  const [baseballStats, setBaseballStats] = useState([]);
-  const [cricketStats, setCricketStats] = useState([]);
-  const [eliminationStats, setEliminationStats] = useState([]);
-  const [killerStats, setKillerStats] = useState([]);
-  const [x01Stats, setX01Stats] = useState([]);
+  useEffect(() => {
+    createTable();
+    getPlayerlist(setPlayerList);
+  }, []);
 
   const onAddPlayer = (player: IPlayer) => {
     onAddPlayerToDb(player, setPlayerList);
@@ -110,59 +83,8 @@ const PlayerListProvider = ({ children }: { children: React.ReactNode }) => {
   };
 
   useEffect(() => {
-    createTable();
-    getPlayerlist(setPlayerList);
-    onGetPlayerStats(setOverallStats);
-    onGetPlayerStats(setBaseballStats, "baseball");
-    onGetPlayerStats(setCricketStats, "cricket");
-  }, []);
-
-  useEffect(() => {
     assignSelectedPlayers();
   }, [playerList]);
-
-  const updateStatsArray = (array: any[], stateSetter: any, game?: any) => {
-    for (let i = 0; i < array.length; i++) {
-      let newArray: any[] = [];
-
-      for (const [key, value] of Object.entries(array[i])) {
-        if (key !== "name" && key !== "one_dart_average") newArray.push(value);
-      }
-      if (game !== undefined) stateSetter(game, newArray);
-      else stateSetter(newArray);
-      newArray = [];
-    }
-  };
-
-  useEffect(() => {
-    // console.log(overallStats);
-    updateStatsArray(overallStats, updateOverallPlayerStats);
-  }, [overallStats]);
-
-  useEffect(() => {
-    // console.log(baseballStats);
-    updateStatsArray(baseballStats, updatePlayerStats, "baseball");
-  }, [baseballStats]);
-
-  useEffect(() => {
-    console.log(cricketStats);
-    updateStatsArray(cricketStats, updatePlayerStats, "cricket");
-  }, [cricketStats]);
-
-  useEffect(() => {
-    // console.log(eliminationStats);
-    updateStatsArray(eliminationStats, updatePlayerStats, "elimination");
-  }, [eliminationStats]);
-
-  useEffect(() => {
-    // console.log(killerStats);
-    updateStatsArray(killerStats, updatePlayerStats, "killer");
-  }, [killerStats]);
-
-  useEffect(() => {
-    // console.log(x01Stats);
-    updateStatsArray(x01Stats, updatePlayerStats, "x01");
-  }, [x01Stats]);
 
   return (
     <PlayerStateContext.Provider
@@ -174,18 +96,6 @@ const PlayerListProvider = ({ children }: { children: React.ReactNode }) => {
         selectedPlayers,
         setSelectedPlayers,
         togglePlayerSelect,
-        overallStats,
-        setOverallStats,
-        baseballStats,
-        setBaseballStats,
-        cricketStats,
-        setCricketStats,
-        eliminationStats,
-        setEliminationStats,
-        killerStats,
-        setKillerStats,
-        x01Stats,
-        setX01Stats,
       }}
     >
       {children}

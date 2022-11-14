@@ -4,6 +4,8 @@ import { useNavigation } from "@react-navigation/native";
 
 import { usePlayerState, IPlayer } from "@context/PlayerContext";
 import useGame from "../hooks/useGame";
+import useUndoRedo from "../hooks/useUndoRedo";
+import usePlayerStats from "../hooks/usePlayerStats";
 
 import { View } from "../components/Themed";
 import KillerHeader from "@scoreboard/header/KillerHeader";
@@ -20,6 +22,7 @@ type KillerProps = NativeStackScreenProps<RootStackParamList, "killer">;
 const Killer = ({ route }: KillerProps) => {
   const { playerTargets } = route.params;
   const { selectedPlayers, setSelectedPlayers } = usePlayerState();
+  const { setOverallStats, setKillerStats } = usePlayerStats();
   const {
     onDeleteInput,
     currentPlayer,
@@ -32,6 +35,13 @@ const Killer = ({ route }: KillerProps) => {
     changeRounds,
   } = useGame();
   const navigation = useNavigation();
+  const [playerState, { set: setCurrentState, undo: undoTurn, canUndo }] =
+    useUndoRedo({
+      turn: 0,
+      round: 1,
+      player: { ...currentPlayer },
+      nextPlayer: {},
+    });
 
   // assign targets based on player scores
   const [targets] = useState<Array<number>>(playerTargets);
@@ -99,9 +109,7 @@ const Killer = ({ route }: KillerProps) => {
   // when screen is focused re-assign current player to reflect sorted list
   useEffect(() => {
     const unsubscribe = navigation.addListener("focus", () => {
-      setSelectedPlayers((prev: IPlayer[]) =>
-        prev.sort((a, b) => a.score - b.score)
-      );
+      setSelectedPlayers((prev) => prev.sort((a, b) => a.score - b.score));
       setCurrentPlayer(selectedPlayers[turn]);
     });
 
@@ -129,6 +137,35 @@ const Killer = ({ route }: KillerProps) => {
       });
     }
   }, [playerIsOut]);
+
+  const assignPlayerStats = (winner: any) => {
+    selectedPlayers.forEach((player) => {
+      setOverallStats((prev: any) =>
+        prev.map((item: any) => {
+          if (item.id === player.id && item.id !== winner.id) {
+            item.games_played += 1;
+            item.games_lost += 1;
+          } else if (item.id === player.id && item.id === winner.id) {
+            item.games_played += 1;
+            item.games_won += 1;
+          }
+          return item;
+        })
+      );
+      setKillerStats((prev: any) =>
+        prev.map((item: any) => {
+          if (item.id === player.id && item.id !== winner.id) {
+            item.games_played += 1;
+            item.games_lost += 1;
+          } else if (item.id === player.id && item.id === winner.id) {
+            item.games_played += 1;
+            item.games_won += 1;
+          }
+          return item;
+        })
+      );
+    });
+  };
 
   return (
     // main container

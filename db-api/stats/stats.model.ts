@@ -70,7 +70,7 @@ export const onInsertNewRow = ({
     args,
     () => {},
     (_, error) => {
-      console.log(error);
+      // console.log(error);
       return false;
     }
   );
@@ -121,7 +121,7 @@ export const onGetPlayerStats = <T>({
         setStateFunc(() => _array.map((item) => item));
       },
       (_, error) => {
-        console.log(error);
+        // console.log(error);
         return false;
       }
     );
@@ -141,7 +141,7 @@ export const onUpdateOverallStats = ({
     args,
     () => {},
     (_, error) => {
-      console.log(error);
+      // console.log(error);
       return false;
     }
   );
@@ -160,7 +160,7 @@ export const onUpdatePlayerStats = ({
     args,
     () => {},
     (_, error) => {
-      console.log(error);
+      // console.log(error);
       return false;
     }
   );

@@ -37,9 +37,8 @@ const useGame = () => {
   const [round, setRound] = useState<number>(1);
 
   // change rounds
-  const changeRounds = () => {
-    turn === selectedPlayers.length - 1 && setRound((prev) => prev + 1);
-  };
+  const changeRounds = () =>
+    turn === selectedPlayers.length - 1 ? setRound((prev) => prev + 1) : null;
 
   // current player
   const [currentPlayer, setCurrentPlayer] = useState<IPlayer>(
@@ -54,6 +53,8 @@ const useGame = () => {
   };
 
   const [playerIsOut, setPlayerIsOut] = useState<any[]>([]);
+
+  const nextPlayer = selectedPlayers[(turn + 1) % selectedPlayers.length];
 
   return {
     playerScore,
@@ -72,6 +73,7 @@ const useGame = () => {
     assignCurrentPlayerHighScore,
     playerIsOut,
     setPlayerIsOut,
+    nextPlayer,
   };
 };
 

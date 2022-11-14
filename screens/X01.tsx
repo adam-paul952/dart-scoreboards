@@ -2,19 +2,23 @@ import React, { useEffect, useState } from "react";
 import { Alert, StyleSheet } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 
-import { View } from "@components/Themed";
 import { IPlayer, usePlayerState } from "../context/PlayerContext";
 import useGame from "../hooks/useGame";
+import useUndoRedo from "../hooks/useUndoRedo";
+import usePlayerStats from "../hooks/usePlayerStats";
 
+import { View } from "@components/Themed";
 import X01Header from "@scoreboard/header/X01Header";
 import X01ScoreboardBody from "@scoreboard/body/X01ScoreboardBody";
 import X01PlayerInfo from "@scoreboard/round-info/X01PlayerInfo";
 import X01InputRow from "@components/scoreboard/X01InputRow";
 import CalculatorButtons from "@scoreboard/calculator-buttons/CalculatorButtons";
 import gameOverAlert from "@components/GameOverAlert";
+import CustomButton from "@components/CustomButton";
 
 const X01 = () => {
   const { selectedPlayers, setSelectedPlayers } = usePlayerState();
+  const { setOverallStats, setX01Stats } = usePlayerStats();
   const {
     playerScore,
     setPlayerScore,
@@ -22,9 +26,28 @@ const X01 = () => {
     changeTurns,
     currentPlayer,
     changeRounds,
-    getCurrentPlayerHighScore,
+    assignCurrentPlayerHighScore,
+    setRound,
+    setTurn,
+    setCurrentPlayer,
+    turn,
+    nextPlayer,
   } = useGame();
   const navigation = useNavigation();
+  const [playerState, { set: setCurrentState, undo: undoTurn, canUndo }] =
+    useUndoRedo({
+      // turn: 0,
+      // round: 1,
+      player: { ...currentPlayer },
+      nextPlayer: {},
+    });
+
+  const { present: presentTurn } = playerState;
+
+  useEffect(() => {
+    // console.log(`Present Turn: `);
+    // console.log(presentTurn);
+  }, [presentTurn]);
 
   // state to manage input error and disable buttons
   const [inputError, setInputError] = useState<boolean>(false);
@@ -32,6 +55,8 @@ const X01 = () => {
 
   // set X01 points
   const [x01Points] = useState(currentPlayer.score);
+
+  let winner = { id: 0, name: "" };
 
   // check user input for error
   const checkForInputError = () => {
@@ -55,7 +80,7 @@ const X01 = () => {
 
   useEffect(() => {
     checkForInputError();
-  });
+  }, [playerScore]);
 
   // handle submit action enter button
   const onHandleSubmit = () => {
@@ -64,7 +89,7 @@ const X01 = () => {
     if (isNaN(score)) score = 0;
     handleScoreChange(score);
     changeTurns();
-    changeRounds();
+    // changeRounds();
   };
 
   const handleScoreChange = (score: number) => {
@@ -95,7 +120,37 @@ const X01 = () => {
     );
     // if current player is winner - game over
     if (currentPlayer.score === 0) {
-      gameOverAlert({ playerName: currentPlayer.name, resetGame, navigation });
+      winner = { id: currentPlayer.id!, name: currentPlayer.name };
+
+      selectedPlayers.forEach((player) => {
+        setOverallStats((prev: any) =>
+          prev.map((item: any) => {
+            if (item.id === player.id && item.id !== winner.id) {
+              item.games_played += 1;
+              item.games_lost += 1;
+            } else if (item.id === player.id && item.id === winner.id) {
+              item.games_played += 1;
+              item.games_won += 1;
+            }
+            return item;
+          })
+        );
+
+        setX01Stats((prev: any) =>
+          prev.map((item: any) => {
+            if (item.id === player.id && item.id !== winner.id) {
+              item.games_played += 1;
+              item.games_lost += 1;
+            } else if (item.id === player.id && item.id === winner.id) {
+              item.games_played += 1;
+              item.games_won += 1;
+            }
+            return item;
+          })
+        );
+      });
+
+      gameOverAlert({ playerName: winner.name, resetGame, navigation });
     }
     return true;
   };
@@ -115,8 +170,24 @@ const X01 = () => {
 
   const handleStatsChange = () => {
     // determine if this is highest score
-    getCurrentPlayerHighScore();
+    assignCurrentPlayerHighScore(currentPlayer);
     currentPlayer.stats.darts += 3;
+  };
+
+  const onUndo = () => {
+    undoTurn();
+    setSelectedPlayers((prev) =>
+      prev.map((player) => {
+        if (player.id === presentTurn.player.id) {
+          return presentTurn.player;
+        } else {
+          return player;
+        }
+      })
+    );
+    setCurrentPlayer(presentTurn.player);
+    // setTurn(presentTurn.turn);
+    // setRound(presentTurn.round);
   };
 
   return (
@@ -128,6 +199,12 @@ const X01 = () => {
           currentPlayer={currentPlayer}
         />
       </View>
+      <CustomButton
+        title="Undo"
+        buttonStyle={{ width: "25%", alignSelf: "center" }}
+        onPressIn={() => onUndo()}
+        disabled={!canUndo}
+      />
       <>
         <X01InputRow
           playerScore={playerScore}
@@ -141,7 +218,13 @@ const X01 = () => {
             value={playerScore}
             setValue={setPlayerScore}
             disabled={disabled}
-            onHandleSubmit={onHandleSubmit}
+            onHandleSubmit={() => {
+              setCurrentState({
+                player: JSON.parse(JSON.stringify(currentPlayer)),
+                nextPlayer: JSON.parse(JSON.stringify(nextPlayer)),
+              });
+              onHandleSubmit();
+            }}
             onDeleteInput={() => onDeleteInput("x01")}
           />
         </View>

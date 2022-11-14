@@ -18,20 +18,19 @@ import window from "../constants/Layout";
 const width = window.window.width;
 
 /**
+ * @component
  * @description Main Landing Screen - Renders buttons to direct the user
- * @description New Game - route "create-match"
- * @description Manage Players - route "manage-players"
- * @description Resume Game - route "resume-game" (Not used yet)
- * @description Stats - route "statistics" (Not used yet)
+ *  New Game - route "create-match"
+ *  Manage Players - route "manage-players"
+ *  Resume Game - route "resume-game" (Not used yet)
+ *  Stats - route "statistics" (Not used yet)
  */
 
 const Landing = () => {
   const { playerList } = usePlayerState();
 
   const navigation = useNavigation();
-
   const colorScheme = useColorScheme();
-  const buttonBG = Colors[colorScheme].buttonColor;
   const color = Colors[colorScheme].text;
 
   const alertUserNoPlayers = () => {
@@ -50,8 +49,6 @@ const Landing = () => {
       <View style={styles.buttonRow}>
         <LandingPageButton
           variant="New Game"
-          buttonBG={buttonBG}
-          color={color}
           onPressOut={() => alertUserNoPlayers()}
         >
           <MaterialCommunityIcon
@@ -62,8 +59,6 @@ const Landing = () => {
         </LandingPageButton>
         <LandingPageButton
           variant="Resume Game"
-          buttonBG={buttonBG}
-          color={color}
           onPressOut={() => navigation.navigate("resume-game")}
         >
           <FontAwesome5Icon name="undo-alt" color={color} size={60} />
@@ -72,8 +67,6 @@ const Landing = () => {
       <View style={styles.buttonRow}>
         <LandingPageButton
           variant="Manage Players"
-          buttonBG={buttonBG}
-          color={color}
           onPressOut={() => {
             navigation.navigate("manage-players");
           }}
@@ -82,8 +75,6 @@ const Landing = () => {
         </LandingPageButton>
         <LandingPageButton
           variant="Stats"
-          buttonBG={buttonBG}
-          color={color}
           onPressOut={() => navigation.navigate("statistics")}
         >
           <IonIcon name="stats-chart" color={color} size={60} />

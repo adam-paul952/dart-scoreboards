@@ -56,7 +56,7 @@ export const onGetPlayers = ({
         },
         // error during the transaction
         (_, error) => {
-          console.log(`db error load players \n`, error);
+          // console.log(`db error load players \n`, error);
           return false;
         }
       )
@@ -77,14 +77,14 @@ export const onAddPlayer = ({
         (_, resultSet) => {
           const newId = resultSet.insertId;
           setStateFunc((prev) => prev.concat({ id: newId, ...state }));
-          console.log(`successfully added player`);
+          // console.log(`successfully added player`);
           // add playerstats row to DB
           if (newId !== undefined) {
             insertNewStatsRow(newId);
           }
         },
         (_, error) => {
-          console.log(`insert player error \n`, error);
+          // console.log(`insert player error \n`, error);
           return false;
         }
       )
@@ -99,10 +99,10 @@ export const onUpdateSelectedPlayer = ({
     `UPDATE ${table} SET selected = (?) WHERE id = (?)`,
     args,
     () => {
-      console.log(`successfully updated selected row`);
+      // console.log(`successfully updated selected row`);
     },
     (_, error) => {
-      console.log(error);
+      // console.log(error);
       return false;
     }
   );
@@ -128,7 +128,7 @@ export const onDeletePlayer = ({
           }
         },
         (_, error) => {
-          console.log(`error removing player \n`, error);
+          // console.log(`error removing player \n`, error);
           return false;
         }
       )

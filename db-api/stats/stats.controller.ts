@@ -22,7 +22,7 @@ export const createTables = () =>
       onCreateX01Stats({ transaction: tx, table: "x01_stats" });
     },
     (error) => {
-      console.log(dbError, error);
+      // console.log(dbError, error);
     }
   );
 
@@ -49,7 +49,7 @@ export const insertNewStatsRow = (newId: number) =>
       onInsertNewRow({ transaction: tx, table: "x01_stats", args: [newId] });
     },
     (error) => {
-      console.log(dbError, error);
+      // console.log(dbError, error);
     }
   );
 
@@ -64,7 +64,7 @@ export const getPlayerStats = <T>(
       onGetPlayerStats({ transaction: tx, table: game, setStateFunc });
     },
     (error) => {
-      console.log(dbError, error);
+      // console.log(dbError, error);
     }
   );
 
@@ -94,7 +94,7 @@ export const updatePlayerStats = (
       // }
     },
     (error) => {
-      console.log(dbError, error);
+      // console.log(dbError, error);
     }
   );
 };
@@ -111,6 +111,6 @@ export const dropTables = () =>
       onDropTables({ transaction: tx, table: "x01_stats" });
     },
     (error) => {
-      console.log(dbError, error);
+      // console.log(dbError, error);
     }
   );

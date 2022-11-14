@@ -14,17 +14,13 @@ import CricketRoundInfo from "@scoreboard/round-info/CricketRoundInfo";
 import CalculatorButtons from "@scoreboard/calculator-buttons/CalculatorButtons";
 import gameOverAlert from "@components/GameOverAlert";
 import CustomButton from "@components/CustomButton";
+import usePlayerStats from "../hooks/usePlayerStats";
 
 const targets = [20, 19, 18, 17, 16, 15, 25];
 
 const Cricket = () => {
-  const {
-    selectedPlayers,
-    setSelectedPlayers,
-    setOverallStats,
-    cricketStats,
-    setCricketStats,
-  } = usePlayerState();
+  const { setOverallStats, cricketStats, setCricketStats } = usePlayerStats();
+  const { selectedPlayers, setSelectedPlayers } = usePlayerState();
   const {
     playerScore,
     setPlayerScore,

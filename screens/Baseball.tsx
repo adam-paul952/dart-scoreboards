@@ -2,25 +2,23 @@ import React, { Fragment, useEffect } from "react";
 import { StyleSheet } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 
+import { IPlayer, usePlayerState } from "../context/PlayerContext";
 import useGame from "../hooks/useGame";
 import useUndoRedo from "../hooks/useUndoRedo";
-import { IPlayer, usePlayerState } from "../context/PlayerContext";
+import usePlayerStats from "../hooks/usePlayerStats";
 
 import { View } from "../components/Themed";
 import BaseballHeader from "@scoreboard/header/BaseballHeader";
 import BaseballScoreboardBody from "@scoreboard/body/BaseballScoreboardBody";
 import CalculatorButtons from "@scoreboard/calculator-buttons/CalculatorButtons";
 import BaseballRoundInfo from "@scoreboard/round-info/BaseballRoundInfo";
-import gameOverAlert from "@components/GameOverAlert";
 import CustomButton from "@components/CustomButton";
 
+import gameOverAlert from "@components/GameOverAlert";
+
 const Baseball = () => {
-  const {
-    selectedPlayers,
-    setSelectedPlayers,
-    setOverallStats,
-    setBaseballStats,
-  } = usePlayerState();
+  const { selectedPlayers, setSelectedPlayers } = usePlayerState();
+  const { setOverallStats, setBaseballStats } = usePlayerStats();
   const {
     playerScore,
     setPlayerScore,
@@ -41,22 +39,20 @@ const Baseball = () => {
   } = useGame();
   const navigation = useNavigation();
 
-  const [
-    playerState,
-    { set: setCurrentState, undo: undoTurn, redo: redoTurn, canUndo, canRedo },
-  ] = useUndoRedo({
-    turn: 0,
-    round: 1,
-    player: { ...currentPlayer },
-    nextPlayer: {},
-    leadingScore: 0,
-  });
+  const [playerState, { set: setCurrentState, undo: undoTurn, canUndo }] =
+    useUndoRedo({
+      turn: 0,
+      round: 1,
+      player: { ...currentPlayer },
+      nextPlayer: {},
+      leadingScore: 0,
+    });
 
   const { present: presentPlayer } = playerState;
 
   // set initial player scorelist filled with 0 - mostly for display purposes
   useEffect(() => {
-    setSelectedPlayers((prev: IPlayer[]) =>
+    setSelectedPlayers((prev) =>
       prev.map((player) => {
         player.scoreList = new Array(9).fill(0);
         return player;
@@ -113,7 +109,7 @@ const Baseball = () => {
           if (player.score === leadingScore)
             winner = { id: player.id, name: player.name };
         });
-        console.log(winner);
+        // console.log(winner);
         if (winner) {
           selectedPlayers.forEach((player) => {
             setOverallStats((prev) =>

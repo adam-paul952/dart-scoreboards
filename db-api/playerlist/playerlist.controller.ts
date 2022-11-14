@@ -16,7 +16,7 @@ export const createTable = () =>
   db.transaction(
     (tx) => onCreateTable({ transaction: tx, table: "playerlist" }),
     (error) => {
-      console.log(dbError, error);
+      // console.log(dbError, error);
     }
   );
 
@@ -28,7 +28,7 @@ export const getPlayers = (
     (tx) =>
       onGetPlayers({ transaction: tx, table: "playerlist", setStateFunc }),
     (error) => {
-      console.log(dbError, error);
+      // console.log(dbError, error);
     }
   );
 
@@ -47,7 +47,7 @@ export const addPlayer = (
         setStateFunc,
       }),
     (error) => {
-      console.log(dbError, error);
+      // console.log(dbError, error);
     }
   );
 
@@ -60,7 +60,7 @@ export const updateSelectedPlayer = (state: { selected: number; id: number }) =>
         args: [state.selected, state.id],
       }),
     (error) => {
-      console.log(dbError, error);
+      // console.log(dbError, error);
     }
   );
 
@@ -80,7 +80,7 @@ export const deletePlayer = (
         mainState,
       }),
     (error) => {
-      console.log(dbError, error);
+      // console.log(dbError, error);
     }
   );
 
@@ -90,6 +90,6 @@ export const dropTable = (
   db.transaction(
     (tx) => onDropTable({ transaction: tx, table: "playerlist", setStateFunc }),
     (error) => {
-      console.log(dbError, error);
+      // console.log(dbError, error);
     }
   );

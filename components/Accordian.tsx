@@ -1,12 +1,8 @@
 import React from "react";
 import { FlatList, StyleSheet } from "react-native";
+
 import { View } from "./Themed";
 import AccordianItem from "./AccordianItem";
-
-interface ICustomAccordianProps {
-  title: string;
-  children: React.ReactNode;
-}
 
 let data = [
   { game: "Baseball" },
@@ -30,10 +26,4 @@ const CustomAccordian = () => {
 
 export default CustomAccordian;
 
-const styles = StyleSheet.create({
-  title: {
-    fontSize: 20,
-    fontWeight: "bold",
-    marginVertical: "5%",
-  },
-});
+const styles = StyleSheet.create({});
