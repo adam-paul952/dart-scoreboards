@@ -1,5 +1,4 @@
 import { SqlControllerProps } from "db-api";
-import { X01Stats } from "screens/Statistics";
 
 // CREATE
 export const onCreateStatsTable = ({
@@ -116,7 +115,7 @@ export const onGetPlayerStats = <T>({
   if (setStateFunc !== undefined)
     transaction.executeSql(
       sqlStatement,
-      [],
+      args,
       (_, { rows: { _array } }) => {
         setStateFunc(() => _array.map((item) => item));
       },
@@ -146,7 +145,7 @@ export const onUpdateOverallStats = ({
     }
   );
 
-export const onUpdatePlayerStats = ({
+export const onUpdatePlayerStats = <V>({
   transaction,
   table,
   args,

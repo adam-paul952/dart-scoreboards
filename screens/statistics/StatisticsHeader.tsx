@@ -4,7 +4,13 @@ import { StyleSheet } from "react-native";
 import { Text, View } from "@components/Themed";
 
 export interface StatisticsHeaderProps {
-  variant: string;
+  variant:
+    | "overall"
+    | "x01"
+    | "baseball"
+    | "elimination"
+    | "killer"
+    | "cricket";
 }
 
 const overallHeader = ["Name", "GP", "GW", "GL", "Win %"];

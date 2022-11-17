@@ -22,7 +22,8 @@ type KillerProps = NativeStackScreenProps<RootStackParamList, "killer">;
 const Killer = ({ route }: KillerProps) => {
   const { playerTargets } = route.params;
   const { selectedPlayers, setSelectedPlayers } = usePlayerState();
-  const { setOverallStats, setKillerStats } = usePlayerStats();
+  const { setOverallStats, setKillerStats, onUpdatePlayerStats } =
+    usePlayerStats();
   const {
     onDeleteInput,
     currentPlayer,
@@ -47,9 +48,7 @@ const Killer = ({ route }: KillerProps) => {
   const [targets] = useState<Array<number>>(playerTargets);
 
   // store players that have been eliminated
-  const [playerIsOut, setPlayerIsOut] = useState<
-    { id: number; name: string }[]
-  >([]);
+  const [playerIsOut, setPlayerIsOut] = useState<IPlayer[]>([]);
 
   const onHandleSubmit = () => {
     const hits = playerScore.split("").map((score) => parseInt(score, 10));
@@ -57,7 +56,7 @@ const Killer = ({ route }: KillerProps) => {
       (num) => hits.filter((hit) => hit === num).length
     );
     let playerScoreIndex = targets.indexOf(currentPlayer.score);
-    setSelectedPlayers((prev: IPlayer[]) =>
+    setSelectedPlayers((prev) =>
       prev.map((player) => {
         if (currentPlayer.id === player.id) {
           player.lives += count[playerScoreIndex];
@@ -80,13 +79,10 @@ const Killer = ({ route }: KillerProps) => {
       })
     );
     if (currentPlayer.killer === true) {
-      selectedPlayers.forEach((player: IPlayer) => {
+      selectedPlayers.forEach((player) => {
         if (playerIsOut.some((value) => value.name === player.name)) return;
         else if (player.lives === 0) {
-          setPlayerIsOut((prev) => [
-            ...prev,
-            { id: player.id!, name: player.name },
-          ]);
+          setPlayerIsOut((prev) => [...prev, player]);
         }
       });
     }
@@ -95,7 +91,7 @@ const Killer = ({ route }: KillerProps) => {
   };
 
   const resetGame = () => {
-    setSelectedPlayers((prev: IPlayer[]) =>
+    setSelectedPlayers((prev) =>
       prev.map((player) => {
         player.lives = 0;
         player.killer = false;
@@ -120,7 +116,7 @@ const Killer = ({ route }: KillerProps) => {
   useEffect(() => {
     if (playerIsOut.length >= 1)
       playerIsOut.forEach((player) => {
-        if (player.name === currentPlayer.name) {
+        if (player.id === currentPlayer.id) {
           changeTurns();
           changeRounds();
         }
@@ -130,40 +126,24 @@ const Killer = ({ route }: KillerProps) => {
   // check length of eliminated players - if only one player remaining then declare winner
   useEffect(() => {
     if (playerIsOut.length === selectedPlayers.length - 1) {
-      gameOverAlert({
-        playerName: currentPlayer.name,
-        resetGame,
-        navigation,
+      let winner = selectedPlayers.filter((player) => {
+        if (!playerIsOut.includes(player)) {
+          return player;
+        }
       });
+      assignPlayerStats(winner[0]);
     }
   }, [playerIsOut]);
 
-  const assignPlayerStats = (winner: any) => {
+  const assignPlayerStats = (winner: IPlayer) => {
     selectedPlayers.forEach((player) => {
-      setOverallStats((prev: any) =>
-        prev.map((item: any) => {
-          if (item.id === player.id && item.id !== winner.id) {
-            item.games_played += 1;
-            item.games_lost += 1;
-          } else if (item.id === player.id && item.id === winner.id) {
-            item.games_played += 1;
-            item.games_won += 1;
-          }
-          return item;
-        })
-      );
-      setKillerStats((prev: any) =>
-        prev.map((item: any) => {
-          if (item.id === player.id && item.id !== winner.id) {
-            item.games_played += 1;
-            item.games_lost += 1;
-          } else if (item.id === player.id && item.id === winner.id) {
-            item.games_played += 1;
-            item.games_won += 1;
-          }
-          return item;
-        })
-      );
+      onUpdatePlayerStats("killer", player, winner);
+    });
+
+    gameOverAlert({
+      playerName: winner.name,
+      resetGame,
+      navigation,
     });
   };
 
@@ -175,7 +155,7 @@ const Killer = ({ route }: KillerProps) => {
         <KillerHeader />
         {/* scoreboard body */}
         <View>
-          {selectedPlayers.map((player: IPlayer) => {
+          {selectedPlayers.map((player) => {
             return (
               <KillerScoreboardBody
                 key={player.name}

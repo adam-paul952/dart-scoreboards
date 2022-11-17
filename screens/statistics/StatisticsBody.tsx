@@ -4,14 +4,15 @@ import { StyleSheet } from "react-native";
 import { Text, View } from "@components/Themed";
 
 import { StatisticsHeaderProps } from "./StatisticsHeader";
+import { GameStats, OverallStats, X01Stats } from "../../hooks/usePlayerStats";
 
 interface StatisticsBodyProps extends StatisticsHeaderProps {
-  stats: any[];
+  stats: OverallStats[] | GameStats[] | X01Stats[];
   calculateWinPercent: (gamesWon: number, gamesPlayed: number) => number;
 }
 
 const StatisticsBody = (props: StatisticsBodyProps) => {
-  const { stats, variant, calculateWinPercent } = props;
+  const { stats, calculateWinPercent } = props;
 
   return (
     <>
@@ -29,10 +30,10 @@ const StatisticsBody = (props: StatisticsBodyProps) => {
               ).toFixed(2)}
               %
             </Text>
-            {variant !== "overall" ? (
+            {"highscore" in player ? (
               <Text style={styles.statsListText}>{player.highscore}</Text>
             ) : null}
-            {variant === "x01" ? (
+            {"one_dart_average" in player ? (
               <Text style={styles.statsListText}>
                 {player.one_dart_average}
               </Text>

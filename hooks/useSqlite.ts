@@ -3,7 +3,7 @@ import * as stats from "../db-api/stats/stats.controller";
 import * as resumeGame from "../db-api/resumeGame/resumeGame.controller";
 
 import { IPlayer } from "@context/PlayerContext";
-import { X01Stats } from "../screens/Statistics";
+import { GameVariants } from "../types";
 
 type UpdateSelectedPlayerArgs = {
   selected: number;
@@ -23,10 +23,10 @@ const useSqlite = () => {
     setPlayersFunc: React.Dispatch<React.SetStateAction<IPlayer[]>>
   ) => playerlist.getPlayers(setPlayersFunc);
 
-  const onGetPlayerStats = <T>(
-    statsArray: React.Dispatch<React.SetStateAction<T[]>>,
-    game?: string
-  ) => stats.getPlayerStats(game, statsArray);
+  // const onGetPlayerStats = <T>(
+  //   statsArray: React.Dispatch<React.SetStateAction<T[]>>,
+  //   game: GameVariants
+  // ) => stats.;
 
   // UPDATE
   const onAddPlayerToDb = (
@@ -40,18 +40,18 @@ const useSqlite = () => {
   }: UpdateSelectedPlayerArgs) =>
     playerlist.updateSelectedPlayer({ selected, id });
 
-  const onUpdatePlayerStats = (player: IPlayer, game: string) => {
-    if (player.id !== undefined) {
-      const statsToUpdate: number[] = [
-        player.stats.gamesPlayed,
-        player.stats.gamesWon,
-        player.stats.gamesLost,
-        player.id,
-      ];
+  // const onUpdatePlayerStats = (player: IPlayer, game: GameVariants) => {
+  //   if (player.id !== undefined) {
+  //     const statsToUpdate: number[] = [
+  //       player.stats.gamesPlayed,
+  //       player.stats.gamesWon,
+  //       player.stats.gamesLost,
+  //       player.id,
+  //     ];
 
-      stats.updatePlayerStats(game, statsToUpdate);
-    }
-  };
+  //     stats.updatePlayerStats(game, statsToUpdate);
+  //   }
+  // };
 
   // DELETE
   const onDeletePlayerFromDb = (
@@ -85,8 +85,8 @@ const useSqlite = () => {
     dropTable,
     onDeletePlayerFromDb,
     updateSelectedPlayerlist,
-    onUpdatePlayerStats,
-    onGetPlayerStats,
+    // onUpdatePlayerStats,
+    // onGetPlayerStats,
     calculateWinPercent,
   };
 };

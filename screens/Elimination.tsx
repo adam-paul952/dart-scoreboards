@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { StyleSheet } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 
-import { IPlayer, usePlayerState } from "../context/PlayerContext";
+import { usePlayerState } from "../context/PlayerContext";
 import useGame from "../hooks/useGame";
 import useUndoRedo from "../hooks/useUndoRedo";
 import usePlayerStats from "../hooks/usePlayerStats";
@@ -18,7 +18,7 @@ import CustomButton from "@components/CustomButton";
 
 const Elimination = () => {
   const { selectedPlayers, setSelectedPlayers } = usePlayerState();
-  const { setOverallStats, setEliminationStats } = usePlayerStats();
+  const { onUpdatePlayerStats } = usePlayerStats();
   const {
     currentPlayer,
     playerScore,
@@ -36,7 +36,9 @@ const Elimination = () => {
     setTurn,
     nextPlayer,
   } = useGame();
+
   const navigation = useNavigation();
+
   const [playerState, { set: setCurrentState, undo: undoTurn, canUndo }] =
     useUndoRedo({
       turn: 0,
@@ -48,15 +50,24 @@ const Elimination = () => {
 
   const { present: presentTurn } = playerState;
 
+  useEffect(() => {
+    console.log(`---------------------`);
+    console.log(`Present Turn: `);
+    console.log(presentTurn);
+    console.log(`    `);
+  }, [presentTurn]);
+
   // set variables
-  let winner: { id: number | undefined; name: string } = {
+  let winner: { id?: number; name: string } = {
     id: undefined,
     name: "",
   };
+
   let roundScore = 0;
+
   const [eliminationLives] = useState(currentPlayer.lives);
 
-  // check to see if current player lives === 0 - player is out, pass turn
+  // if player has 0 lives; player is out change turns
   useEffect(() => {
     if (currentPlayer.lives === 0) {
       changeTurns();
@@ -64,7 +75,7 @@ const Elimination = () => {
     }
   }, [currentPlayer]);
 
-  const onHandleSubmit = () => {
+  const onChangeTurns = () => {
     // convert playerScore to number
     roundScore = parseInt(playerScore, 10);
     // if playerScore isn't a number -> score = 0
@@ -72,9 +83,13 @@ const Elimination = () => {
     // assign score to scorelist
     currentPlayer.scoreList.push(roundScore);
     assignCurrentPlayerHighScore(currentPlayer);
+  };
+
+  const onHandleSubmit = () => {
+    onChangeTurns();
     // if it's the first turn of the game and the player doesn't score - player doesn't lose a life
     if (round === 1 && turn === 0 && roundScore === 0) {
-      setSelectedPlayers((prev: IPlayer[]) =>
+      setSelectedPlayers((prev) =>
         prev.map((player) => {
           if (player.id === currentPlayer.id) {
             player.score = roundScore;
@@ -88,7 +103,7 @@ const Elimination = () => {
       // set leading score to new score
       setLeadingScore(roundScore);
       // set player's score to current score
-      setSelectedPlayers((prev: IPlayer[]) =>
+      setSelectedPlayers((prev) =>
         prev.map((player) => {
           if (player.id === currentPlayer.id) {
             player.score = roundScore;
@@ -98,7 +113,8 @@ const Elimination = () => {
       );
     } else {
       setLeadingScore(roundScore);
-      setSelectedPlayers((prev: IPlayer[]) =>
+
+      setSelectedPlayers((prev) =>
         prev.map((player) => {
           if (player.id === currentPlayer.id) {
             player.score = roundScore;
@@ -108,47 +124,21 @@ const Elimination = () => {
         })
       );
     }
+
     changeTurns();
     changeRounds();
+
     // if only one player left with lives game is over
     const checkForWinningPlayer: number = selectedPlayers.filter(
-      (player: IPlayer) => player.lives > 0
+      (player) => player.lives > 0
     ).length;
+
     if (checkForWinningPlayer === 1) {
-      selectedPlayers.forEach((player: IPlayer) => {
+      selectedPlayers.forEach((player) => {
         if (player.lives > 0) {
-          winner = { id: player.id, name: player.name };
-          if (winner) {
-            setOverallStats((prev) =>
-              prev.map((item) => {
-                if (item.id === player.id && item.id !== winner.id) {
-                  item.games_played += 1;
-                  item.games_lost += 1;
-                  // console.log(`Losing Stats: `, player.stats);
-                } else if (item.id === player.id && item.id === winner.id) {
-                  item.games_won += 1;
-                  item.games_played += 1;
-                  // console.log(`Winner stats: `, player.stats);
-                }
-                return item;
-              })
-            );
-            setEliminationStats((prev: any) =>
-              prev.map((item: any) => {
-                if (item.id === player.id && item.id !== winner.id) {
-                  item.games_played += 1;
-                  item.games_lost += 1;
-                  // console.log(`Losing Stats: `, player.stats);
-                } else if (item.id === player.id && item.id === winner.id) {
-                  item.games_won += 1;
-                  item.games_played += 1;
-                  // console.log(`Winner stats: `, player.stats);
-                }
-                return item;
-              })
-            );
-          }
+          winner = player;
         }
+        onUpdatePlayerStats("elimination", player, winner);
       });
 
       // alert game over with winner name
@@ -171,6 +161,7 @@ const Elimination = () => {
         }
       })
     );
+
     setCurrentPlayer(presentTurn.player);
     setTurn(presentTurn.turn);
     setRound(presentTurn.round);
@@ -179,7 +170,7 @@ const Elimination = () => {
 
   // reset game if playing again
   const resetGame = () => {
-    setSelectedPlayers((prev: IPlayer[]) =>
+    setSelectedPlayers((prev) =>
       prev.map((player) => {
         player.score = 0;
         player.scoreList = [];
@@ -187,6 +178,7 @@ const Elimination = () => {
         return player;
       })
     );
+
     setRound(1);
     setLeadingScore(0);
   };
@@ -199,7 +191,7 @@ const Elimination = () => {
         {/* scoreboard header */}
         <EliminationHeader />
         {/* scoreboard body */}
-        {selectedPlayers.map((player: IPlayer) => {
+        {selectedPlayers.map((player) => {
           return (
             <EliminationScoreboardBody
               key={player.name}

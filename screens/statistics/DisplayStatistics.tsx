@@ -1,26 +1,28 @@
-import React, { useEffect } from "react";
+import React from "react";
 import { StyleSheet } from "react-native";
 
-import { usePlayerState, IPlayer } from "@context/PlayerContext";
 import useSqlite from "../../hooks/useSqlite";
-import usePlayerStats from "../../hooks/usePlayerStats";
+import usePlayerStats, {
+  GameStats,
+  OverallStats,
+  X01Stats,
+} from "../../hooks/usePlayerStats";
 
-import { Text, View } from "@components/Themed";
+import { View } from "@components/Themed";
 import StatisticsHeader from "./StatisticsHeader";
 import StatisticsBody from "./StatisticsBody";
 
 import type { NativeStackScreenProps } from "@react-navigation/native-stack";
-import { RootStackParamList } from "types";
+import { GameVariants, RootStackParamList } from "types";
 
 type DisplayStatisticsProps = NativeStackScreenProps<
   RootStackParamList,
   "display-statistics"
 >;
 
-let stats: any[] = [];
 const DisplayStatistics = ({ route }: DisplayStatisticsProps) => {
   const { variant } = route.params;
-  const { playerList } = usePlayerState();
+
   const {
     overallStats,
     baseballStats,
@@ -31,8 +33,10 @@ const DisplayStatistics = ({ route }: DisplayStatisticsProps) => {
   } = usePlayerStats();
   const { calculateWinPercent } = useSqlite();
 
-  const assignStatsArray = () => {
-    switch (variant) {
+  const assignStatsArray = (
+    game: GameVariants
+  ): (OverallStats | GameStats | X01Stats)[] => {
+    switch (game) {
       case "baseball":
         return baseballStats;
       case "cricket":
@@ -48,36 +52,18 @@ const DisplayStatistics = ({ route }: DisplayStatisticsProps) => {
     }
   };
 
-  // useEffect(() => {
-  //   playerList.forEach((player: IPlayer) => {
-  //     if (player.id !== undefined)
-  //       if (variant === "baseball") stats = baseballStats;
-  //       else if (variant === "cricket") stats = cricketStats;
-  //       else if (variant === "elimination") stats = eliminationStats;
-  //       else if (variant === "killer") stats = killerStats;
-  //       else if (variant === "x01") stats = x01Stats;
-  //       else stats = overallStats;
-  //   });
-  // }, []);
-
   return (
     <View style={styles.container}>
       <View style={styles.statsListHeader}>
         <StatisticsHeader variant={variant} />
       </View>
-      {/* {stats.length < 1 ? (
-        <View style={styles.emptyListContainer}>
-          <Text style={styles.emptyListText}>No games have been played</Text>
-        </View>
-      ) : ( */}
       <View style={styles.statsBodyContainer}>
         <StatisticsBody
           variant={variant}
-          stats={assignStatsArray()}
+          stats={assignStatsArray(variant)}
           calculateWinPercent={calculateWinPercent}
         />
       </View>
-      {/* )} */}
     </View>
   );
 };

@@ -1,17 +1,29 @@
 import React from "react";
-import { StyleSheet } from "react-native";
+import { StyleProp, StyleSheet, ViewStyle } from "react-native";
 
 import useColorScheme from "../hooks/useColorScheme";
 import CustomButton from "./CustomButton";
 
 import Colors from "../constants/Colors";
 import window from "../constants/Layout";
+
 const height = window.window.height;
 
 interface ILandingButtonProps {
-  variant: "New Game" | "Resume Game" | "Manage Players" | "Stats";
+  variant:
+    | "New Game"
+    | "Resume Game"
+    | "Manage Players"
+    | "Stats"
+    | "Overall"
+    | "Baseball"
+    | "Cricket"
+    | "Elimination"
+    | "Killer"
+    | "X01";
   children: React.ReactNode;
   onPressOut: () => void;
+  buttonOverrideStyle?: StyleProp<ViewStyle>;
 }
 
 const LandingPageButton = (props: ILandingButtonProps) => {
@@ -22,7 +34,11 @@ const LandingPageButton = (props: ILandingButtonProps) => {
     <CustomButton
       title={props.variant}
       textStyle={styles.buttonTextStyle}
-      buttonStyle={[styles.buttonStyle, { backgroundColor: buttonBG }]}
+      buttonStyle={[
+        styles.buttonStyle,
+        props.buttonOverrideStyle,
+        { backgroundColor: buttonBG },
+      ]}
       buttonChildrenStyle={{ backgroundColor: "transparent" }}
       buttonIconStyle={[
         styles.buttonIconStyle,

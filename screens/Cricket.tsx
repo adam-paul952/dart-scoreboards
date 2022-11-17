@@ -4,7 +4,6 @@ import { useNavigation } from "@react-navigation/native";
 
 import { IPlayer, usePlayerState } from "../context/PlayerContext";
 import useGame from "../hooks/useGame";
-import useSqlite from "../hooks/useSqlite";
 import useUndoRedo from "../hooks/useUndoRedo";
 
 import { View } from "../components/Themed";
@@ -19,7 +18,7 @@ import usePlayerStats from "../hooks/usePlayerStats";
 const targets = [20, 19, 18, 17, 16, 15, 25];
 
 const Cricket = () => {
-  const { setOverallStats, cricketStats, setCricketStats } = usePlayerStats();
+  const { onUpdatePlayerStats } = usePlayerStats();
   const { selectedPlayers, setSelectedPlayers } = usePlayerState();
   const {
     playerScore,
@@ -31,13 +30,11 @@ const Cricket = () => {
     setRound,
     changeRounds,
     currentPlayer,
-    assignCurrentPlayerHighScore,
     turn,
     setCurrentPlayer,
     setTurn,
   } = useGame();
   const navigation = useNavigation();
-  const { onUpdatePlayerStats } = useSqlite();
 
   const [playerState, { set: setCurrentState, undo: undoTurn, canUndo }] =
     useUndoRedo({
@@ -130,35 +127,9 @@ const Cricket = () => {
 
   const onDeclareWinner = () => {
     selectedPlayers.forEach((player) => {
-      setOverallStats((prev: any) =>
-        prev.map((item: any) => {
-          if (item.id === player.id && item.id !== currentPlayer.id) {
-            item.games_played += 1;
-            item.games_lost += 1;
-            // console.log(`Losing stats: `, player.stats);
-          } else if (item.id === player.id && item.id === currentPlayer.id) {
-            item.games_won += 1;
-            item.games_played += 1;
-            // console.log(`Winner stats: `, player.stats);
-          }
-          return item;
-        })
-      );
-      setCricketStats((prev: any) =>
-        prev.map((item: any) => {
-          if (item.id === player.id && item.id !== currentPlayer.id) {
-            item.games_played += 1;
-            item.games_lost += 1;
-          } else if (item.id === player.id && item.id === currentPlayer.id) {
-            item.games_won += 1;
-            item.games_played += 1;
-          }
-          return item;
-        })
-      );
+      onUpdatePlayerStats("cricket", player, currentPlayer);
     });
 
-    // alert game over
     gameOverAlert({ playerName: currentPlayer.name, resetGame, navigation });
   };
 

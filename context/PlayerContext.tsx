@@ -24,9 +24,6 @@ export interface IPlayer {
 }
 
 export interface IPlayerStats {
-  gamesWon: number;
-  gamesLost: number;
-  gamesPlayed: number;
   highScore: number;
   oneDartAverage: number;
   darts: number;
@@ -35,13 +32,8 @@ export interface IPlayerStats {
 const PlayerStateContext = createContext({} as PlayerContext);
 
 const PlayerListProvider = ({ children }: { children: React.ReactNode }) => {
-  const {
-    createTable,
-    getPlayerlist,
-    onAddPlayerToDb,
-    onDeletePlayerFromDb,
-    onGetPlayerStats,
-  } = useSqlite();
+  const { createTable, getPlayerlist, onAddPlayerToDb, onDeletePlayerFromDb } =
+    useSqlite();
 
   const [playerList, setPlayerList] = useState<IPlayer[]>([]);
 
@@ -62,7 +54,7 @@ const PlayerListProvider = ({ children }: { children: React.ReactNode }) => {
 
   const togglePlayerSelect = (id: number) => {
     setPlayerList(() =>
-      playerList.map((player: IPlayer) => {
+      playerList.map((player) => {
         if (player.id === id) {
           player.selected = !player.selected;
         }

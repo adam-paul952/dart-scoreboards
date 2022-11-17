@@ -126,8 +126,8 @@ const Baseball = () => {
                 return item;
               })
             );
-            setBaseballStats((prev: any) =>
-              prev.map((item: any) => {
+            setBaseballStats((prev) =>
+              prev.map((item) => {
                 if (item.id === player.id && item.id !== winner.id) {
                   item.games_played += 1;
                   item.games_lost += 1;
@@ -152,7 +152,7 @@ const Baseball = () => {
 
   // reset game if playing again
   const resetGame = () => {
-    setSelectedPlayers((prev: IPlayer[]) =>
+    setSelectedPlayers((prev) =>
       prev.map((player) => {
         player.score = 0;
         player.scoreList = new Array(9).fill(0);
@@ -199,7 +199,7 @@ const Baseball = () => {
       <View style={{ flex: 2 }}>
         <BaseballHeader />
         <View>
-          {selectedPlayers.map((player: IPlayer) => {
+          {selectedPlayers.map((player) => {
             return (
               <Fragment key={player.id}>
                 <BaseballScoreboardBody

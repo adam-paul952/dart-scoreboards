@@ -1,4 +1,5 @@
-import db, { dbError } from "..";
+import { GameVariants } from "../../types";
+import db from "..";
 import {
   onCreateIndividualStats,
   onCreateStatsTable,
@@ -53,15 +54,24 @@ export const insertNewStatsRow = (newId: number) =>
     }
   );
 
+let table = "";
 // READ
 export const getPlayerStats = <T>(
-  game: string | undefined,
-  setStateFunc: React.Dispatch<React.SetStateAction<T[]>>
+  setStateFunc: React.Dispatch<React.SetStateAction<T[]>>,
+  game: GameVariants
 ) =>
   db.transaction(
     (tx) => {
-      if (game === undefined) game = "stats";
-      onGetPlayerStats({ transaction: tx, table: game, setStateFunc });
+      if (game === "overall")
+        onGetPlayerStats({ transaction: tx, table: "stats", setStateFunc });
+      else {
+        console.log(`if statement working: ${game}`);
+        onGetPlayerStats({
+          transaction: tx,
+          table: `${game}_stats`,
+          setStateFunc,
+        });
+      }
     },
     (error) => {
       // console.log(dbError, error);
@@ -69,34 +79,39 @@ export const getPlayerStats = <T>(
   );
 
 //UPDATE
-export const updateOverallPlayerStats = (
-  statsToUpdate: (string | number | null)[]
-) =>
-  db.transaction((tx) => {
-    onUpdateOverallStats({
-      transaction: tx,
-      table: "stats",
-      args: statsToUpdate,
-    });
-  });
+// export const updateOverallPlayerStats = <T>(
+//   statsToUpdate:T[]
+// ) =>
+//   ;
 
 export const updatePlayerStats = (
-  game: string,
+  game: GameVariants,
   statsToUpdate: (string | number | null)[]
 ) => {
-  db.transaction(
-    (tx) => {
-      onUpdatePlayerStats({
+  console.log(`GAME: ${game}`);
+  console.log(`STATS TO UPDATE: `, statsToUpdate);
+  if (game === "overall")
+    db.transaction((tx) => {
+      onUpdateOverallStats({
         transaction: tx,
-        table: `${game}_stats`,
+        table: "stats",
         args: statsToUpdate,
       });
-      // }
-    },
-    (error) => {
-      // console.log(dbError, error);
-    }
-  );
+    });
+  else
+    db.transaction(
+      (tx) => {
+        onUpdatePlayerStats({
+          transaction: tx,
+          table: `${game}_stats`,
+          args: statsToUpdate,
+        });
+        // }
+      },
+      (error) => {
+        // console.log(dbError, error);
+      }
+    );
 };
 
 //DELETE

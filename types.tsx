@@ -16,6 +16,14 @@ declare global {
   }
 }
 
+export type GameVariants =
+  | "overall"
+  | "baseball"
+  | "cricket"
+  | "elimination"
+  | "killer"
+  | "x01";
+
 export type RootStackParamList = {
   Root: NavigatorScreenParams<RootTabParamList> | undefined;
   NotFound: undefined;
@@ -31,7 +39,7 @@ export type RootStackParamList = {
   "resume-game": undefined;
   "x01-outchart": undefined;
   "killer-setup": undefined;
-  "display-statistics": { variant: string };
+  "display-statistics": { variant: GameVariants };
   "undo-modal": undefined;
 };
 

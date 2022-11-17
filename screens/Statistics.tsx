@@ -2,6 +2,7 @@ import React from "react";
 import { ScrollView, StyleSheet } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 
+import usePlayerStats from "../hooks/usePlayerStats";
 import useColorScheme from "../hooks/useColorScheme";
 import Colors from "../constants/Colors";
 import window from "../constants/Layout";
@@ -14,32 +15,26 @@ import {
   MaterialCommunityIcon,
 } from "@components/button-icons/ButtonIcons";
 
+import { GameVariants } from "../types";
+
 const height = window.window.height;
-
-export interface PlayerStats {
-  id: number;
-  name: string;
-  games_won: number;
-  games_lost: number;
-  games_played: number;
-}
-
-export interface BaseballStats extends PlayerStats {
-  highscore: number;
-}
-export interface X01Stats extends PlayerStats {
-  one_dart_average: number;
-  highscore: number;
-}
 
 const Statistics = () => {
   const navigation = useNavigation();
 
+  const {
+    overallStats,
+    baseballStats,
+    cricketStats,
+    eliminationStats,
+    killerStats,
+    x01Stats,
+  } = usePlayerStats();
+
   const colorScheme = useColorScheme();
-  const buttonBG = Colors[colorScheme].buttonColor;
   const color = Colors[colorScheme].text;
 
-  const navigateToStats = (game: string) => {
+  const navigateToStats = (game: GameVariants) => {
     navigation.navigate("display-statistics", { variant: game });
   };
 
@@ -49,8 +44,6 @@ const Statistics = () => {
         <View style={styles.buttonRow}>
           <LandingPageButton
             variant="Overall"
-            buttonBG={buttonBG}
-            color={color}
             buttonOverrideStyle={styles.buttonStyle}
             onPressOut={() => navigateToStats("overall")}
           >
@@ -58,8 +51,6 @@ const Statistics = () => {
           </LandingPageButton>
           <LandingPageButton
             variant="Baseball"
-            buttonBG={buttonBG}
-            color={color}
             buttonOverrideStyle={styles.buttonStyle}
             onPressOut={() => navigateToStats("baseball")}
           >
@@ -73,8 +64,6 @@ const Statistics = () => {
         <View style={styles.buttonRow}>
           <LandingPageButton
             variant="Cricket"
-            buttonBG={buttonBG}
-            color={color}
             buttonOverrideStyle={styles.buttonStyle}
             onPressOut={() => navigateToStats("cricket")}
           >
@@ -82,8 +71,6 @@ const Statistics = () => {
           </LandingPageButton>
           <LandingPageButton
             variant="Elimination"
-            buttonBG={buttonBG}
-            color={color}
             buttonOverrideStyle={styles.buttonStyle}
             onPressOut={() => navigateToStats("elimination")}
           >
@@ -97,8 +84,6 @@ const Statistics = () => {
         <View style={styles.buttonRow}>
           <LandingPageButton
             variant="Killer"
-            buttonBG={buttonBG}
-            color={color}
             buttonOverrideStyle={styles.buttonStyle}
             onPressOut={() => navigateToStats("killer")}
           >
@@ -110,8 +95,6 @@ const Statistics = () => {
           </LandingPageButton>
           <LandingPageButton
             variant="X01"
-            buttonBG={buttonBG}
-            color={color}
             buttonOverrideStyle={styles.buttonStyle}
             onPressOut={() => navigateToStats("x01")}
           >
