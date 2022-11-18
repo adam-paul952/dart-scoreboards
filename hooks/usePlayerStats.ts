@@ -5,7 +5,6 @@ import {
   getPlayerStats,
 } from "../db-api/stats/stats.controller";
 
-import useSqlite from "../hooks/useSqlite";
 import { GameVariants } from "../types";
 import { IPlayer } from "@context/PlayerContext";
 
@@ -26,7 +25,10 @@ export interface X01Stats extends GameStats {
 }
 
 const usePlayerStats = () => {
-  // const { onGetPlayerStats } = useSqlite();
+  const [isGameOver, setGameOver] = useState<{
+    isOver: boolean;
+    game: GameVariants;
+  }>({ isOver: false, game: "overall" });
 
   const [overallStats, setOverallStats] = useState<OverallStats[]>([]);
   const [baseballStats, setBaseballStats] = useState<GameStats[]>([]);
@@ -37,24 +39,20 @@ const usePlayerStats = () => {
 
   // assign stats for all games to state
   const onGetAllStats = () => {
-    // onGetPlayerStats(setOverallStats, "overall");
-    // getPlayerStats(setBaseballStats, "baseball");
+    getPlayerStats(setOverallStats, "overall");
+    getPlayerStats(setBaseballStats, "baseball");
     getPlayerStats(setCricketStats, "cricket");
-    // onGetPlayerStats(setEliminationStats, "elimination");
-    // onGetPlayerStats(setKillerStats, "killer");
-    // onGetPlayerStats(setX01Stats, "x01");
+    getPlayerStats(setEliminationStats, "elimination");
+    getPlayerStats(setKillerStats, "killer");
+    getPlayerStats(setX01Stats, "x01");
   };
 
   useEffect(() => {
     onGetAllStats();
   }, []);
 
-  const updateStatsArray = (
+  const onFormatStatsArray = (
     array: (OverallStats | GameStats | X01Stats)[],
-    stateSetter: (
-      game: GameVariants,
-      statsToUpdate: (string | number | null)[]
-    ) => void,
     game: GameVariants
   ) => {
     for (let i = 0; i < array.length; i++) {
@@ -62,10 +60,9 @@ const usePlayerStats = () => {
 
       for (const [key, value] of Object.entries(array[i])) {
         if (key !== "name" && key !== "one_dart_average") newArray.push(value);
-        // return newArray;
       }
 
-      stateSetter(game, newArray);
+      updatePlayerStats(game, newArray);
     }
   };
 
@@ -89,9 +86,36 @@ const usePlayerStats = () => {
       })
     );
 
-    updateStatsArray(overallStats, updatePlayerStats, "overall");
-
     onUpdateGameStats(game, player, winner);
+  };
+
+  const assignStatsToDB = (game: GameVariants) => {
+    onFormatStatsArray(overallStats, "overall");
+
+    switch (game) {
+      case "baseball":
+        onFormatStatsArray(baseballStats, game);
+        break;
+
+      case "cricket":
+        onFormatStatsArray(cricketStats, game);
+        break;
+
+      case "elimination":
+        onFormatStatsArray(eliminationStats, game);
+        break;
+
+      case "killer":
+        onFormatStatsArray(killerStats, game);
+        break;
+
+      case "x01":
+        onFormatStatsArray(x01Stats, game);
+        break;
+
+      default:
+        return;
+    }
   };
 
   const onUpdateGameStats = (
@@ -101,7 +125,18 @@ const usePlayerStats = () => {
   ) => {
     switch (game) {
       case "baseball":
-        updateStatsArray(baseballStats, updatePlayerStats, game);
+        setBaseballStats((prev) =>
+          prev.map((item) => {
+            if (item.id === player.id && item.id !== winner.id) {
+              item.games_played += 1;
+              item.games_lost += 1;
+            } else if (item.id === player.id && item.id === winner.id) {
+              item.games_won += 1;
+              item.games_played += 1;
+            }
+            return item;
+          })
+        );
         break;
 
       case "cricket":
@@ -117,8 +152,6 @@ const usePlayerStats = () => {
             return item;
           })
         );
-
-        updateStatsArray(cricketStats, updatePlayerStats, game);
         break;
 
       case "elimination":
@@ -136,8 +169,6 @@ const usePlayerStats = () => {
             return item;
           })
         );
-        console.log(`Elimination Updated`);
-        updateStatsArray(eliminationStats, updatePlayerStats, game);
         break;
 
       case "killer":
@@ -153,43 +184,58 @@ const usePlayerStats = () => {
             return item;
           })
         );
-        console.log(`Killer Updated`);
-        updateStatsArray(killerStats, updatePlayerStats, game);
         break;
 
       case "x01":
-        updateStatsArray(x01Stats, updatePlayerStats, game);
+        setX01Stats((prev: any) =>
+          prev.map((item: any) => {
+            if (item.id === player.id && item.id !== winner.id) {
+              item.games_played += 1;
+              item.games_lost += 1;
+            } else if (item.id === player.id && item.id === winner.id) {
+              item.games_played += 1;
+              item.games_won += 1;
+            }
+            return item;
+          })
+        );
         break;
 
       default:
-        return null;
+        return;
     }
   };
 
   useEffect(() => {
-    console.log(`Overall: `);
-    console.log(overallStats);
-  }, [overallStats]);
-  useEffect(() => {
-    console.log(`Baseball: `);
-    console.log(baseballStats);
-  }, [baseballStats]);
-  useEffect(() => {
-    console.log(`Cricket: `);
-    console.log(cricketStats);
-  }, [cricketStats]);
-  useEffect(() => {
-    console.log(`Killer: `);
-    console.log(killerStats);
-  }, [killerStats]);
-  useEffect(() => {
-    console.log(`Elimination: `);
-    console.log(eliminationStats);
-  }, [eliminationStats]);
-  useEffect(() => {
-    console.log(`X01: `);
-    console.log(x01Stats);
-  }, [x01Stats]);
+    if (isGameOver.isOver) assignStatsToDB(isGameOver.game);
+  }, [isGameOver]);
+
+  // useEffect(() => {
+  //   console.log(`-----------------------`);
+  //   console.log(`Overall: `);
+  //   console.log(overallStats);
+  // }, [overallStats]);
+  // useEffect(() => {
+  //   console.log(`Baseball: `);
+  //   console.log(baseballStats);
+  // }, [baseballStats]);
+  // useEffect(() => {
+  //   console.log(`Cricket: `);
+  //   console.log(cricketStats);
+  // }, [cricketStats]);
+  // useEffect(() => {
+  //   console.log(`Killer: `);
+  //   console.log(killerStats);
+  // }, [killerStats]);
+  // useEffect(() => {
+  //   console.log(`Elimination: `);
+  //   console.log(eliminationStats);
+  // }, [eliminationStats]);
+  // useEffect(() => {
+  //   console.log(`X01: `);
+  //   console.log(x01Stats);
+  //   console.log(`-----------------------`);
+  // }, [x01Stats]);
 
   return {
     overallStats,
@@ -205,6 +251,7 @@ const usePlayerStats = () => {
     x01Stats,
     setX01Stats,
     onUpdatePlayerStats,
+    setGameOver,
   };
 };
 

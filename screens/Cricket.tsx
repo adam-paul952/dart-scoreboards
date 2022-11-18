@@ -18,7 +18,7 @@ import usePlayerStats from "../hooks/usePlayerStats";
 const targets = [20, 19, 18, 17, 16, 15, 25];
 
 const Cricket = () => {
-  const { onUpdatePlayerStats } = usePlayerStats();
+  const { onUpdatePlayerStats, setGameOver } = usePlayerStats();
   const { selectedPlayers, setSelectedPlayers } = usePlayerState();
   const {
     playerScore,
@@ -130,6 +130,8 @@ const Cricket = () => {
       onUpdatePlayerStats("cricket", player, currentPlayer);
     });
 
+    setGameOver({ isOver: true, game: "cricket" });
+
     gameOverAlert({ playerName: currentPlayer.name, resetGame, navigation });
   };
 
@@ -139,9 +141,6 @@ const Cricket = () => {
       prev.map((player) => {
         player.score = 0;
         player.scoreList = [];
-        player.stats.gamesPlayed = 0;
-        player.stats.gamesWon = 0;
-        player.stats.gamesLost = 0;
         player.stats.highScore = 0;
         return player;
       })

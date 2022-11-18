@@ -18,7 +18,7 @@ import CustomButton from "@components/CustomButton";
 
 const Elimination = () => {
   const { selectedPlayers, setSelectedPlayers } = usePlayerState();
-  const { onUpdatePlayerStats } = usePlayerStats();
+  const { onUpdatePlayerStats, setGameOver } = usePlayerStats();
   const {
     currentPlayer,
     playerScore,
@@ -140,6 +140,8 @@ const Elimination = () => {
         }
         onUpdatePlayerStats("elimination", player, winner);
       });
+
+      setGameOver({ isOver: true, game: "elimination" });
 
       // alert game over with winner name
       gameOverAlert({

@@ -2,7 +2,6 @@ import React from "react";
 import { ScrollView, StyleSheet } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 
-import usePlayerStats from "../hooks/usePlayerStats";
 import useColorScheme from "../hooks/useColorScheme";
 import Colors from "../constants/Colors";
 import window from "../constants/Layout";
@@ -21,15 +20,6 @@ const height = window.window.height;
 
 const Statistics = () => {
   const navigation = useNavigation();
-
-  const {
-    overallStats,
-    baseballStats,
-    cricketStats,
-    eliminationStats,
-    killerStats,
-    x01Stats,
-  } = usePlayerStats();
 
   const colorScheme = useColorScheme();
   const color = Colors[colorScheme].text;

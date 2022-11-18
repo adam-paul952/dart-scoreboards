@@ -82,27 +82,26 @@ export const onGetPlayerStats = <T>({
   setStateFunc,
 }: SqlControllerProps<T>) => {
   let sqlStatement = "";
-
   if (
-    table === "baseball" ||
-    table === "cricket" ||
-    table === "elimination" ||
-    table === "killer"
+    table === "baseball_stats" ||
+    table === "cricket_stats" ||
+    table === "elimination_stats" ||
+    table === "killer_stats"
   )
     sqlStatement = `
-    SELECT ${table}_stats.games_played, ${table}_stats.games_won, 
-      ${table}_stats.games_lost, ${table}_stats.highscore, 
+    SELECT ${table}.games_played, ${table}.games_won, 
+      ${table}.games_lost, ${table}.highscore, 
       playerlist.id, playerlist.name
     FROM playerlist 
-    INNER JOIN ${table}_stats ON (${table}_stats.player_id = playerlist.id)
+    INNER JOIN ${table} ON (${table}.player_id = playerlist.id)
     `;
-  else if (table === "x01")
+  else if (table === "x01_stats")
     sqlStatement = `
     SELECT playerlist.id, playerlist.name,
-      ${table}_stats.games_won, ${table}_stats.games_lost, 
-      ${table}_stats.games_played, ${table}_stats.highscore, ${table}_stats.one_dart_average
+      ${table}.games_won, ${table}.games_lost, 
+      ${table}.games_played, ${table}.highscore, ${table}.one_dart_average
     FROM playerlist 
-    INNER JOIN ${table}_stats ON (${table}_stats.player_id = playerlist.id)
+    INNER JOIN ${table} ON (${table}.player_id = playerlist.id)
     `;
   else
     sqlStatement = `
@@ -145,7 +144,7 @@ export const onUpdateOverallStats = ({
     }
   );
 
-export const onUpdatePlayerStats = <V>({
+export const onUpdatePlayerStats = ({
   transaction,
   table,
   args,

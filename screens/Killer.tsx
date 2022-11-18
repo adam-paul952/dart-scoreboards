@@ -22,8 +22,7 @@ type KillerProps = NativeStackScreenProps<RootStackParamList, "killer">;
 const Killer = ({ route }: KillerProps) => {
   const { playerTargets } = route.params;
   const { selectedPlayers, setSelectedPlayers } = usePlayerState();
-  const { setOverallStats, setKillerStats, onUpdatePlayerStats } =
-    usePlayerStats();
+  const { onUpdatePlayerStats, setGameOver } = usePlayerStats();
   const {
     onDeleteInput,
     currentPlayer,
@@ -139,6 +138,8 @@ const Killer = ({ route }: KillerProps) => {
     selectedPlayers.forEach((player) => {
       onUpdatePlayerStats("killer", player, winner);
     });
+
+    setGameOver({ isOver: true, game: "killer" });
 
     gameOverAlert({
       playerName: winner.name,

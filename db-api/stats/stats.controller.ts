@@ -54,7 +54,6 @@ export const insertNewStatsRow = (newId: number) =>
     }
   );
 
-let table = "";
 // READ
 export const getPlayerStats = <T>(
   setStateFunc: React.Dispatch<React.SetStateAction<T[]>>,
@@ -64,14 +63,12 @@ export const getPlayerStats = <T>(
     (tx) => {
       if (game === "overall")
         onGetPlayerStats({ transaction: tx, table: "stats", setStateFunc });
-      else {
-        console.log(`if statement working: ${game}`);
+      else
         onGetPlayerStats({
           transaction: tx,
           table: `${game}_stats`,
           setStateFunc,
         });
-      }
     },
     (error) => {
       // console.log(dbError, error);
@@ -79,39 +76,24 @@ export const getPlayerStats = <T>(
   );
 
 //UPDATE
-// export const updateOverallPlayerStats = <T>(
-//   statsToUpdate:T[]
-// ) =>
-//   ;
-
 export const updatePlayerStats = (
   game: GameVariants,
   statsToUpdate: (string | number | null)[]
 ) => {
-  console.log(`GAME: ${game}`);
-  console.log(`STATS TO UPDATE: `, statsToUpdate);
-  if (game === "overall")
-    db.transaction((tx) => {
+  db.transaction((tx) => {
+    if (game === "overall")
       onUpdateOverallStats({
         transaction: tx,
         table: "stats",
         args: statsToUpdate,
       });
-    });
-  else
-    db.transaction(
-      (tx) => {
-        onUpdatePlayerStats({
-          transaction: tx,
-          table: `${game}_stats`,
-          args: statsToUpdate,
-        });
-        // }
-      },
-      (error) => {
-        // console.log(dbError, error);
-      }
-    );
+    else
+      onUpdatePlayerStats({
+        transaction: tx,
+        table: `${game}_stats`,
+        args: statsToUpdate,
+      });
+  });
 };
 
 //DELETE

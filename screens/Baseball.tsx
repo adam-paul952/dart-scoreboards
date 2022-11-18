@@ -18,7 +18,7 @@ import gameOverAlert from "@components/GameOverAlert";
 
 const Baseball = () => {
   const { selectedPlayers, setSelectedPlayers } = usePlayerState();
-  const { setOverallStats, setBaseballStats } = usePlayerStats();
+  const { onUpdatePlayerStats, setGameOver } = usePlayerStats();
   const {
     playerScore,
     setPlayerScore,
@@ -112,34 +112,10 @@ const Baseball = () => {
         // console.log(winner);
         if (winner) {
           selectedPlayers.forEach((player) => {
-            setOverallStats((prev) =>
-              prev.map((item) => {
-                if (item.id === player.id && item.id !== winner.id) {
-                  item.games_played += 1;
-                  item.games_lost += 1;
-                  // console.log(`Losing stats: `, player.stats);
-                } else if (item.id === player.id && item.id === winner.id) {
-                  item.games_won += 1;
-                  item.games_played += 1;
-                  // console.log(`Winner stats: `, player.stats);
-                }
-                return item;
-              })
-            );
-            setBaseballStats((prev) =>
-              prev.map((item) => {
-                if (item.id === player.id && item.id !== winner.id) {
-                  item.games_played += 1;
-                  item.games_lost += 1;
-                } else if (item.id === player.id && item.id === winner.id) {
-                  item.games_won += 1;
-                  item.games_played += 1;
-                }
-                return item;
-              })
-            );
+            onUpdatePlayerStats("baseball", player, winner);
           });
         }
+        setGameOver({ isOver: true, game: "baseball" });
         // alert game over with winner name
         gameOverAlert({
           playerName: winner.name,
@@ -157,9 +133,6 @@ const Baseball = () => {
         player.score = 0;
         player.scoreList = new Array(9).fill(0);
         player.stats.highScore = 0;
-        player.stats.gamesWon = 0;
-        player.stats.gamesLost = 0;
-        player.stats.gamesPlayed = 0;
         return player;
       })
     );

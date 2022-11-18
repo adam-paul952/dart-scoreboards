@@ -18,36 +18,33 @@ import CustomButton from "@components/CustomButton";
 
 const X01 = () => {
   const { selectedPlayers, setSelectedPlayers } = usePlayerState();
-  const { setOverallStats, setX01Stats } = usePlayerStats();
+  const { onUpdatePlayerStats, setGameOver } = usePlayerStats();
   const {
     playerScore,
     setPlayerScore,
     onDeleteInput,
     changeTurns,
     currentPlayer,
-    changeRounds,
+
     assignCurrentPlayerHighScore,
-    setRound,
-    setTurn,
+
     setCurrentPlayer,
-    turn,
+
     nextPlayer,
   } = useGame();
   const navigation = useNavigation();
   const [playerState, { set: setCurrentState, undo: undoTurn, canUndo }] =
     useUndoRedo({
-      // turn: 0,
-      // round: 1,
       player: { ...currentPlayer },
       nextPlayer: {},
     });
 
   const { present: presentTurn } = playerState;
 
-  useEffect(() => {
-    // console.log(`Present Turn: `);
-    // console.log(presentTurn);
-  }, [presentTurn]);
+  // useEffect(() => {
+  //   // console.log(`Present Turn: `);
+  //   // console.log(presentTurn);
+  // }, [presentTurn]);
 
   // state to manage input error and disable buttons
   const [inputError, setInputError] = useState<boolean>(false);
@@ -123,32 +120,10 @@ const X01 = () => {
       winner = { id: currentPlayer.id!, name: currentPlayer.name };
 
       selectedPlayers.forEach((player) => {
-        setOverallStats((prev: any) =>
-          prev.map((item: any) => {
-            if (item.id === player.id && item.id !== winner.id) {
-              item.games_played += 1;
-              item.games_lost += 1;
-            } else if (item.id === player.id && item.id === winner.id) {
-              item.games_played += 1;
-              item.games_won += 1;
-            }
-            return item;
-          })
-        );
-
-        setX01Stats((prev: any) =>
-          prev.map((item: any) => {
-            if (item.id === player.id && item.id !== winner.id) {
-              item.games_played += 1;
-              item.games_lost += 1;
-            } else if (item.id === player.id && item.id === winner.id) {
-              item.games_played += 1;
-              item.games_won += 1;
-            }
-            return item;
-          })
-        );
+        onUpdatePlayerStats("x01", player, winner);
       });
+
+      setGameOver({ isOver: true, game: "x01" });
 
       gameOverAlert({ playerName: winner.name, resetGame, navigation });
     }

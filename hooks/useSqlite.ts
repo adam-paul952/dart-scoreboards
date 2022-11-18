@@ -3,7 +3,6 @@ import * as stats from "../db-api/stats/stats.controller";
 import * as resumeGame from "../db-api/resumeGame/resumeGame.controller";
 
 import { IPlayer } from "@context/PlayerContext";
-import { GameVariants } from "../types";
 
 type UpdateSelectedPlayerArgs = {
   selected: number;
