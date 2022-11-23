@@ -1,7 +1,4 @@
-import Colors from "../constants/Colors";
-import useColorScheme from "../hooks/useColorScheme";
 import React from "react";
-
 import {
   Pressable,
   PressableProps,
@@ -11,7 +8,11 @@ import {
   ViewStyle,
 } from "react-native";
 
+import useColorScheme from "../hooks/useColorScheme";
+
 import { Text, View } from "../components/Themed";
+
+import Colors from "../constants/Colors";
 
 export interface ICustomButtonProps extends PressableProps {
   title: string;
@@ -27,6 +28,7 @@ const CustomButton = (props: ICustomButtonProps) => {
   const colorScheme = useColorScheme();
   const background = Colors[colorScheme].buttonColor;
   const textColor = Colors[colorScheme].text;
+
   return (
     <Pressable
       {...props}
@@ -46,8 +48,8 @@ const CustomButton = (props: ICustomButtonProps) => {
           ? [
               styles.button,
               styles.disabledButton,
-              props.buttonStyle,
               { backgroundColor: background },
+              props.buttonStyle,
             ]
           : props.selected
           ? [
@@ -90,7 +92,7 @@ const CustomButton = (props: ICustomButtonProps) => {
                       { color: textColor },
                     ]
                   : props.textStyle
-                  ? [styles.buttonText, props.textStyle, { color: textColor }]
+                  ? [styles.buttonText, { color: textColor }, props.textStyle]
                   : [styles.buttonText, { color: textColor }]
               }
             >

@@ -24,8 +24,10 @@ const BaseballScoreboardBody = (props: IBaseballScoreboardBodyProps) => {
         },
       ]}
     >
-      <View style={{ flex: 2, backgroundColor: "transparent" }}>
-        <Text style={{ fontSize: 20, paddingLeft: 3 }}>{player.name}</Text>
+      <View style={{ flex: 3, backgroundColor: "transparent" }}>
+        <Text style={{ fontSize: 18, paddingLeft: 3, textAlign: "center" }}>
+          {player.name}
+        </Text>
       </View>
       {player.scoreList.map((score, index) => {
         return (
@@ -33,12 +35,12 @@ const BaseballScoreboardBody = (props: IBaseballScoreboardBodyProps) => {
             key={player.id * 25 + index}
             style={{ flex: 1, backgroundColor: "transparent" }}
           >
-            <Text style={{ textAlign: "center", fontSize: 20 }}>{score}</Text>
+            <Text style={{ textAlign: "center", fontSize: 18 }}>{score}</Text>
           </View>
         );
       })}
-      <View style={{ flex: 2, backgroundColor: "transparent" }}>
-        <Text style={{ textAlign: "center", fontSize: 20 }}>
+      <View style={{ flex: 1.5, backgroundColor: "transparent" }}>
+        <Text style={{ textAlign: "center", fontSize: 18 }}>
           {player.score}
         </Text>
       </View>

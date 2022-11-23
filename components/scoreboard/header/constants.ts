@@ -16,7 +16,7 @@ const x01Header = ["Player", "Legs", "Points"];
 const eliminationHeader = ["Player", "Score", "Lives"];
 // baseball header
 const baseballHeader = [
-  "Player",
+  "Name",
   "1",
   "2",
   "3",
@@ -26,7 +26,7 @@ const baseballHeader = [
   "7",
   "8",
   "9",
-  "Total",
+  "Tot",
 ];
 
 const killerHeader = ["Player", "Target", " Lives", "Killer"];

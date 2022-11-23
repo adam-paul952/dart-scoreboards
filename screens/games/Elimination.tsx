@@ -2,12 +2,12 @@ import React, { useEffect, useState } from "react";
 import { StyleSheet } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 
-import { usePlayerState } from "../context/PlayerContext";
-import useGame from "../hooks/useGame";
-import useUndoRedo from "../hooks/useUndoRedo";
-import usePlayerStats from "../hooks/usePlayerStats";
+import { usePlayerState } from "../../context/PlayerContext";
+import useGame from "../../hooks/useGame";
+import useUndoRedo from "../../hooks/useUndoRedo";
+import usePlayerStats from "../../hooks/usePlayerStats";
 
-import { View } from "../components/Themed";
+import { View } from "../../components/Themed";
 import EliminationHeader from "@components/scoreboard/header/EliminationHeader";
 import EliminationScoreboardBody from "@components/scoreboard/body/EliminationScoreboardBody";
 import EliminationRoundInfo from "@components/scoreboard/round-info/EliminationRoundInfo";

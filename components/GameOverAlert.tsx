@@ -2,11 +2,11 @@ import { Alert } from "react-native";
 
 const gameOverAlert = ({
   playerName,
-  resetGame,
+  onResetGame,
   navigation,
 }: {
   playerName: string;
-  resetGame: () => void;
+  onResetGame: () => void;
   navigation: any;
 }) => {
   return Alert.alert(
@@ -16,12 +16,12 @@ const gameOverAlert = ({
       {
         text: "Create Match",
         onPress: () => {
-          resetGame();
+          onResetGame();
           navigation.navigate("create-match");
         },
         style: "cancel",
       },
-      { text: "Play Again", onPress: () => resetGame() },
+      { text: "Play Again", onPress: () => onResetGame() },
     ]
   );
 };

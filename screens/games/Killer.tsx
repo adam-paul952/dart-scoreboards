@@ -3,11 +3,11 @@ import { StyleSheet } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 
 import { usePlayerState, IPlayer } from "@context/PlayerContext";
-import useGame from "../hooks/useGame";
-import useUndoRedo from "../hooks/useUndoRedo";
-import usePlayerStats from "../hooks/usePlayerStats";
+import useGame from "../../hooks/useGame";
+import useUndoRedo from "../../hooks/useUndoRedo";
+import usePlayerStats from "../../hooks/usePlayerStats";
 
-import { View } from "../components/Themed";
+import { View } from "../../components/Themed";
 import KillerHeader from "@scoreboard/header/KillerHeader";
 import KillerScoreboardBody from "@components/scoreboard/body/KillerScoreboardBody";
 import CalculatorButtons from "@components/scoreboard/calculator-buttons/CalculatorButtons";

@@ -22,6 +22,20 @@ const useGame = () => {
     else setPlayerScore("");
   };
 
+  // reset game if playing again
+  const onResetGame = () => {
+    setSelectedPlayers((prev) =>
+      prev.map((player) => {
+        player.score = 0;
+        player.scoreList = new Array(9).fill(0);
+        player.stats.highScore = 0;
+        return player;
+      })
+    );
+    setRound(1);
+    setLeadingScore(0);
+  };
+
   // turn information
   const [turn, setTurn] = useState<number>(0);
 
@@ -74,6 +88,7 @@ const useGame = () => {
     playerIsOut,
     setPlayerIsOut,
     nextPlayer,
+    onResetGame,
   };
 };
 

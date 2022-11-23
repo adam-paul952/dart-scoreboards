@@ -2,18 +2,18 @@ import React, { useEffect, useState, useRef } from "react";
 import { StyleSheet } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 
-import { IPlayer, usePlayerState } from "../context/PlayerContext";
-import useGame from "../hooks/useGame";
-import useUndoRedo from "../hooks/useUndoRedo";
+import { IPlayer, usePlayerState } from "../../context/PlayerContext";
+import useGame from "../../hooks/useGame";
+import useUndoRedo from "../../hooks/useUndoRedo";
 
-import { View } from "../components/Themed";
+import { View } from "../../components/Themed";
 import CricketHeader from "@scoreboard/header/CricketHeader";
 import CricketScoreboardBody from "@scoreboard/body/CricketScoreboardBody";
 import CricketRoundInfo from "@scoreboard/round-info/CricketRoundInfo";
 import CalculatorButtons from "@scoreboard/calculator-buttons/CalculatorButtons";
 import gameOverAlert from "@components/GameOverAlert";
 import CustomButton from "@components/CustomButton";
-import usePlayerStats from "../hooks/usePlayerStats";
+import usePlayerStats from "../../hooks/usePlayerStats";
 
 const targets = [20, 19, 18, 17, 16, 15, 25];
 

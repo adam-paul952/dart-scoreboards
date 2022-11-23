@@ -3,7 +3,7 @@ import React from "react";
 import { StyleSheet } from "react-native";
 import { Text, View } from "@components/Themed";
 
-import { possibleOutShots } from "../constants/data/x01OutShots";
+import { possibleOutShots } from "../../constants/data/x01OutShots";
 import { FlatList } from "react-native-gesture-handler";
 
 const outShotHeader = ["Score", "Dart 1", " Dart 2", "Dart 3"];

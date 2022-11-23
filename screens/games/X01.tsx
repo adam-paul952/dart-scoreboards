@@ -2,10 +2,10 @@ import React, { useEffect, useState } from "react";
 import { Alert, StyleSheet } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 
-import { IPlayer, usePlayerState } from "../context/PlayerContext";
-import useGame from "../hooks/useGame";
-import useUndoRedo from "../hooks/useUndoRedo";
-import usePlayerStats from "../hooks/usePlayerStats";
+import { IPlayer, usePlayerState } from "../../context/PlayerContext";
+import useGame from "../../hooks/useGame";
+import useUndoRedo from "../../hooks/useUndoRedo";
+import usePlayerStats from "../../hooks/usePlayerStats";
 
 import { View } from "@components/Themed";
 import X01Header from "@scoreboard/header/X01Header";

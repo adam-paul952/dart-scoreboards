@@ -13,7 +13,7 @@ interface PlayerContext {
 }
 
 export interface IPlayer {
-  id?: number;
+  id: number;
   name: string;
   score: number;
   selected: boolean;

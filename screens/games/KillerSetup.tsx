@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { StyleSheet } from "react-native";
 
 import { IPlayer, usePlayerState } from "@context/PlayerContext";
-import useGame from "../hooks/useGame";
+import useGame from "../../hooks/useGame";
 import { Text, TextInput, View } from "@components/Themed";
 import CalculatorButtons from "@components/scoreboard/calculator-buttons/CalculatorButtons";
 

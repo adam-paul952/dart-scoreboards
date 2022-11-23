@@ -23,7 +23,7 @@ const width = window.window.width;
  *  New Game - route "create-match"
  *  Manage Players - route "manage-players"
  *  Resume Game - route "resume-game" (Not used yet)
- *  Stats - route "statistics" (Not used yet)
+ *  Stats - route "statistics"
  */
 
 const Landing = () => {

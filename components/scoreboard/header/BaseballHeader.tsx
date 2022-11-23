@@ -1,7 +1,8 @@
 import React from "react";
-
 import { StyleSheet } from "react-native";
+
 import { Text, View } from "@components/Themed";
+
 import { baseballHeader } from "./constants";
 
 const BaseballHeader = () => {
@@ -12,11 +13,15 @@ const BaseballHeader = () => {
           <View
             key={text}
             style={[
-              text === "Player" || text === "Total" ? { flex: 2 } : { flex: 1 },
+              text === "Name"
+                ? { flex: 3 }
+                : text === "Tot"
+                ? { flex: 1.5 }
+                : { flex: 1 },
               { borderBottomColor: "gray", borderBottomWidth: 1 },
             ]}
           >
-            <Text style={{ textAlign: "center", fontSize: 20 }}>{text}</Text>
+            <Text style={{ textAlign: "center", fontSize: 18 }}>{text}</Text>
           </View>
         );
       })}
