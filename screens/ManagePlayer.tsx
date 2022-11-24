@@ -22,6 +22,16 @@ const ManagePlayerScreen = () => {
     else return true;
   };
 
+  const onHandleContinue = () => {
+    playerList.forEach((player) => {
+      let selected;
+      if (player.selected === true) selected = 1;
+      else selected = 0;
+      updateSelectedPlayerlist({ selected, id: player.id! });
+    });
+    navigation.navigate("create-match");
+  };
+
   const renderItem = ({ item }: { item: IPlayer }) => {
     return (
       <PlayerItem
@@ -60,15 +70,7 @@ const ManagePlayerScreen = () => {
           title="Continue to Game"
           buttonStyle={styles.buttonStyle}
           disabled={disableButton()}
-          onPressOut={() => {
-            playerList.forEach((player) => {
-              let selected;
-              if (player.selected === true) selected = 1;
-              else selected = 0;
-              updateSelectedPlayerlist({ selected, id: player.id! });
-            });
-            navigation.navigate("create-match");
-          }}
+          onPressOut={onHandleContinue}
         />
       </>
     </View>

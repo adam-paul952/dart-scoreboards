@@ -1,42 +1,39 @@
 import React from "react";
-
 import { StyleSheet } from "react-native";
-import { AntDesign } from "@expo/vector-icons";
 
 import CricketScoreboardColumn from "./CricketScoreboardColumn";
 import { Text, View } from "../../Themed";
+
 import { IPlayer } from "@context/PlayerContext";
 
 import useColorScheme from "../../../hooks/useColorScheme";
 import Colors from "../../../constants/Colors";
 
-interface ICricketScoreboardBodyProps {
+interface CricketScoreboardBodyProps {
   player: IPlayer;
   currentPlayer: IPlayer;
 }
 
-const CricketScoreboardBody = (props: ICricketScoreboardBodyProps) => {
+const CricketScoreboardBody = (props: CricketScoreboardBodyProps) => {
   const { player, currentPlayer } = props;
 
   const colorScheme = useColorScheme();
+  const hitMarkColor = Colors[colorScheme].text;
+  const activePlayerColor = Colors[colorScheme].activePlayer;
 
   return (
-    <View style={styles.playerRow}>
-      <View
-        style={[
-          styles.playerColumn,
-          { flexDirection: "row", alignItems: "center" },
-        ]}
-      >
-        <Text style={[styles.scoreboardText, { flex: 2 }]}>{player.name}</Text>
-        {player.id === currentPlayer.id && (
-          <AntDesign name="caretleft" size={18} color="darkred" />
-        )}
+    <View
+      style={[
+        player.id === currentPlayer.id
+          ? { backgroundColor: activePlayerColor }
+          : {},
+        styles.playerRow,
+      ]}
+    >
+      <View style={styles.playerColumn}>
+        <Text style={[styles.scoreboardText, { flex: 3 }]}>{player.name}</Text>
       </View>
-      <CricketScoreboardColumn
-        player={player}
-        colorScheme={Colors[colorScheme].text}
-      />
+      <CricketScoreboardColumn player={player} hitMarkColor={hitMarkColor} />
       <Text style={[styles.scoreboardText, { flex: 1, textAlign: "center" }]}>
         {player.score}
       </Text>
@@ -47,11 +44,13 @@ const CricketScoreboardBody = (props: ICricketScoreboardBodyProps) => {
 export default CricketScoreboardBody;
 
 const styles = StyleSheet.create({
-  scoreboardText: { paddingLeft: 2, fontSize: 20 },
-  playerRow: { flexDirection: "row", marginHorizontal: 5 },
+  scoreboardText: { paddingLeft: 2, fontSize: 18 },
+  playerRow: {
+    flexDirection: "row",
+    marginHorizontal: 5,
+  },
   playerColumn: {
     flex: 2,
-    borderRightColor: "gray",
-    borderRightWidth: 1,
+    backgroundColor: "transparent",
   },
 });

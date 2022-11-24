@@ -36,8 +36,6 @@ const styles = StyleSheet.create({
   },
   playerHeaderColumn: {
     flex: 2,
-    borderRightColor: "gray",
-    borderRightWidth: 1,
     borderBottomWidth: 1,
     borderBottomColor: "gray",
   },
@@ -46,5 +44,5 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: "gray",
   },
-  scoreboardText: { textAlign: "center", fontSize: 20 },
+  scoreboardText: { textAlign: "center", fontSize: 18 },
 });

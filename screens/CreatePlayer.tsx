@@ -19,7 +19,7 @@ import { usePlayerState } from "../context/PlayerContext";
 
 const CreatePlayer = () => {
   const initialState = {
-    // id: Math.floor(Math.random() * 10000),
+    id: 0,
     name: "",
     score: 0,
     scoreList: [],
@@ -30,9 +30,6 @@ const CreatePlayer = () => {
       highScore: 0,
       oneDartAverage: 0,
       darts: 0,
-      gamesPlayed: 0,
-      gamesWon: 0,
-      gamesLost: 0,
     },
   };
   const { onAddPlayer } = usePlayerState();
@@ -90,7 +87,6 @@ const CreatePlayer = () => {
                 title="Add Player"
                 buttonStyle={{
                   width: "60%",
-                  backgroundColor: "lightblue",
                 }}
                 onPress={() => addPlayer()}
                 disabled={name.length < 3 ? true : false}

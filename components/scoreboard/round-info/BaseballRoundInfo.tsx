@@ -16,11 +16,6 @@ const BaseballRoundInfo = (props: IBaseballRoundInfoProps) => {
 
   const scoreDifference = currentPlayer.score - leadingScore;
 
-  React.useEffect(() => {
-    console.log(scoreDifference);
-    console.log(Math.sign(scoreDifference));
-  }, [scoreDifference]);
-
   return (
     <>
       <View

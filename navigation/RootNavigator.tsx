@@ -38,7 +38,11 @@ const Stack = createNativeStackNavigator<RootStackParamList>();
 const RootNavigator = () => {
   const colorScheme = useColorScheme();
   return (
-    <Stack.Navigator>
+    <Stack.Navigator
+      screenOptions={{
+        headerStyle: { backgroundColor: Colors[colorScheme].background },
+      }}
+    >
       <Stack.Group>
         <Stack.Screen
           name="Root"

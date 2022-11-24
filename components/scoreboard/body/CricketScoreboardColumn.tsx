@@ -1,23 +1,22 @@
 import React from "react";
-
 import { StyleSheet } from "react-native";
+
+import { View } from "../../Themed";
 
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { Feather } from "@expo/vector-icons";
 import { AntDesign } from "@expo/vector-icons";
 
 import { IPlayer } from "@context/PlayerContext";
-import { View } from "../../Themed";
 
-const CricketScoreboardColumn = ({
-  player,
-  colorScheme,
-}: // hitTargets,
-{
+interface CricketScoreboardColumnProps {
   player: IPlayer;
-  colorScheme: string;
-  // hitTargets: Array<number>;
-}) => {
+  hitMarkColor: string;
+}
+
+const CricketScoreboardColumn = (props: CricketScoreboardColumnProps) => {
+  const { player, hitMarkColor } = props;
+
   const hitTargets = [
     player.scoreList.filter((hitNum) => hitNum === 20).length,
     player.scoreList.filter((hitNum) => hitNum === 19).length,
@@ -36,9 +35,9 @@ const CricketScoreboardColumn = ({
           accessible={true}
           accessibilityLabel="One Point"
           name="slash-forward"
-          size={24}
-          color={colorScheme}
-          style={{ marginHorizontal: 6, transform: [{ rotate: "15deg" }] }}
+          size={22}
+          color={hitMarkColor}
+          style={[styles.iconMargin, { transform: [{ rotate: "15deg" }] }]}
         />
       );
     } else if (target === 2) {
@@ -48,9 +47,9 @@ const CricketScoreboardColumn = ({
           accessible={true}
           accessibilityLabel="Two Points"
           name="x"
-          size={24}
-          color={colorScheme}
-          style={{ marginHorizontal: 6 }}
+          size={22}
+          color={hitMarkColor}
+          style={styles.iconMargin}
         />
       );
     } else if (target >= 3) {
@@ -59,9 +58,9 @@ const CricketScoreboardColumn = ({
           testID="3-points"
           accessibilityLabel="3 Points"
           name="closecircleo"
-          size={24}
-          color={colorScheme}
-          style={{ marginHorizontal: 6 }}
+          size={22}
+          color={hitMarkColor}
+          style={styles.iconMargin}
         />
       );
     } else return null;
@@ -73,7 +72,12 @@ const CricketScoreboardColumn = ({
         return (
           <View
             key={index}
-            style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
+            style={{
+              flex: 1,
+              justifyContent: "center",
+              alignItems: "center",
+              backgroundColor: "transparent",
+            }}
           >
             {renderIcon(target)}
           </View>
@@ -85,4 +89,6 @@ const CricketScoreboardColumn = ({
 
 export default CricketScoreboardColumn;
 
-const styles = StyleSheet.create({});
+const styles = StyleSheet.create({
+  iconMargin: { marginHorizontal: 6 },
+});

@@ -28,6 +28,7 @@ const CustomButton = (props: ICustomButtonProps) => {
   const colorScheme = useColorScheme();
   const background = Colors[colorScheme].buttonColor;
   const textColor = Colors[colorScheme].text;
+  const disabledBackground = Colors[colorScheme].disabledButtonColor;
 
   return (
     <Pressable
@@ -48,7 +49,7 @@ const CustomButton = (props: ICustomButtonProps) => {
           ? [
               styles.button,
               styles.disabledButton,
-              { backgroundColor: background },
+              { backgroundColor: disabledBackground },
               props.buttonStyle,
             ]
           : props.selected

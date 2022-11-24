@@ -1,4 +1,4 @@
-import React, { Fragment, useEffect } from "react";
+import React, { useEffect } from "react";
 import { StyleSheet } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 
@@ -8,7 +8,7 @@ import useUndoRedo from "../../hooks/useUndoRedo";
 import usePlayerStats from "../../hooks/usePlayerStats";
 import useColorScheme from "../../hooks/useColorScheme";
 
-import { Text, View } from "../../components/Themed";
+import { View } from "../../components/Themed";
 import BaseballHeader from "@scoreboard/header/BaseballHeader";
 import BaseballScoreboardBody from "@scoreboard/body/BaseballScoreboardBody";
 import CalculatorButtons from "@scoreboard/calculator-buttons/CalculatorButtons";
@@ -59,7 +59,7 @@ const Baseball = () => {
       leadingScore: 0,
     });
 
-  const { present: presentPlayer, past: undoPastState } = undoState;
+  const { present: presentPlayer } = undoState;
 
   // set initial player scorelist filled with 0 - for display purposes
   useEffect(() => {
@@ -95,13 +95,13 @@ const Baseball = () => {
             }
       )
     );
+    // if current player score is greater then leading score, set leading score
+    overallScore > leadingScore && setLeadingScore(overallScore);
   };
 
   // handle score submit
   const onHandleTurnChange = () => {
     handleScoreInput();
-    // if current player score is greater then leading score, set leading score
-    currentPlayer.score > leadingScore && setLeadingScore(currentPlayer.score);
     // if round is = 9 and turn is last turn check for duplicates or winner
     if (round === 9 && turn === selectedPlayers.length - 1) {
       const scores: IPlayer[] = selectedPlayers.filter(
@@ -183,27 +183,6 @@ const Baseball = () => {
     onHandleTurnChange();
   };
 
-  const [toggleUndoVisual, setUndoVisual] = React.useState(true);
-
-  useEffect(() => {
-    console.log(`Past State: `);
-    console.log(
-      undoPastState.forEach((state) => {
-        console.log(state.player.scoreList);
-      })
-    );
-  }, [undoPastState]);
-
-  useEffect(() => {
-    console.log(`Current Player: `);
-    console.log(currentPlayer.scoreList);
-  }, [currentPlayer]);
-
-  useEffect(() => {
-    console.log(`LeadingScore: `);
-    console.log(leadingScore);
-  }, [leadingScore]);
-
   return (
     <View style={styles.container}>
       <View style={styles.scoreboardContainer}>
@@ -220,22 +199,9 @@ const Baseball = () => {
         <View
           style={{
             flexDirection: "row",
-            // justifyContent: "flex-end",
             margin: 20,
           }}
         >
-          {toggleUndoVisual ? (
-            <>
-              {undoPastState.map((state, index) => {
-                index === 0 ? null : (
-                  <View key={index}>
-                    <Text>{state.player.name}</Text>
-                    <Text>{state.player.scoreList[state.round - 1]}</Text>
-                  </View>
-                );
-              })}
-            </>
-          ) : null}
           <CustomButton
             buttonStyle={{
               backgroundColor: "transparent",
@@ -244,8 +210,7 @@ const Baseball = () => {
             }}
             textStyle={{ display: "none" }}
             title="Undo"
-            // onPressIn={() => onUndo()}
-            onPressIn={() => setUndoVisual(true)}
+            onPressIn={() => onUndo()}
             disabled={!canUndo}
           >
             <MaterialCommunityIcons

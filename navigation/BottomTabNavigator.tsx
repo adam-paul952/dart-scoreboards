@@ -30,6 +30,7 @@ const BottomTabNavigator = () => {
       initialRouteName="landing"
       screenOptions={{
         tabBarActiveTintColor: Colors[colorScheme].tint,
+        headerStyle: { backgroundColor: Colors[colorScheme].background },
       }}
     >
       <BottomTab.Screen
