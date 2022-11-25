@@ -10,11 +10,12 @@ import {
 
 import { IPlayer } from "@context/PlayerContext";
 import React from "react";
+import { DbTables } from "..";
 
 // CREATE
 export const createTable = () =>
   db.transaction(
-    (tx) => onCreateTable({ transaction: tx, table: "playerlist" }),
+    (tx) => onCreateTable({ transaction: tx, table: DbTables.Players }),
     (error) => {
       // console.log(dbError, error);
     }
@@ -26,7 +27,7 @@ export const getPlayers = (
 ) =>
   db.transaction(
     (tx) =>
-      onGetPlayers({ transaction: tx, table: "playerlist", setStateFunc }),
+      onGetPlayers({ transaction: tx, table: DbTables.Players, setStateFunc }),
     (error) => {
       // console.log(dbError, error);
     }
@@ -41,7 +42,7 @@ export const addPlayer = (
     (tx) =>
       onAddPlayer({
         transaction: tx,
-        table: "playerlist",
+        table: DbTables.Players,
         args: [state.name],
         state,
         setStateFunc,
@@ -56,7 +57,7 @@ export const updateSelectedPlayer = (state: { selected: number; id: number }) =>
     (tx) =>
       onUpdateSelectedPlayer({
         transaction: tx,
-        table: "playerlist",
+        table: DbTables.Players,
         args: [state.selected, state.id],
       }),
     (error) => {
@@ -74,7 +75,7 @@ export const deletePlayer = (
     (tx) =>
       onDeletePlayer({
         transaction: tx,
-        table: "playerlist",
+        table: DbTables.Players,
         args: [playerId],
         setStateFunc,
         mainState,
@@ -88,7 +89,8 @@ export const dropTable = (
   setStateFunc: React.Dispatch<React.SetStateAction<IPlayer[]>>
 ) =>
   db.transaction(
-    (tx) => onDropTable({ transaction: tx, table: "playerlist", setStateFunc }),
+    (tx) =>
+      onDropTable({ transaction: tx, table: DbTables.Players, setStateFunc }),
     (error) => {
       // console.log(dbError, error);
     }

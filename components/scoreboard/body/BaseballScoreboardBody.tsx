@@ -1,5 +1,4 @@
 import React from "react";
-
 import { StyleSheet } from "react-native";
 
 import { Text, View } from "@components/Themed";
@@ -25,11 +24,7 @@ const BaseballScoreboardBody = (props: IBaseballScoreboardBodyProps) => {
         player.id === currentPlayer
           ? { backgroundColor: activePlayerColor }
           : {},
-        {
-          flexDirection: "row",
-          justifyContent: "space-evenly",
-          padding: 2,
-        },
+        styles.playerRow,
       ]}
     >
       <View style={[styles.transparentBg, { flex: 3 }]}>
@@ -57,6 +52,11 @@ const BaseballScoreboardBody = (props: IBaseballScoreboardBodyProps) => {
 export default BaseballScoreboardBody;
 
 const styles = StyleSheet.create({
+  playerRow: {
+    flexDirection: "row",
+    justifyContent: "space-evenly",
+    padding: 2,
+  },
   textCentered: { textAlign: "center" },
   textSize: { fontSize: 18 },
   transparentBg: { backgroundColor: "transparent" },

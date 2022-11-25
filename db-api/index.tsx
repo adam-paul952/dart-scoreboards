@@ -4,15 +4,20 @@ const db = openDatabase("db.playerList.dev");
 
 export const dbError = `DB Error: \n`;
 
+export enum DbTables {
+  Overall = "stats",
+  Baseball = "baseball_stats",
+  Cricket = "cricket_stats",
+  Elimination = "elimination_stats",
+  Killer = "killer_stats",
+  X01 = "x01_stats",
+  Players = "playerlist",
+  Resume = "resume_game",
+}
+
 export interface SqlControllerProps<T> {
   transaction: SQLTransaction;
-  table:
-    | "stats"
-    | "baseball_stats"
-    | "cricket_stats"
-    | "elimination_stats"
-    | "killer_stats"
-    | "x01_stats";
+  table: DbTables;
   args?: (string | number | null)[];
   state?: T;
   setStateFunc?: React.Dispatch<React.SetStateAction<T[]>>;

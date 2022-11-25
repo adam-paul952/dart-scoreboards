@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from "react";
-import { StyleSheet } from "react-native";
+import { ScrollView, StyleSheet } from "react-native";
 
-import { IPlayer, usePlayerState } from "@context/PlayerContext";
+import { usePlayerState } from "@context/PlayerContext";
 import useGame from "../../hooks/useGame";
+
 import { Text, TextInput, View } from "@components/Themed";
 import CalculatorButtons from "@components/scoreboard/calculator-buttons/CalculatorButtons";
 
@@ -37,7 +38,7 @@ const KillerSetup = ({ navigation }: KillerSetupProps) => {
   const onHandleSubmit = () => {
     // convert player score to a number
     if (isNaN(playerTarget)) return;
-    setSelectedPlayers((prev: IPlayer[]) =>
+    setSelectedPlayers((prev) =>
       prev.map((player) => {
         if (currentPlayer.id !== player.id) return player;
         else {
@@ -63,7 +64,7 @@ const KillerSetup = ({ navigation }: KillerSetupProps) => {
   };
 
   const checkForDuplicateTargets = () =>
-    selectedPlayers.some((player: IPlayer) => player.score === playerTarget);
+    selectedPlayers.some((player) => player.score === playerTarget);
 
   useEffect(() => {
     setInputError(checkForInputError());
@@ -71,9 +72,16 @@ const KillerSetup = ({ navigation }: KillerSetupProps) => {
 
   return (
     <View style={styles.container}>
-      {/* list players */}
-      <View style={styles.playerListContainer}>
-        {selectedPlayers.map((player: IPlayer) => {
+      <Text style={styles.infoText}>
+        Players to throw with&nbsp;
+        <Text style={{ fontWeight: "600" }}>opposite</Text>
+        &nbsp;main throwing hand to get target
+      </Text>
+      <Text style={{ fontSize: 15, paddingHorizontal: 10 }}>
+        (eg. Right handed players throw with left and vice-versa)
+      </Text>
+      <ScrollView style={styles.playerListContainer}>
+        {selectedPlayers.map((player) => {
           return (
             <View key={player.name} style={styles.playerListRow}>
               <View style={{ flex: 0.5 }}>
@@ -85,8 +93,7 @@ const KillerSetup = ({ navigation }: KillerSetupProps) => {
             </View>
           );
         })}
-      </View>
-      {/* score input */}
+      </ScrollView>
       <View style={{ alignItems: "center" }}>
         <Text style={[styles.textStyle, { paddingVertical: 5 }]}>Target</Text>
         <TextInput
@@ -97,7 +104,6 @@ const KillerSetup = ({ navigation }: KillerSetupProps) => {
           textAlign="center"
         />
       </View>
-      {/* calculator container */}
       <View>
         <CalculatorButtons
           variant="killer-setup"
@@ -116,10 +122,16 @@ export default KillerSetup;
 const styles = StyleSheet.create({
   container: { flex: 1 },
   playerListContainer: { flex: 2, paddingTop: 20 },
+  infoText: {
+    fontSize: 18,
+    paddingHorizontal: 10,
+    paddingTop: 10,
+  },
   playerListRow: {
     flex: 0.2,
     flexDirection: "row",
     justifyContent: "center",
+    paddingVertical: 5,
   },
   textStyle: { fontSize: 20 },
   scoreInput: {

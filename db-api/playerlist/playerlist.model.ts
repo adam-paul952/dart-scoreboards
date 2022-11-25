@@ -76,12 +76,12 @@ export const onAddPlayer = ({
         args,
         (_, resultSet) => {
           const newId = resultSet.insertId;
-          setStateFunc((prev) => prev.concat({ id: newId, ...state }));
-          // console.log(`successfully added player`);
           // add playerstats row to DB
           if (newId !== undefined) {
+            setStateFunc((prev) => prev.concat({ ...state, id: newId }));
             insertNewStatsRow(newId);
           }
+          // console.log(`successfully added player`);
         },
         (_, error) => {
           // console.log(`insert player error \n`, error);

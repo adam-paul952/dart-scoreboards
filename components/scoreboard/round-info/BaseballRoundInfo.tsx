@@ -18,33 +18,15 @@ const BaseballRoundInfo = (props: IBaseballRoundInfoProps) => {
 
   return (
     <>
-      <View
-        style={{
-          flexDirection: "row",
-          marginLeft: 30,
-        }}
-      >
-        <View style={{ paddingHorizontal: 5 }}>
-          <Text
-            style={{
-              fontSize: 20,
-              padding: 5,
-              fontWeight: "500",
-              textDecorationLine: "underline",
-            }}
-          >
+      <View style={styles.throwIndicatorContainer}>
+        <View style={styles.paddingHorizontal}>
+          <Text style={styles.throwIndicatorText}>
             {currentPlayer.name} to throw
           </Text>
         </View>
       </View>
-      <View
-        style={{
-          flexDirection: "row",
-          justifyContent: "space-around",
-          alignItems: "flex-end",
-        }}
-      >
-        <View style={{ width: "33%", paddingHorizontal: 5 }}>
+      <View style={styles.roundInfoContainer}>
+        <View style={[styles.paddingHorizontal, { width: "33%" }]}>
           <TextInput
             style={[
               Math.sign(scoreDifference)
@@ -58,7 +40,7 @@ const BaseballRoundInfo = (props: IBaseballRoundInfoProps) => {
             value={`${scoreDifference} pts`}
           />
         </View>
-        <View style={{ width: "33%", paddingHorizontal: 5 }}>
+        <View style={[styles.paddingHorizontal, { width: "33%" }]}>
           <Text style={{ fontSize: 20, padding: 5 }}>Points</Text>
           <TextInput
             style={styles.scoreInput}
@@ -69,15 +51,9 @@ const BaseballRoundInfo = (props: IBaseballRoundInfoProps) => {
           />
         </View>
       </View>
-      <View
-        style={{
-          flexDirection: "row",
-          justifyContent: "space-evenly",
-          paddingVertical: 5,
-        }}
-      >
-        <Text style={{ fontSize: 15 }}>Inning: {round}</Text>
-        <Text style={{ fontSize: 15 }}>
+      <View style={styles.roundStatsContainer}>
+        <Text style={styles.roundStatsText}>Inning: {round}</Text>
+        <Text style={styles.roundStatsText}>
           Highscore: {currentPlayer.stats.highScore}
         </Text>
       </View>
@@ -88,6 +64,21 @@ const BaseballRoundInfo = (props: IBaseballRoundInfoProps) => {
 export default BaseballRoundInfo;
 
 const styles = StyleSheet.create({
+  throwIndicatorContainer: {
+    flexDirection: "row",
+    marginHorizontal: 30,
+  },
+  throwIndicatorText: {
+    fontSize: 20,
+    padding: 5,
+    fontWeight: "500",
+    textDecorationLine: "underline",
+  },
+  roundInfoContainer: {
+    flexDirection: "row",
+    justifyContent: "space-around",
+    alignItems: "flex-end",
+  },
   scoreInput: {
     borderWidth: 1,
     borderColor: "gray",
@@ -97,4 +88,14 @@ const styles = StyleSheet.create({
     fontSize: 20,
     borderRadius: 15,
   },
+  roundStatsContainer: {
+    flexDirection: "row",
+    justifyContent: "space-evenly",
+    paddingVertical: 5,
+    borderTopWidth: 1,
+    borderTopColor: "lightgray",
+    marginTop: 5,
+  },
+  roundStatsText: { fontSize: 15 },
+  paddingHorizontal: { paddingHorizontal: 5 },
 });

@@ -155,13 +155,9 @@ const Baseball = () => {
   const onUndo = () => {
     undoTurn();
     setSelectedPlayers((prev) =>
-      prev.map((player) => {
-        if (player.id === presentPlayer.player.id) {
-          return presentPlayer.player;
-        } else {
-          return player;
-        }
-      })
+      prev.map((player) =>
+        player.id === presentPlayer.player.id ? presentPlayer.player : player
+      )
     );
     setCurrentPlayer(presentPlayer.player);
     setTurn(presentPlayer.turn);

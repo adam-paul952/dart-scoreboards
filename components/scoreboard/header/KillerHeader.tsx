@@ -32,8 +32,6 @@ const styles = StyleSheet.create({
   },
   playerColumn: {
     flex: 1,
-    borderRightColor: "gray",
-    borderRightWidth: 1,
     borderBottomWidth: 1,
     borderBottomColor: "gray",
   },

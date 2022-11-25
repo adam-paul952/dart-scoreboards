@@ -75,6 +75,24 @@ const Elimination = () => {
     }
   }, [currentPlayer]);
 
+  const declareWinner = () => {
+    selectedPlayers.forEach((player) => {
+      if (player.lives > 0) {
+        winner = player;
+      }
+      onUpdatePlayerStats("elimination", player, winner);
+    });
+
+    setGameOver({ isOver: true, game: "elimination" });
+
+    // alert game over with winner name
+    gameOverAlert({
+      playerName: winner.name,
+      onResetGame,
+      navigation,
+    });
+  };
+
   const onChangeTurns = () => {
     // convert playerScore to number
     roundScore = parseInt(playerScore, 10);
@@ -133,23 +151,7 @@ const Elimination = () => {
       (player) => player.lives > 0
     ).length;
 
-    if (checkForWinningPlayer === 1) {
-      selectedPlayers.forEach((player) => {
-        if (player.lives > 0) {
-          winner = player;
-        }
-        onUpdatePlayerStats("elimination", player, winner);
-      });
-
-      setGameOver({ isOver: true, game: "elimination" });
-
-      // alert game over with winner name
-      gameOverAlert({
-        playerName: winner.name,
-        resetGame,
-        navigation,
-      });
-    }
+    if (checkForWinningPlayer === 1) declareWinner();
   };
 
   const onUndo = () => {
@@ -171,7 +173,7 @@ const Elimination = () => {
   };
 
   // reset game if playing again
-  const resetGame = () => {
+  const onResetGame = () => {
     setSelectedPlayers((prev) =>
       prev.map((player) => {
         player.score = 0;
@@ -186,13 +188,9 @@ const Elimination = () => {
   };
 
   return (
-    // Main Container
     <View style={styles.container}>
-      {/* scoreboard container */}
       <View style={styles.scoreboardContainer}>
-        {/* scoreboard header */}
         <EliminationHeader />
-        {/* scoreboard body */}
         {selectedPlayers.map((player) => {
           return (
             <EliminationScoreboardBody
@@ -203,21 +201,17 @@ const Elimination = () => {
           );
         })}
       </View>
-      {/* end scoreboard container */}
       <CustomButton
         title="Undo"
         buttonStyle={{ width: "25%", alignSelf: "center" }}
         onPressIn={() => onUndo()}
         disabled={!canUndo}
       />
-      {/* round info */}
       <EliminationRoundInfo
         currentPlayer={currentPlayer}
         round={round}
         playerScore={playerScore}
       />
-      {/* end round info */}
-      {/* calculator buttons container */}
       <View>
         <CalculatorButtons
           variant="elimination"
@@ -235,9 +229,7 @@ const Elimination = () => {
           setValue={setPlayerScore}
         />
       </View>
-      {/* end calculator buttons container */}
     </View>
-    // end main container
   );
 };
 

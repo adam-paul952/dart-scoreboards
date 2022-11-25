@@ -1,5 +1,5 @@
 import { GameVariants } from "../../types";
-import db from "..";
+import db, { DbTables } from "..";
 import {
   onCreateIndividualStats,
   onCreateStatsTable,
@@ -11,16 +11,34 @@ import {
   onUpdatePlayerStats,
 } from "./stats.model";
 
+const assignTableType = (game: string) => {
+  switch (game) {
+    case "baseball":
+      return DbTables.Baseball;
+    case "cricket":
+      return DbTables.Cricket;
+    case "elimination":
+      return DbTables.Elimination;
+    case "killer":
+      return DbTables.Killer;
+    case "X01":
+      return DbTables.X01;
+    default:
+      console.log(`Invalid game type supplied to Stats Controller`);
+      break;
+  }
+};
+
 // CREATE
 export const createTables = () =>
   db.transaction(
     (tx) => {
-      onCreateStatsTable({ transaction: tx, table: "stats" });
-      onCreateIndividualStats({ transaction: tx, table: "baseball_stats" });
-      onCreateIndividualStats({ transaction: tx, table: "cricket_stats" });
-      onCreateIndividualStats({ transaction: tx, table: "elimination_stats" });
-      onCreateIndividualStats({ transaction: tx, table: "killer_stats" });
-      onCreateX01Stats({ transaction: tx, table: "x01_stats" });
+      onCreateStatsTable({ transaction: tx, table: DbTables.Overall });
+      onCreateIndividualStats({ transaction: tx, table: DbTables.Baseball });
+      onCreateIndividualStats({ transaction: tx, table: DbTables.Cricket });
+      onCreateIndividualStats({ transaction: tx, table: DbTables.Elimination });
+      onCreateIndividualStats({ transaction: tx, table: DbTables.Killer });
+      onCreateX01Stats({ transaction: tx, table: DbTables.X01 });
     },
     (error) => {
       // console.log(dbError, error);
@@ -30,24 +48,32 @@ export const createTables = () =>
 export const insertNewStatsRow = (newId: number) =>
   db.transaction(
     (tx) => {
-      onInsertNewRow({ transaction: tx, table: "stats", args: [newId] });
       onInsertNewRow({
         transaction: tx,
-        table: "baseball_stats",
+        table: DbTables.Overall,
         args: [newId],
       });
       onInsertNewRow({
         transaction: tx,
-        table: "cricket_stats",
+        table: DbTables.Baseball,
         args: [newId],
       });
       onInsertNewRow({
         transaction: tx,
-        table: "elimination_stats",
+        table: DbTables.Cricket,
         args: [newId],
       });
-      onInsertNewRow({ transaction: tx, table: "killer_stats", args: [newId] });
-      onInsertNewRow({ transaction: tx, table: "x01_stats", args: [newId] });
+      onInsertNewRow({
+        transaction: tx,
+        table: DbTables.Elimination,
+        args: [newId],
+      });
+      onInsertNewRow({
+        transaction: tx,
+        table: DbTables.Killer,
+        args: [newId],
+      });
+      onInsertNewRow({ transaction: tx, table: DbTables.X01, args: [newId] });
     },
     (error) => {
       // console.log(dbError, error);
@@ -61,12 +87,17 @@ export const getPlayerStats = <T>(
 ) =>
   db.transaction(
     (tx) => {
+      let table = assignTableType(game);
       if (game === "overall")
-        onGetPlayerStats({ transaction: tx, table: "stats", setStateFunc });
-      else
         onGetPlayerStats({
           transaction: tx,
-          table: `${game}_stats`,
+          table: DbTables.Overall,
+          setStateFunc,
+        });
+      else if (table !== undefined)
+        onGetPlayerStats({
+          transaction: tx,
+          table,
           setStateFunc,
         });
     },
@@ -81,16 +112,17 @@ export const updatePlayerStats = (
   statsToUpdate: (string | number | null)[]
 ) => {
   db.transaction((tx) => {
+    let table = assignTableType(game);
     if (game === "overall")
       onUpdateOverallStats({
         transaction: tx,
-        table: "stats",
+        table: DbTables.Overall,
         args: statsToUpdate,
       });
-    else
+    else if (table !== undefined)
       onUpdatePlayerStats({
         transaction: tx,
-        table: `${game}_stats`,
+        table,
         args: statsToUpdate,
       });
   });
@@ -100,12 +132,12 @@ export const updatePlayerStats = (
 export const dropTables = () =>
   db.transaction(
     (tx) => {
-      onDropTables({ transaction: tx, table: "stats" });
-      onDropTables({ transaction: tx, table: "baseball_stats" });
-      onDropTables({ transaction: tx, table: "cricket_stats" });
-      onDropTables({ transaction: tx, table: "elimination_stats" });
-      onDropTables({ transaction: tx, table: "killer_stats" });
-      onDropTables({ transaction: tx, table: "x01_stats" });
+      onDropTables({ transaction: tx, table: DbTables.Overall });
+      onDropTables({ transaction: tx, table: DbTables.Baseball });
+      onDropTables({ transaction: tx, table: DbTables.Cricket });
+      onDropTables({ transaction: tx, table: DbTables.Elimination });
+      onDropTables({ transaction: tx, table: DbTables.Killer });
+      onDropTables({ transaction: tx, table: DbTables.X01 });
     },
     (error) => {
       // console.log(dbError, error);

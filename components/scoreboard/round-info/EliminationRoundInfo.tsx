@@ -16,14 +16,17 @@ const EliminationRoundInfo = (props: IEliminationRoundInfo) => {
 
   return (
     <>
-      {/* current round info container */}
       <View style={styles.currentRoundInfoContainer}>
         <View style={styles.currentRoundInfoRow}>
-          <Text style={[styles.currentRoundText, { fontWeight: "600" }]}>
+          <Text
+            style={[
+              styles.currentRoundText,
+              { fontWeight: "600", textDecorationLine: "underline" },
+            ]}
+          >
             {currentPlayer.name} to throw
           </Text>
         </View>
-        {/* player points container */}
         <View style={styles.pointsContainer}>
           <Text style={[styles.currentRoundText, { textAlign: "center" }]}>
             Points
@@ -36,17 +39,13 @@ const EliminationRoundInfo = (props: IEliminationRoundInfo) => {
             textAlign="center"
           />
         </View>
-        {/* end player points container */}
       </View>
-      {/* end current round info container */}
-      {/* player round info container */}
       <View style={styles.playerRoundInfo}>
         <Text style={styles.playerRoundText}>Round: {round}</Text>
         <Text style={styles.playerRoundText}>
           High Score: {currentPlayer.stats.highScore}
         </Text>
       </View>
-      {/* end player round info container */}
     </>
   );
 };
@@ -79,6 +78,8 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-evenly",
     paddingVertical: 5,
+    borderTopWidth: 1,
+    borderTopColor: "lightgray",
   },
   playerRoundText: { fontSize: 15 },
 });

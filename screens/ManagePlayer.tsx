@@ -16,7 +16,7 @@ const ManagePlayerScreen = () => {
 
   const disableButton = () => {
     const selected = playerList.filter(
-      (player: IPlayer) => player.selected === true
+      (player) => player.selected === true
     ).length;
     if (selected > 1) return false;
     else return true;
@@ -27,7 +27,7 @@ const ManagePlayerScreen = () => {
       let selected;
       if (player.selected === true) selected = 1;
       else selected = 0;
-      updateSelectedPlayerlist({ selected, id: player.id! });
+      updateSelectedPlayerlist({ selected, id: player.id });
     });
     navigation.navigate("create-match");
   };

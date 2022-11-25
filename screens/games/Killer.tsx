@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { StyleSheet } from "react-native";
+import { ScrollView, StyleSheet } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 
 import { usePlayerState, IPlayer } from "@context/PlayerContext";
@@ -33,6 +33,8 @@ const Killer = ({ route }: KillerProps) => {
     round,
     changeTurns,
     changeRounds,
+    playerIsOut,
+    setPlayerIsOut,
   } = useGame();
   const navigation = useNavigation();
   const [playerState, { set: setCurrentState, undo: undoTurn, canUndo }] =
@@ -45,9 +47,6 @@ const Killer = ({ route }: KillerProps) => {
 
   // assign targets based on player scores
   const [targets] = useState<Array<number>>(playerTargets);
-
-  // store players that have been eliminated
-  const [playerIsOut, setPlayerIsOut] = useState<IPlayer[]>([]);
 
   const onHandleSubmit = () => {
     const hits = playerScore.split("").map((score) => parseInt(score, 10));
@@ -89,7 +88,7 @@ const Killer = ({ route }: KillerProps) => {
     changeRounds();
   };
 
-  const resetGame = () => {
+  const onResetGame = () => {
     setSelectedPlayers((prev) =>
       prev.map((player) => {
         player.lives = 0;
@@ -143,36 +142,26 @@ const Killer = ({ route }: KillerProps) => {
 
     gameOverAlert({
       playerName: winner.name,
-      resetGame,
+      onResetGame,
       navigation,
     });
   };
 
   return (
-    // main container
     <View style={{ flex: 1, paddingTop: 10 }}>
-      {/* scoreboard container */}
-      <View style={{ flex: 2 }}>
+      <ScrollView style={{ flex: 2 }}>
         <KillerHeader />
-        {/* scoreboard body */}
-        <View>
-          {selectedPlayers.map((player) => {
-            return (
-              <KillerScoreboardBody
-                key={player.name}
-                player={player}
-                currentPlayer={currentPlayer.id!}
-              />
-            );
-          })}
-        </View>
-        {/* end scoreboard body */}
-      </View>
-      {/* end scoreboard container */}
-      {/* round info */}
+        {selectedPlayers.map((player) => {
+          return (
+            <KillerScoreboardBody
+              key={player.name}
+              player={player}
+              currentPlayer={currentPlayer.id!}
+            />
+          );
+        })}
+      </ScrollView>
       <View></View>
-      {/* end round info */}
-      {/* calculator buttons container */}
       <View>
         <CalculatorButtons
           variant="killer"
@@ -181,9 +170,7 @@ const Killer = ({ route }: KillerProps) => {
           setValue={setPlayerScore}
         />
       </View>
-      {/* end calculator buttons container */}
     </View>
-    // end main container
   );
 };
 
