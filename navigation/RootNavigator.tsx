@@ -92,31 +92,12 @@ const RootNavigator = () => {
         <Stack.Screen
           name="baseball"
           component={Baseball}
-          options={({
-            navigation,
-            route,
-          }: RootStackScreenProps<"baseball">) => ({
-            title: "Baseball",
-            // headerRight: () => (
-            //   <Pressable
-            //     style={({ pressed }) => ({
-            //       opacity: pressed ? 0.5 : 1,
-            //     })}
-            //     onPressIn={() => navigation.navigate("undo-modal")}
-            //   >
-            //     <MaterialCommunityIcons
-            //       name="undo-variant"
-            //       size={24}
-            //       color={Colors[colorScheme].text}
-            //     />
-            //   </Pressable>
-            // ),
-          })}
+          options={{ title: "Baseball", headerShown: false }}
         />
         <Stack.Screen
           name="cricket"
           component={Cricket}
-          options={{ title: "Cricket" }}
+          options={{ title: "Cricket", headerShown: false }}
         />
         <Stack.Screen
           name="x01"

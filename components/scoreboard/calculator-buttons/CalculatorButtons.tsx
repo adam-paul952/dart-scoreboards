@@ -1,15 +1,15 @@
 import React from "react";
+import { FlatList } from "react-native";
 
-import { FlatList, StyleSheet } from "react-native";
+import { usePlayerState } from "@context/PlayerContext";
 
 import ButtonItem from "./ButtonItem";
 
 import { regularButtons } from "@scoreboard/calculator-buttons/constants";
 import { cricketButtons } from "@scoreboard/calculator-buttons/constants";
-import { IPlayer, usePlayerState } from "@context/PlayerContext";
 
-interface ICalculatorButtonsProps {
-  variant: string;
+interface CalculatorButtonsProps {
+  variant: "baseball" | "cricket" | "elimination" | "killer" | "x01";
   value?: string;
   setValue?: React.Dispatch<React.SetStateAction<string>>;
   disabled?: boolean | Array<boolean>;
@@ -18,7 +18,7 @@ interface ICalculatorButtonsProps {
   hitTargets?: Array<number>;
 }
 
-const CalculatorButtons = (props: ICalculatorButtonsProps) => {
+const CalculatorButtons = (props: CalculatorButtonsProps) => {
   const {
     value,
     setValue,
@@ -29,14 +29,14 @@ const CalculatorButtons = (props: ICalculatorButtonsProps) => {
     hitTargets,
   } = props;
 
-  const { playerList, selectedPlayers } = usePlayerState();
+  const { selectedPlayers } = usePlayerState();
 
   let data: string[] = [];
   // assign calculator buttons
   if (variant === "cricket") data = cricketButtons;
   else if (variant === "killer") {
     data = selectedPlayers
-      .map((player: IPlayer) => {
+      .map((player) => {
         return player.score.toString();
       })
       .sort();
@@ -106,7 +106,7 @@ const CalculatorButtons = (props: ICalculatorButtonsProps) => {
           // if last element assign to index 7 bull button
           else if (index === 7) isDisabled = value;
         });
-        // return isDisabled
+
         return isDisabled;
       }
       // if disabled prop isn't defined return false
@@ -143,5 +143,3 @@ const CalculatorButtons = (props: ICalculatorButtonsProps) => {
 };
 
 export default CalculatorButtons;
-
-const styles = StyleSheet.create({});

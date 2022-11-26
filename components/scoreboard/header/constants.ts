@@ -26,7 +26,8 @@ const baseballHeader = [
   "7",
   "8",
   "9",
-  "Tot",
+  "E",
+  "R",
 ];
 
 const killerHeader = ["Player", "Target", " Lives", "Killer"];

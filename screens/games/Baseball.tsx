@@ -1,24 +1,20 @@
-import React, { useEffect } from "react";
-import { StyleSheet } from "react-native";
+import React, { useEffect, useRef } from "react";
+import { Alert, StyleSheet } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 
-import { IPlayer, usePlayerState } from "../../context/PlayerContext";
+import { usePlayerState } from "../../context/PlayerContext";
 import useGame from "../../hooks/useGame";
 import useUndoRedo from "../../hooks/useUndoRedo";
 import usePlayerStats from "../../hooks/usePlayerStats";
-import useColorScheme from "../../hooks/useColorScheme";
 
 import { View } from "../../components/Themed";
 import BaseballHeader from "@scoreboard/header/BaseballHeader";
 import BaseballScoreboardBody from "@scoreboard/body/BaseballScoreboardBody";
 import CalculatorButtons from "@scoreboard/calculator-buttons/CalculatorButtons";
 import BaseballRoundInfo from "@scoreboard/round-info/BaseballRoundInfo";
-import CustomButton from "@components/CustomButton";
+import CustomStackScreenHeader from "@components/scoreboard/CustomStackScreenHEader";
 
 import gameOverAlert from "@components/GameOverAlert";
-import { MaterialCommunityIcons } from "@expo/vector-icons";
-
-import Colors from "../../constants/Colors";
 
 let winner: { id: number; name: string } = {
   id: 0,
@@ -48,7 +44,6 @@ const Baseball = () => {
     onResetGame,
   } = useGame();
   const navigation = useNavigation();
-  const colorScheme = useColorScheme();
 
   const [undoState, { set: setCurrentUndoState, undo: undoTurn, canUndo }] =
     useUndoRedo({
@@ -61,11 +56,13 @@ const Baseball = () => {
 
   const { present: presentPlayer } = undoState;
 
+  const roundRef = useRef(round);
+
   // set initial player scorelist filled with 0 - for display purposes
   useEffect(() => {
     setSelectedPlayers((prev) =>
       prev.map((player) => {
-        player.scoreList = new Array(9).fill(0);
+        player.scoreList = new Array(10).fill(0);
         return player;
       })
     );
@@ -77,7 +74,9 @@ const Baseball = () => {
     // if score is NaN - score = 0
     if (isNaN(roundScore)) roundScore = 0;
     // assign score to proper index in scorelist
-    currentPlayer.scoreList[round - 1] = roundScore;
+    round <= 9
+      ? (currentPlayer.scoreList[round - 1] = roundScore)
+      : (currentPlayer.scoreList[9] += roundScore);
     // calculate total by reducing scorelist
     const overallScore = currentPlayer.scoreList.reduce((a, b) => a + b);
     assignCurrentPlayerHighScore(currentPlayer);
@@ -102,37 +101,49 @@ const Baseball = () => {
   // handle score submit
   const onHandleTurnChange = () => {
     handleScoreInput();
+    roundRef.current = round;
     // if round is = 9 and turn is last turn check for duplicates or winner
     if (round === 9 && turn === selectedPlayers.length - 1) {
-      const scores: IPlayer[] = selectedPlayers.filter(
-        (player) => player.score === leadingScore
-      );
-      // TODO: if player's have a tie then continue on in game
-      scores.length > 1 ? playExtraInnings() : declareWinner();
+      selectedPlayers.filter((player) => player.score === leadingScore).length >
+      1
+        ? playExtraInnings()
+        : declareWinner();
+    } else if (
+      round > 9 &&
+      roundRef.current === presentPlayer.round &&
+      // since state update is batched we need to manually add
+      // if not always returns true
+      currentPlayer.score + parseInt(playerScore, 10) !== leadingScore
+    ) {
+      selectedPlayers.filter((player) => player.score === leadingScore)
+        .length === 1 && declareWinner();
     }
   };
 
   const playExtraInnings = () => {
-    selectedPlayers.forEach((player: IPlayer) => {
+    selectedPlayers.forEach((player) => {
       if (playerIsOut.some((value) => value.name === player.name)) return;
       else if (player.score < leadingScore) {
-        setPlayerIsOut((prev) => [...prev, player]);
+        setPlayerIsOut((prev) => prev.concat(player));
       }
     });
-    alert("Extra Innings!");
+
+    Alert.alert("", "Extra Innings!", [{ text: "Ok", style: "cancel" }]);
   };
 
   const declareWinner = () => {
     // find winner's name
-    selectedPlayers.forEach((player: IPlayer) => {
+    selectedPlayers.forEach((player) => {
       if (player.score === leadingScore)
         winner = { id: player.id, name: player.name };
     });
+
     if (winner) {
       selectedPlayers.forEach((player) => {
         onUpdatePlayerStats("baseball", player, winner);
       });
     }
+
     setGameOver({ isOver: true, game: "baseball" });
     // alert game over with winner name
     gameOverAlert({
@@ -181,6 +192,12 @@ const Baseball = () => {
 
   return (
     <View style={styles.container}>
+      <CustomStackScreenHeader
+        title="Baseball"
+        canUndo={canUndo}
+        onUndo={onUndo}
+        navigation={navigation}
+      />
       <View style={styles.scoreboardContainer}>
         <BaseballHeader />
         {selectedPlayers.map((player) => {
@@ -189,33 +206,10 @@ const Baseball = () => {
               key={player.id}
               player={player}
               currentPlayer={currentPlayer.id!}
+              playersOut={playerIsOut.some((item) => item.id === player.id)}
             />
           );
         })}
-        <View
-          style={{
-            flexDirection: "row",
-            margin: 20,
-          }}
-        >
-          <CustomButton
-            buttonStyle={{
-              backgroundColor: "transparent",
-              padding: 10,
-              marginLeft: "auto",
-            }}
-            textStyle={{ display: "none" }}
-            title="Undo"
-            onPressIn={() => onUndo()}
-            disabled={!canUndo}
-          >
-            <MaterialCommunityIcons
-              name="undo-variant"
-              size={28}
-              color={Colors[colorScheme].text}
-            />
-          </CustomButton>
-        </View>
       </View>
       <View>
         <BaseballRoundInfo
@@ -239,5 +233,5 @@ export default Baseball;
 
 const styles = StyleSheet.create({
   container: { flex: 1 },
-  scoreboardContainer: { flex: 2 },
+  scoreboardContainer: { flex: 2, marginHorizontal: 5 },
 });

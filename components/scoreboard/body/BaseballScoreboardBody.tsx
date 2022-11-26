@@ -10,10 +10,11 @@ import useColorScheme from "../../../hooks/useColorScheme";
 interface IBaseballScoreboardBodyProps {
   player: IPlayer;
   currentPlayer: number;
+  playersOut: boolean;
 }
 
 const BaseballScoreboardBody = (props: IBaseballScoreboardBodyProps) => {
-  const { player, currentPlayer } = props;
+  const { player, currentPlayer, playersOut } = props;
 
   const colorScheme = useColorScheme();
   const activePlayerColor = Colors[colorScheme].activePlayer;
@@ -27,6 +28,7 @@ const BaseballScoreboardBody = (props: IBaseballScoreboardBodyProps) => {
         styles.playerRow,
       ]}
     >
+      {playersOut ? <View style={styles.strikeThrough} /> : null}
       <View style={[styles.transparentBg, { flex: 3 }]}>
         <Text style={[styles.textSize, { paddingLeft: 3 }]}>{player.name}</Text>
       </View>
@@ -56,6 +58,15 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-evenly",
     padding: 2,
+    position: "relative",
+  },
+  strikeThrough: {
+    borderBottomWidth: 1,
+    borderBottomColor: "black",
+    width: "105%",
+    position: "absolute",
+    top: "55%",
+    left: "-2%",
   },
   textCentered: { textAlign: "center" },
   textSize: { fontSize: 18 },

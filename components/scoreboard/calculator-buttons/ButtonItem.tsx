@@ -1,18 +1,16 @@
 import React from "react";
-
-import { StyleSheet } from "react-native";
+import { StyleSheet, Text } from "react-native";
 
 import CustomButton from "../../CustomButton";
 import {
   AntDesignIcon,
   FeatherIcon,
 } from "@components/button-icons/ButtonIcons";
-import { Text } from "@components/Themed";
 
 import Colors from "../../../constants/Colors";
 import useColorScheme from "../../../hooks/useColorScheme";
 
-interface IButtonItemProps {
+interface ButtonItemProps {
   item: string;
   onButtonPress: (inputValue: string) => void;
   disabled?: boolean;
@@ -20,7 +18,7 @@ interface IButtonItemProps {
   hits?: number;
 }
 
-const ButtonItem = (props: IButtonItemProps) => {
+const ButtonItem = (props: ButtonItemProps) => {
   const { item, onButtonPress, disabled, variant, hits } = props;
 
   const colorScheme = useColorScheme();
@@ -72,23 +70,10 @@ const ButtonItem = (props: IButtonItemProps) => {
           buttonChildrenStyle={{
             backgroundColor: "transparent",
           }}
-          buttonIconStyle={[
-            hits === 0
-              ? { display: "none" }
-              : {
-                  display: "flex",
-                  backgroundColor: "#fff",
-                  position: "absolute",
-                  top: -8,
-                  right: -36,
-                  padding: 2,
-                  borderRadius: 30,
-                  width: "35%",
-                },
-          ]}
+          buttonIconStyle={[hits === 0 ? { display: "none" } : styles.hitsTag]}
           disabled={disabled}
         >
-          <Text style={{ fontSize: 17, textAlign: "center" }}>x{hits}</Text>
+          <Text style={styles.hitsTagText}>x{hits}</Text>
         </CustomButton>
       );
     } else
@@ -116,6 +101,17 @@ const styles = StyleSheet.create({
     height: 70,
     alignItems: "center",
   },
+  hitsTag: {
+    display: "flex",
+    backgroundColor: "#fff",
+    position: "absolute",
+    top: -8,
+    right: -36,
+    padding: 2,
+    borderRadius: 30,
+    width: "35%",
+  },
+  hitsTagText: { fontSize: 17, textAlign: "center" },
   buttonChildrenStyle: {
     backgroundColor: "transparent",
     paddingVertical: 6,

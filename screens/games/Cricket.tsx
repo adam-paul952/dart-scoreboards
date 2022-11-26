@@ -2,18 +2,18 @@ import React, { useEffect, useState, useRef } from "react";
 import { StyleSheet } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 
-import { IPlayer, usePlayerState } from "../../context/PlayerContext";
+import { usePlayerState } from "../../context/PlayerContext";
 import useGame from "../../hooks/useGame";
 import useUndoRedo from "../../hooks/useUndoRedo";
+import usePlayerStats from "../../hooks/usePlayerStats";
 
 import { View } from "../../components/Themed";
+import CustomStackScreenHeader from "@components/scoreboard/CustomStackScreenHEader";
 import CricketHeader from "@scoreboard/header/CricketHeader";
 import CricketScoreboardBody from "@scoreboard/body/CricketScoreboardBody";
 import CricketRoundInfo from "@scoreboard/round-info/CricketRoundInfo";
 import CalculatorButtons from "@scoreboard/calculator-buttons/CalculatorButtons";
 import gameOverAlert from "@components/GameOverAlert";
-import CustomButton from "@components/CustomButton";
-import usePlayerStats from "../../hooks/usePlayerStats";
 
 const targets = [20, 19, 18, 17, 16, 15, 25];
 
@@ -36,7 +36,7 @@ const Cricket = () => {
   } = useGame();
   const navigation = useNavigation();
 
-  const [playerState, { set: setCurrentState, undo: undoTurn, canUndo }] =
+  const [undoState, { set: setUndoState, undo: undoTurn, canUndo }] =
     useUndoRedo({
       turn: 0,
       round: 1,
@@ -46,7 +46,7 @@ const Cricket = () => {
       disabledButtons: [] as boolean[],
     });
 
-  const { past: pastTurn, present: presentTurn } = playerState;
+  const { present: presentTurn } = undoState;
 
   // useEffect(() => {
   //   console.log(`-------New State--------`);
@@ -132,11 +132,11 @@ const Cricket = () => {
 
     setGameOver({ isOver: true, game: "cricket" });
 
-    gameOverAlert({ playerName: currentPlayer.name, resetGame, navigation });
+    gameOverAlert({ playerName: currentPlayer.name, onResetGame, navigation });
   };
 
   // reset game
-  const resetGame = () => {
+  const onResetGame = () => {
     setSelectedPlayers((prev) =>
       prev.map((player) => {
         player.score = 0;
@@ -145,11 +145,13 @@ const Cricket = () => {
         return player;
       })
     );
+
     setDisableButton((prev) =>
       prev.map((value) => {
         return (value = false);
       })
     );
+
     setLeadingScore(0);
     setRound(1);
   };
@@ -244,10 +246,16 @@ const Cricket = () => {
 
   return (
     <View style={styles.container}>
-      <View style={{ flex: 2 }}>
+      <CustomStackScreenHeader
+        title="Cricket"
+        canUndo={canUndo}
+        onUndo={onUndoTurn}
+        navigation={navigation}
+      />
+      <View style={{ flex: 3 }}>
         <CricketHeader />
         <>
-          {selectedPlayers.map((player: IPlayer) => {
+          {selectedPlayers.map((player) => {
             return (
               <CricketScoreboardBody
                 key={player.id}
@@ -258,12 +266,6 @@ const Cricket = () => {
           })}
         </>
       </View>
-      <CustomButton
-        title="Undo"
-        buttonStyle={{ width: "25%", alignSelf: "center" }}
-        onPress={() => onUndoTurn()}
-        disabled={!canUndo}
-      />
       <View>
         <CricketRoundInfo
           currentPlayer={currentPlayer}
@@ -276,7 +278,7 @@ const Cricket = () => {
           value={playerScore}
           setValue={setPlayerScore}
           onHandleSubmit={() => {
-            setCurrentState({
+            setUndoState({
               turn,
               round,
               player: {
@@ -305,7 +307,7 @@ const Cricket = () => {
 export default Cricket;
 
 const styles = StyleSheet.create({
-  container: { flex: 1, flexDirection: "column", paddingTop: 20 },
+  container: { flex: 1, flexDirection: "column" },
 });
 
 /* TODO:

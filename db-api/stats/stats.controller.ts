@@ -21,8 +21,10 @@ const assignTableType = (game: string) => {
       return DbTables.Elimination;
     case "killer":
       return DbTables.Killer;
-    case "X01":
+    case "x01":
       return DbTables.X01;
+    case "overall":
+      return DbTables.Overall;
     default:
       console.log(`Invalid game type supplied to Stats Controller`);
       break;
@@ -33,12 +35,14 @@ const assignTableType = (game: string) => {
 export const createTables = () =>
   db.transaction(
     (tx) => {
-      onCreateStatsTable({ transaction: tx, table: DbTables.Overall });
-      onCreateIndividualStats({ transaction: tx, table: DbTables.Baseball });
-      onCreateIndividualStats({ transaction: tx, table: DbTables.Cricket });
-      onCreateIndividualStats({ transaction: tx, table: DbTables.Elimination });
-      onCreateIndividualStats({ transaction: tx, table: DbTables.Killer });
-      onCreateX01Stats({ transaction: tx, table: DbTables.X01 });
+      Object.entries(DbTables).forEach(([key, value]) => {
+        if (key === "Players" || key === "Resume") return;
+        else if (key === "Overall")
+          onCreateStatsTable({ transaction: tx, table: value });
+        else if (key === "X01")
+          onCreateX01Stats({ transaction: tx, table: value });
+        else onCreateIndividualStats({ transaction: tx, table: value });
+      });
     },
     (error) => {
       // console.log(dbError, error);
@@ -87,14 +91,9 @@ export const getPlayerStats = <T>(
 ) =>
   db.transaction(
     (tx) => {
+      // console.log(`getPlayerstats called`);
       let table = assignTableType(game);
-      if (game === "overall")
-        onGetPlayerStats({
-          transaction: tx,
-          table: DbTables.Overall,
-          setStateFunc,
-        });
-      else if (table !== undefined)
+      if (table !== undefined)
         onGetPlayerStats({
           transaction: tx,
           table,
@@ -112,6 +111,7 @@ export const updatePlayerStats = (
   statsToUpdate: (string | number | null)[]
 ) => {
   db.transaction((tx) => {
+    // console.log(`update player stats called`);
     let table = assignTableType(game);
     if (game === "overall")
       onUpdateOverallStats({

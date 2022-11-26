@@ -34,6 +34,7 @@ const useGame = () => {
     );
     setRound(1);
     setLeadingScore(0);
+    setPlayerIsOut(() => []);
   };
 
   // turn information

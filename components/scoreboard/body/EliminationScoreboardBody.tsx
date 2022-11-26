@@ -1,7 +1,6 @@
 import React from "react";
 
 import { StyleSheet } from "react-native";
-import { AntDesign } from "@expo/vector-icons";
 
 import { Text, View } from "@components/Themed";
 import { IPlayer } from "@context/PlayerContext";

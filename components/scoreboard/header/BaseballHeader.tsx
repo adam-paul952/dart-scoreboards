@@ -15,7 +15,7 @@ const BaseballHeader = () => {
             style={[
               text === "Name"
                 ? { flex: 3 }
-                : text === "Tot"
+                : text === "R"
                 ? { flex: 1.5 }
                 : { flex: 1 },
               { borderBottomColor: "gray", borderBottomWidth: 1 },
@@ -36,7 +36,6 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-evenly",
     alignItems: "center",
-    marginHorizontal: 5,
     paddingVertical: 3,
   },
 });

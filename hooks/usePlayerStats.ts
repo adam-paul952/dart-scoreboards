@@ -37,6 +37,10 @@ const usePlayerStats = () => {
   const [killerStats, setKillerStats] = useState<GameStats[]>([]);
   const [x01Stats, setX01Stats] = useState<X01Stats[]>([]);
 
+  // TODO: we don't need to get all only on stats screen
+  // maybe we should breakthese out into a switch statement
+  // to use in individual games & remove useEffect from hook
+
   // assign stats for all games to state
   const onGetAllStats = () => {
     getPlayerStats(setOverallStats, "overall");
@@ -209,33 +213,6 @@ const usePlayerStats = () => {
   useEffect(() => {
     if (isGameOver.isOver) assignStatsToDB(isGameOver.game);
   }, [isGameOver]);
-
-  // useEffect(() => {
-  //   console.log(`-----------------------`);
-  //   console.log(`Overall: `);
-  //   console.log(overallStats);
-  // }, [overallStats]);
-  // useEffect(() => {
-  //   console.log(`Baseball: `);
-  //   console.log(baseballStats);
-  // }, [baseballStats]);
-  // useEffect(() => {
-  //   console.log(`Cricket: `);
-  //   console.log(cricketStats);
-  // }, [cricketStats]);
-  // useEffect(() => {
-  //   console.log(`Killer: `);
-  //   console.log(killerStats);
-  // }, [killerStats]);
-  // useEffect(() => {
-  //   console.log(`Elimination: `);
-  //   console.log(eliminationStats);
-  // }, [eliminationStats]);
-  // useEffect(() => {
-  //   console.log(`X01: `);
-  //   console.log(x01Stats);
-  //   console.log(`-----------------------`);
-  // }, [x01Stats]);
 
   return {
     overallStats,
