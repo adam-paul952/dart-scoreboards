@@ -33,8 +33,6 @@ const styles = StyleSheet.create({
   scoreboardRow: { flexDirection: "row", justifyContent: "center" },
   playerHeaderColumn: {
     flex: 3,
-    borderRightColor: "gray",
-    borderRightWidth: 1,
     borderBottomWidth: 1,
     borderBottomColor: "gray",
   },

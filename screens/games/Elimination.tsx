@@ -8,13 +8,21 @@ import useUndoRedo from "../../hooks/useUndoRedo";
 import usePlayerStats from "../../hooks/usePlayerStats";
 
 import { View } from "../../components/Themed";
+import CustomStackScreenHeader from "@components/scoreboard/CustomStackScreenHeader";
 import EliminationHeader from "@components/scoreboard/header/EliminationHeader";
 import EliminationScoreboardBody from "@components/scoreboard/body/EliminationScoreboardBody";
 import EliminationRoundInfo from "@components/scoreboard/round-info/EliminationRoundInfo";
 import CalculatorButtons from "@scoreboard/calculator-buttons/CalculatorButtons";
 
 import gameOverAlert from "@components/GameOverAlert";
-import CustomButton from "@components/CustomButton";
+
+// set variables
+let winner: { id?: number; name: string } = {
+  id: undefined,
+  name: "",
+};
+
+let roundScore = 0;
 
 const Elimination = () => {
   const { selectedPlayers, setSelectedPlayers } = usePlayerState();
@@ -35,11 +43,12 @@ const Elimination = () => {
     setCurrentPlayer,
     setTurn,
     nextPlayer,
+    onResetGame,
   } = useGame();
 
   const navigation = useNavigation();
 
-  const [playerState, { set: setCurrentState, undo: undoTurn, canUndo }] =
+  const [undoState, { set: setUndoState, undo: undoTurn, canUndo }] =
     useUndoRedo({
       turn: 0,
       round: 1,
@@ -48,22 +57,7 @@ const Elimination = () => {
       leadingScore: 0,
     });
 
-  const { present: presentTurn } = playerState;
-
-  useEffect(() => {
-    console.log(`---------------------`);
-    console.log(`Present Turn: `);
-    console.log(presentTurn);
-    console.log(`    `);
-  }, [presentTurn]);
-
-  // set variables
-  let winner: { id?: number; name: string } = {
-    id: undefined,
-    name: "",
-  };
-
-  let roundScore = 0;
+  const { present: presentTurn } = undoState;
 
   const [eliminationLives] = useState(currentPlayer.lives);
 
@@ -90,6 +84,8 @@ const Elimination = () => {
       playerName: winner.name,
       onResetGame,
       navigation,
+      variant: "elimination",
+      assignedLives: eliminationLives,
     });
   };
 
@@ -103,7 +99,7 @@ const Elimination = () => {
     assignCurrentPlayerHighScore(currentPlayer);
   };
 
-  const onHandleSubmit = () => {
+  const onHandleTurnChange = () => {
     onChangeTurns();
     // if it's the first turn of the game and the player doesn't score - player doesn't lose a life
     if (round === 1 && turn === 0 && roundScore === 0) {
@@ -157,13 +153,9 @@ const Elimination = () => {
   const onUndo = () => {
     undoTurn();
     setSelectedPlayers((prev) =>
-      prev.map((player) => {
-        if (player.id === presentTurn.player.id) {
-          return presentTurn.player;
-        } else {
-          return player;
-        }
-      })
+      prev.map((player) =>
+        player.id === presentTurn.player.id ? presentTurn.player : player
+      )
     );
 
     setCurrentPlayer(presentTurn.player);
@@ -172,41 +164,35 @@ const Elimination = () => {
     setLeadingScore(presentTurn.leadingScore);
   };
 
-  // reset game if playing again
-  const onResetGame = () => {
-    setSelectedPlayers((prev) =>
-      prev.map((player) => {
-        player.score = 0;
-        player.scoreList = [];
-        player.lives = eliminationLives;
-        return player;
-      })
-    );
-
-    setRound(1);
-    setLeadingScore(0);
+  const onHandleSubmit = () => {
+    setUndoState({
+      turn,
+      round,
+      player: JSON.parse(JSON.stringify(currentPlayer)),
+      leadingScore,
+      nextPlayer: JSON.parse(JSON.stringify(nextPlayer)),
+    });
+    onHandleTurnChange();
   };
 
   return (
     <View style={styles.container}>
+      <CustomStackScreenHeader
+        title={"Elimination"}
+        onUndo={onUndo}
+        canUndo={canUndo}
+        onResetGame={onResetGame}
+      />
       <View style={styles.scoreboardContainer}>
         <EliminationHeader />
-        {selectedPlayers.map((player) => {
-          return (
-            <EliminationScoreboardBody
-              key={player.name}
-              player={player}
-              currentPlayer={currentPlayer.id!}
-            />
-          );
-        })}
+        {selectedPlayers.map((player) => (
+          <EliminationScoreboardBody
+            key={player.name}
+            player={player}
+            currentPlayer={currentPlayer.id}
+          />
+        ))}
       </View>
-      <CustomButton
-        title="Undo"
-        buttonStyle={{ width: "25%", alignSelf: "center" }}
-        onPressIn={() => onUndo()}
-        disabled={!canUndo}
-      />
       <EliminationRoundInfo
         currentPlayer={currentPlayer}
         round={round}
@@ -215,16 +201,7 @@ const Elimination = () => {
       <View>
         <CalculatorButtons
           variant="elimination"
-          onHandleSubmit={() => {
-            setCurrentState({
-              turn,
-              round,
-              player: JSON.parse(JSON.stringify(currentPlayer)),
-              leadingScore,
-              nextPlayer: JSON.parse(JSON.stringify(nextPlayer)),
-            });
-            onHandleSubmit();
-          }}
+          onHandleSubmit={onHandleSubmit}
           onDeleteInput={() => onDeleteInput("elimination")}
           setValue={setPlayerScore}
         />
@@ -236,6 +213,6 @@ const Elimination = () => {
 export default Elimination;
 
 const styles = StyleSheet.create({
-  container: { flex: 1, flexDirection: "column", paddingTop: 20 },
+  container: { flex: 1, flexDirection: "column" },
   scoreboardContainer: { flex: 2 },
 });

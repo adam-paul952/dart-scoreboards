@@ -12,12 +12,13 @@ import { IPlayer } from "@context/PlayerContext";
 interface CricketScoreboardColumnProps {
   player: IPlayer;
   hitMarkColor: string;
+  hitTargets?: number[];
 }
 
 const CricketScoreboardColumn = (props: CricketScoreboardColumnProps) => {
-  const { player, hitMarkColor } = props;
+  const { player, hitMarkColor, hitTargets } = props;
 
-  const hitTargets = [
+  const numTargets = [
     player.scoreList.filter((hitNum) => hitNum === 20).length,
     player.scoreList.filter((hitNum) => hitNum === 19).length,
     player.scoreList.filter((hitNum) => hitNum === 18).length,
@@ -26,6 +27,13 @@ const CricketScoreboardColumn = (props: CricketScoreboardColumnProps) => {
     player.scoreList.filter((hitNum) => hitNum === 15).length,
     player.scoreList.filter((hitNum) => hitNum === 25).length,
   ];
+
+  let activeArray: number[] = [];
+
+  if (hitTargets !== undefined)
+    for (let i = 0; i < numTargets.length; i++) {
+      activeArray[i] = numTargets[i] += hitTargets[i];
+    }
 
   const renderIcon = (target: number) => {
     if (target === 1) {
@@ -66,25 +74,38 @@ const CricketScoreboardColumn = (props: CricketScoreboardColumnProps) => {
     } else return null;
   };
 
-  return (
-    <>
-      {hitTargets.map((target, index) => {
-        return (
-          <View
-            key={index}
-            style={{
-              flex: 1,
-              justifyContent: "center",
-              alignItems: "center",
-              backgroundColor: "transparent",
-            }}
-          >
-            {renderIcon(target)}
-          </View>
-        );
-      })}
-    </>
-  );
+  const renderCurrentIcons = () => {
+    if (hitTargets !== undefined)
+      return activeArray.map((target, index) => (
+        <View
+          key={index}
+          style={{
+            flex: 1,
+            justifyContent: "center",
+            alignItems: "center",
+            backgroundColor: "transparent",
+          }}
+        >
+          {renderIcon(target)}
+        </View>
+      ));
+
+    return numTargets.map((target, index) => (
+      <View
+        key={index}
+        style={{
+          flex: 1,
+          justifyContent: "center",
+          alignItems: "center",
+          backgroundColor: "transparent",
+        }}
+      >
+        {renderIcon(target)}
+      </View>
+    ));
+  };
+
+  return <>{renderCurrentIcons()}</>;
 };
 
 export default CricketScoreboardColumn;

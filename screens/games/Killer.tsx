@@ -7,7 +7,8 @@ import useGame from "../../hooks/useGame";
 import useUndoRedo from "../../hooks/useUndoRedo";
 import usePlayerStats from "../../hooks/usePlayerStats";
 
-import { View } from "../../components/Themed";
+import { Text, TextInput, View } from "../../components/Themed";
+import CustomStackScreenHeader from "@components/scoreboard/CustomStackScreenHeader";
 import KillerHeader from "@scoreboard/header/KillerHeader";
 import KillerScoreboardBody from "@components/scoreboard/body/KillerScoreboardBody";
 import CalculatorButtons from "@components/scoreboard/calculator-buttons/CalculatorButtons";
@@ -35,6 +36,7 @@ const Killer = ({ route }: KillerProps) => {
     changeRounds,
     playerIsOut,
     setPlayerIsOut,
+    onResetGame,
   } = useGame();
   const navigation = useNavigation();
   const [playerState, { set: setCurrentState, undo: undoTurn, canUndo }] =
@@ -84,20 +86,9 @@ const Killer = ({ route }: KillerProps) => {
         }
       });
     }
+
     changeTurns();
     changeRounds();
-  };
-
-  const onResetGame = () => {
-    setSelectedPlayers((prev) =>
-      prev.map((player) => {
-        player.lives = 0;
-        player.killer = false;
-        return player;
-      })
-    );
-    // changeTurns();
-    setPlayerIsOut([]);
   };
 
   // when screen is focused re-assign current player to reflect sorted list
@@ -129,6 +120,7 @@ const Killer = ({ route }: KillerProps) => {
           return player;
         }
       });
+
       assignPlayerStats(winner[0]);
     }
   }, [playerIsOut]);
@@ -144,25 +136,80 @@ const Killer = ({ route }: KillerProps) => {
       playerName: winner.name,
       onResetGame,
       navigation,
+      variant: "killer",
     });
   };
 
   return (
-    <View style={{ flex: 1, paddingTop: 10 }}>
-      <ScrollView style={{ flex: 2 }}>
+    <View style={{ flex: 1 }}>
+      <CustomStackScreenHeader
+        title="Killer"
+        onUndo={undoTurn}
+        canUndo={canUndo}
+        onResetGame={onResetGame}
+      />
+      <ScrollView style={{}}>
         <KillerHeader />
         {selectedPlayers.map((player) => {
           return (
             <KillerScoreboardBody
               key={player.name}
               player={player}
-              currentPlayer={currentPlayer.id!}
+              currentPlayer={currentPlayer.id}
             />
           );
         })}
       </ScrollView>
-      <View></View>
-      <View>
+      <>
+        <View
+          style={{
+            flexDirection: "row",
+            justifyContent: "space-evenly",
+          }}
+        >
+          <View
+            style={{
+              width: "45%",
+              paddingHorizontal: 5,
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+          >
+            <Text
+              style={{
+                fontSize: 20,
+                fontWeight: "600",
+                textDecorationLine: "underline",
+              }}
+            >
+              {currentPlayer.name} to throw
+            </Text>
+          </View>
+          <View style={{ width: "33%" }}>
+            <Text style={[{ textAlign: "center" }]}>Points</Text>
+            <TextInput
+              style={styles.scoreInput}
+              editable={false}
+              showSoftInputOnFocus={false}
+              value=""
+              textAlign="center"
+            />
+          </View>
+        </View>
+        <View
+          style={{
+            flexDirection: "row",
+            justifyContent: "space-evenly",
+            borderTopWidth: 1,
+            borderTopColor: "lightgray",
+          }}
+        >
+          <Text style={{ fontSize: 15 }}>Round: {round}</Text>
+          <Text style={{ fontSize: 15 }}>Place</Text>
+          <Text style={{ fontSize: 15 }}>Holder</Text>
+        </View>
+      </>
+      <View style={{}}>
         <CalculatorButtons
           variant="killer"
           onHandleSubmit={onHandleSubmit}
@@ -176,4 +223,14 @@ const Killer = ({ route }: KillerProps) => {
 
 export default Killer;
 
-const styles = StyleSheet.create({});
+const styles = StyleSheet.create({
+  scoreInput: {
+    borderWidth: 1,
+    borderColor: "gray",
+    marginBottom: 10,
+    height: 50,
+    padding: 10,
+    fontSize: 20,
+    borderRadius: 15,
+  },
+});

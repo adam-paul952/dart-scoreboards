@@ -2,19 +2,19 @@ import React, { useEffect, useState } from "react";
 import { Alert, StyleSheet } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 
-import { IPlayer, usePlayerState } from "../../context/PlayerContext";
+import { usePlayerState } from "../../context/PlayerContext";
 import useGame from "../../hooks/useGame";
 import useUndoRedo from "../../hooks/useUndoRedo";
 import usePlayerStats from "../../hooks/usePlayerStats";
 
 import { View } from "@components/Themed";
+import CustomStackScreenHeader from "@components/scoreboard/CustomStackScreenHeader";
 import X01Header from "@scoreboard/header/X01Header";
 import X01ScoreboardBody from "@scoreboard/body/X01ScoreboardBody";
 import X01PlayerInfo from "@scoreboard/round-info/X01PlayerInfo";
 import X01InputRow from "@components/scoreboard/X01InputRow";
 import CalculatorButtons from "@scoreboard/calculator-buttons/CalculatorButtons";
 import gameOverAlert from "@components/GameOverAlert";
-import CustomButton from "@components/CustomButton";
 
 const X01 = () => {
   const { selectedPlayers, setSelectedPlayers } = usePlayerState();
@@ -25,11 +25,8 @@ const X01 = () => {
     onDeleteInput,
     changeTurns,
     currentPlayer,
-
     assignCurrentPlayerHighScore,
-
     setCurrentPlayer,
-
     nextPlayer,
   } = useGame();
   const navigation = useNavigation();
@@ -100,7 +97,7 @@ const X01 = () => {
     // seperate function handle changing of a player in-game stats
     handleStatsChange();
     // set playerlist with currentplayer totals
-    setSelectedPlayers((prev: IPlayer[]) =>
+    setSelectedPlayers((prev) =>
       prev.map((player) => {
         // if current player isn't equal to player return
         if (currentPlayer.id !== player.id) return player;
@@ -125,14 +122,19 @@ const X01 = () => {
 
       setGameOver({ isOver: true, game: "x01" });
 
-      gameOverAlert({ playerName: winner.name, resetGame, navigation });
+      gameOverAlert({
+        playerName: winner.name,
+        onResetGame: resetGame,
+        navigation,
+        variant: "x01",
+      });
     }
     return true;
   };
 
   // reset game if playing again
   const resetGame = () => {
-    setSelectedPlayers((prev: IPlayer[]) =>
+    setSelectedPlayers((prev) =>
       prev.map((player) => {
         player.score = x01Points;
         player.scoreList = [];
@@ -167,6 +169,13 @@ const X01 = () => {
 
   return (
     <View style={styles.container}>
+      <CustomStackScreenHeader
+        title="X01"
+        onUndo={onUndo}
+        canUndo={canUndo}
+        onResetGame={resetGame}
+        currentPlayerScore={currentPlayer.score}
+      />
       <View style={styles.headerRow}>
         <X01Header />
         <X01ScoreboardBody
@@ -174,36 +183,28 @@ const X01 = () => {
           currentPlayer={currentPlayer}
         />
       </View>
-      <CustomButton
-        title="Undo"
-        buttonStyle={{ width: "25%", alignSelf: "center" }}
-        onPressIn={() => onUndo()}
-        disabled={!canUndo}
+      <X01InputRow
+        playerScore={playerScore}
+        inputError={inputError}
+        currentPlayer={currentPlayer}
       />
-      <>
-        <X01InputRow
-          playerScore={playerScore}
-          inputError={inputError}
-          currentPlayerScore={currentPlayer.score}
+      <X01PlayerInfo currentPlayer={currentPlayer} />
+      <View>
+        <CalculatorButtons
+          variant="x01"
+          value={playerScore}
+          setValue={setPlayerScore}
+          disabled={disabled}
+          onHandleSubmit={() => {
+            setCurrentState({
+              player: JSON.parse(JSON.stringify(currentPlayer)),
+              nextPlayer: JSON.parse(JSON.stringify(nextPlayer)),
+            });
+            onHandleSubmit();
+          }}
+          onDeleteInput={() => onDeleteInput("x01")}
         />
-        <View>
-          <X01PlayerInfo currentPlayer={currentPlayer} />
-          <CalculatorButtons
-            variant="x01"
-            value={playerScore}
-            setValue={setPlayerScore}
-            disabled={disabled}
-            onHandleSubmit={() => {
-              setCurrentState({
-                player: JSON.parse(JSON.stringify(currentPlayer)),
-                nextPlayer: JSON.parse(JSON.stringify(nextPlayer)),
-              });
-              onHandleSubmit();
-            }}
-            onDeleteInput={() => onDeleteInput("x01")}
-          />
-        </View>
-      </>
+      </View>
     </View>
   );
 };
@@ -211,7 +212,7 @@ const X01 = () => {
 export default X01;
 
 const styles = StyleSheet.create({
-  container: { flex: 1, flexDirection: "column", paddingTop: 20 },
+  container: { flex: 1, flexDirection: "column" },
   headerRow: { flex: 2 },
   scoreboardRow: { flexDirection: "row", justifyContent: "center" },
   playerHeaderColumn: {

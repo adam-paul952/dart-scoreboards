@@ -12,10 +12,11 @@ import Colors from "../../../constants/Colors";
 interface CricketScoreboardBodyProps {
   player: IPlayer;
   currentPlayer: IPlayer;
+  hitTargets: number[];
 }
 
 const CricketScoreboardBody = (props: CricketScoreboardBodyProps) => {
-  const { player, currentPlayer } = props;
+  const { player, currentPlayer, hitTargets } = props;
 
   const colorScheme = useColorScheme();
   const hitMarkColor = Colors[colorScheme].text;
@@ -33,7 +34,16 @@ const CricketScoreboardBody = (props: CricketScoreboardBodyProps) => {
       <View style={styles.playerColumn}>
         <Text style={[styles.scoreboardText, { flex: 3 }]}>{player.name}</Text>
       </View>
-      <CricketScoreboardColumn player={player} hitMarkColor={hitMarkColor} />
+      {player.id === currentPlayer.id ? (
+        <CricketScoreboardColumn
+          player={player}
+          hitTargets={hitTargets}
+          hitMarkColor={hitMarkColor}
+        />
+      ) : (
+        <CricketScoreboardColumn player={player} hitMarkColor={hitMarkColor} />
+      )}
+
       <Text style={[styles.scoreboardText, { flex: 1, textAlign: "center" }]}>
         {player.score}
       </Text>

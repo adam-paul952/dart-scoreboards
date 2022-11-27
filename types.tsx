@@ -37,7 +37,7 @@ export type RootStackParamList = {
   killer: { playerTargets: Array<number> };
   statistics: undefined;
   "resume-game": undefined;
-  "x01-outchart": undefined;
+  "x01-outchart": { currentPlayerScore?: number };
   "killer-setup": undefined;
   "display-statistics": { variant: GameVariants };
   "undo-modal": undefined;

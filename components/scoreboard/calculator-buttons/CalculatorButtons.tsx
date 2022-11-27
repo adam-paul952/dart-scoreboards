@@ -8,8 +8,10 @@ import ButtonItem from "./ButtonItem";
 import { regularButtons } from "@scoreboard/calculator-buttons/constants";
 import { cricketButtons } from "@scoreboard/calculator-buttons/constants";
 
+import type { PlayableGameVariants } from "../../../hooks/useGame";
+
 interface CalculatorButtonsProps {
-  variant: "baseball" | "cricket" | "elimination" | "killer" | "x01";
+  variant: PlayableGameVariants;
   value?: string;
   setValue?: React.Dispatch<React.SetStateAction<string>>;
   disabled?: boolean | Array<boolean>;
@@ -82,10 +84,11 @@ const CalculatorButtons = (props: CalculatorButtonsProps) => {
   const assignHits = (index: number) => {
     let hit = 0;
     if (hitTargets !== undefined)
-      for (let i = 0; i < hitTargets.length - 1; i++) {
-        if (index === i) hit = hitTargets[i];
+      hitTargets.forEach((target, i) => {
+        if (index === i) hit = target;
         else if (index === 7) hit = hitTargets[hitTargets.length - 1];
-      }
+      });
+
     return hit;
   };
 
@@ -110,7 +113,9 @@ const CalculatorButtons = (props: CalculatorButtonsProps) => {
         return isDisabled;
       }
       // if disabled prop isn't defined return false
-    } else return isDisabled;
+    }
+
+    return isDisabled;
   };
 
   const renderItem = ({ item, index }: { item: string; index: number }) => {

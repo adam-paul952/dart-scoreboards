@@ -38,6 +38,8 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-evenly",
     paddingVertical: 5,
+    borderTopWidth: 1,
+    borderTopColor: "lightgray",
   },
   textStyle: { fontSize: 15 },
 });

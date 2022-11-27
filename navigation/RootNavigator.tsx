@@ -102,37 +102,38 @@ const RootNavigator = () => {
         <Stack.Screen
           name="x01"
           component={X01}
-          options={({ navigation, route }: RootStackScreenProps<"x01">) => ({
-            title: "X01",
-            headerRight: () => (
-              <Pressable
-                onPress={() => navigation.navigate("x01-outchart")}
-                style={({ pressed }) => [
-                  {
-                    opacity: pressed ? 0.5 : 1,
-                  },
-                  { position: "absolute", bottom: -13, right: 5 },
-                ]}
-                accessibilityHint="x01-outshot-left"
-              >
-                <FontAwesome5Icon
-                  name="clipboard-list"
-                  size={23}
-                  color={Colors[colorScheme].text}
-                />
-              </Pressable>
-            ),
-          })}
+          options={{ title: "X01", headerShown: false }}
+          // options={({ navigation, route }: RootStackScreenProps<"x01">) => ({
+          //   title: "X01",
+          //   headerRight: () => (
+          //     <Pressable
+          //       onPress={() => navigation.navigate("x01-outchart")}
+          //       style={({ pressed }) => [
+          //         {
+          //           opacity: pressed ? 0.5 : 1,
+          //         },
+          //         { position: "absolute", bottom: -13, right: 5 },
+          //       ]}
+          //       accessibilityHint="x01-outshot-left"
+          //     >
+          //       <FontAwesome5Icon
+          //         name="clipboard-list"
+          //         size={23}
+          //         color={Colors[colorScheme].text}
+          //       />
+          //     </Pressable>
+          //   ),
+          // })}
         />
         <Stack.Screen
           name="elimination"
           component={Elimination}
-          options={{ title: "Elimination" }}
+          options={{ title: "Elimination", headerShown: false }}
         />
         <Stack.Screen
           name="killer"
           component={Killer}
-          options={{ title: "Killer" }}
+          options={{ title: "Killer", headerShown: false }}
         />
         <Stack.Screen
           name="statistics"

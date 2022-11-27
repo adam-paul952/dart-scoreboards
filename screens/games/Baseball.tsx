@@ -8,11 +8,11 @@ import useUndoRedo from "../../hooks/useUndoRedo";
 import usePlayerStats from "../../hooks/usePlayerStats";
 
 import { View } from "../../components/Themed";
+import CustomStackScreenHeader from "@components/scoreboard/CustomStackScreenHeader";
 import BaseballHeader from "@scoreboard/header/BaseballHeader";
 import BaseballScoreboardBody from "@scoreboard/body/BaseballScoreboardBody";
 import CalculatorButtons from "@scoreboard/calculator-buttons/CalculatorButtons";
 import BaseballRoundInfo from "@scoreboard/round-info/BaseballRoundInfo";
-import CustomStackScreenHeader from "@components/scoreboard/CustomStackScreenHEader";
 
 import gameOverAlert from "@components/GameOverAlert";
 
@@ -45,7 +45,7 @@ const Baseball = () => {
   } = useGame();
   const navigation = useNavigation();
 
-  const [undoState, { set: setCurrentUndoState, undo: undoTurn, canUndo }] =
+  const [undoState, { set: setUndoState, undo: undoTurn, canUndo }] =
     useUndoRedo({
       turn: 0,
       round: 1,
@@ -150,18 +150,9 @@ const Baseball = () => {
       playerName: winner.name,
       onResetGame,
       navigation,
+      variant: "baseball",
     });
   };
-
-  useEffect(() => {
-    if (playerIsOut.length >= 1)
-      playerIsOut.forEach((player) => {
-        if (player.name === currentPlayer.name) {
-          changeTurns();
-          changeRounds();
-        }
-      });
-  }, [currentPlayer]);
 
   const onUndo = () => {
     undoTurn();
@@ -178,7 +169,7 @@ const Baseball = () => {
 
   const onHandleSubmit = () => {
     // assign state to undo redo
-    setCurrentUndoState({
+    setUndoState({
       turn,
       round,
       player: JSON.parse(JSON.stringify(currentPlayer)),
@@ -190,26 +181,33 @@ const Baseball = () => {
     onHandleTurnChange();
   };
 
+  useEffect(() => {
+    if (playerIsOut.length >= 1)
+      playerIsOut.forEach((player) => {
+        if (player.name === currentPlayer.name) {
+          changeTurns();
+          changeRounds();
+        }
+      });
+  }, [currentPlayer]);
+
   return (
     <View style={styles.container}>
       <CustomStackScreenHeader
         title="Baseball"
         canUndo={canUndo}
         onUndo={onUndo}
-        navigation={navigation}
       />
       <View style={styles.scoreboardContainer}>
         <BaseballHeader />
-        {selectedPlayers.map((player) => {
-          return (
-            <BaseballScoreboardBody
-              key={player.id}
-              player={player}
-              currentPlayer={currentPlayer.id!}
-              playersOut={playerIsOut.some((item) => item.id === player.id)}
-            />
-          );
-        })}
+        {selectedPlayers.map((player) => (
+          <BaseballScoreboardBody
+            key={player.id}
+            player={player}
+            currentPlayer={currentPlayer.id!}
+            playersOut={playerIsOut.some((item) => item.id === player.id)}
+          />
+        ))}
       </View>
       <View>
         <BaseballRoundInfo

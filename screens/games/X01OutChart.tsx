@@ -1,98 +1,98 @@
-import React from "react";
-
+import React, { useEffect, useRef, useState } from "react";
 import { StyleSheet } from "react-native";
+import { FlatList } from "react-native-gesture-handler";
+
 import { Text, View } from "@components/Themed";
+import ListItem from "./x01OutChartComponents/ListItem";
 
 import { possibleOutShots } from "../../constants/data/x01OutShots";
-import { FlatList } from "react-native-gesture-handler";
+
+import { NativeStackScreenProps } from "@react-navigation/native-stack";
+import { RootStackParamList } from "types";
+
+type X01OutChartProps = NativeStackScreenProps<
+  RootStackParamList,
+  "x01-outchart"
+>;
+
+export interface ItemProps {
+  score: number;
+  checkOut: string[][];
+}
 
 const outShotHeader = ["Score", "Dart 1", " Dart 2", "Dart 3"];
 
-const X01OutChart = () => {
-  const Item = ({ item }: { item: any }) => {
-    return (
-      <>
-        {item.checkOut.map((outshot: any, index: any) => {
-          if (outshot.includes("No Check Out")) return null;
-          else
-            return (
-              <View
-                key={index}
-                style={{
-                  flexDirection: "row",
-                  borderBottomWidth: 1,
-                  borderBottomColor: "gray",
-                }}
-              >
-                <View
-                  style={{
-                    flex: 1,
-                    alignItems: "center",
-                    borderRightWidth: 1,
-                    borderRightColor: "gray",
-                    paddingHorizontal: 1,
-                    paddingVertical: 3,
-                  }}
-                >
-                  <Text style={{ fontSize: 20 }}>{item.score}</Text>
-                </View>
-                {outshot.map((number: any, index: any) => {
-                  const key = (index + 1) * 1000;
-                  return (
-                    <View key={key} style={{ flex: 1, alignItems: "center" }}>
-                      <Text style={{ fontSize: 20 }}>{number}</Text>
-                    </View>
-                  );
-                })}
-              </View>
-            );
-        })}
-      </>
-    );
-  };
+const keyExtractor = (item: ItemProps, index: number) => `score-${index}`;
+
+const getItemLayout = (data: any, index: number) => ({
+  length: 85,
+  offset: (85 + 1.05) * index,
+  index,
+});
+
+const renderItem = ({ item }: { item: ItemProps }) => <ListItem item={item} />;
+
+const X01OutChart = ({ route }: X01OutChartProps) => {
+  const { currentPlayerScore } = route.params;
+
+  let dataArray = possibleOutShots.filter(
+    (item) => item.checkOut[0][0] !== "No Check Out"
+  );
+
+  currentPlayerScore !== undefined
+    ? (dataArray = dataArray.filter((item) => item.score <= currentPlayerScore))
+    : (dataArray = dataArray);
 
   return (
     <View style={{ flex: 1 }}>
-      {/* Outshot header */}
-      <View style={{ flexDirection: "row", paddingLeft: 3 }}>
-        {outShotHeader.map((header) => {
-          return (
-            <View
-              key={header}
-              style={{
-                flex: 1,
-                borderRightColor: "gray",
-                borderRightWidth: 1,
-                borderBottomWidth: 1,
-                borderBottomColor: "gray",
-                paddingVertical: 3,
-                alignItems: "center",
-              }}
-            >
-              <Text style={{ fontSize: 20 }}>{header}</Text>
-            </View>
-          );
-        })}
-      </View>
-      {/* end header */}
-      {/* Table body */}
-      <View>
-        <FlatList
-          data={possibleOutShots}
-          renderItem={Item}
-          keyExtractor={(item) => item.score.toString()}
-          maxToRenderPerBatch={30}
-          updateCellsBatchingPeriod={75}
-          initialNumToRender={30}
-        />
-      </View>
-      {/* end table body */}
+      <FlatList
+        data={dataArray}
+        renderItem={renderItem}
+        keyExtractor={keyExtractor}
+        ItemSeparatorComponent={ItemSeperator}
+        ListHeaderComponent={ListHeader}
+        getItemLayout={getItemLayout}
+        maxToRenderPerBatch={10}
+        initialNumToRender={30}
+        stickyHeaderIndices={[0]}
+      />
     </View>
   );
 };
 
 export default X01OutChart;
 
-const styles = StyleSheet.create({});
+const ListHeader = () => (
+  <View
+    style={{
+      flex: 1,
+      borderRightColor: "gray",
+      borderRightWidth: 1,
+      borderBottomWidth: 1,
+      borderBottomColor: "gray",
+      paddingVertical: 3,
+      alignItems: "center",
+      flexDirection: "row",
+      justifyContent: "space-around",
+    }}
+  >
+    {outShotHeader.map((header) => (
+      <Text key={header} style={{ fontSize: 20 }}>
+        {header}
+      </Text>
+    ))}
+  </View>
+);
 
-// TODO: List needs to be further optimized
+const ItemSeperator = () => (
+  <View
+    style={{
+      margin: 1,
+      borderBottomColor: "lightgray",
+      borderBottomWidth: 1,
+      marginVertical: 5,
+    }}
+  />
+);
+
+const styles = StyleSheet.create({});

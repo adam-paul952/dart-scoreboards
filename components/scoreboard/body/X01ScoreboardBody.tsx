@@ -1,11 +1,12 @@
 import React from "react";
-
 import { StyleSheet } from "react-native";
-import { AntDesign } from "@expo/vector-icons";
 
-import { IPlayer } from "@context/PlayerContext";
 import { Text, View } from "../../Themed";
 
+import Colors from "../../../constants/Colors";
+import useColorScheme from "../../../hooks/useColorScheme";
+
+import { IPlayer } from "@context/PlayerContext";
 interface IX01ScoreboardBodyProps {
   selectedPlayers: IPlayer[];
   currentPlayer: any;
@@ -13,27 +14,34 @@ interface IX01ScoreboardBodyProps {
 
 const X01ScoreboardBody = (props: IX01ScoreboardBodyProps) => {
   const { selectedPlayers, currentPlayer } = props;
+  const colorScheme = useColorScheme();
+  const activePlayerRow = Colors[colorScheme].activePlayer;
 
   return (
     <>
-      {selectedPlayers.map((player: IPlayer) => {
+      {selectedPlayers.map((player) => {
         return (
-          <View key={player.id} style={styles.playerRow}>
+          <View
+            key={player.id}
+            style={[
+              player.id === currentPlayer.id
+                ? { backgroundColor: activePlayerRow }
+                : {},
+              styles.playerRow,
+            ]}
+          >
             <View
               style={[
                 styles.playerColumn,
-                { flexDirection: "row", alignItems: "center" },
+                {
+                  flexDirection: "row",
+                  alignItems: "center",
+                  backgroundColor: "transparent",
+                },
               ]}
             >
-              <View style={{ flex: 4 }}>
-                <Text style={[styles.scoreboardText, { marginLeft: 25 }]}>
-                  {player.name}
-                </Text>
-              </View>
-              <View style={{ flex: 0.5 }}>
-                {player.id === currentPlayer.id && (
-                  <AntDesign name="caretleft" size={18} color="darkred" />
-                )}
+              <View style={{ flex: 4, backgroundColor: "transparent" }}>
+                <Text style={[styles.scoreboardText]}>{player.name}</Text>
               </View>
             </View>
             <Text style={[styles.scoreboardText, { flex: 1 }]}>0</Text>
@@ -54,7 +62,5 @@ const styles = StyleSheet.create({
   playerRow: { flexDirection: "row" },
   playerColumn: {
     flex: 3,
-    borderRightColor: "gray",
-    borderRightWidth: 1,
   },
 });

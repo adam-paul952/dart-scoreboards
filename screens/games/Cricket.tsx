@@ -3,12 +3,12 @@ import { StyleSheet } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 
 import { usePlayerState } from "../../context/PlayerContext";
-import useGame from "../../hooks/useGame";
+import useGame, { PlayableGameVariants } from "../../hooks/useGame";
 import useUndoRedo from "../../hooks/useUndoRedo";
 import usePlayerStats from "../../hooks/usePlayerStats";
 
 import { View } from "../../components/Themed";
-import CustomStackScreenHeader from "@components/scoreboard/CustomStackScreenHEader";
+import CustomStackScreenHeader from "@components/scoreboard/CustomStackScreenHeader";
 import CricketHeader from "@scoreboard/header/CricketHeader";
 import CricketScoreboardBody from "@scoreboard/body/CricketScoreboardBody";
 import CricketRoundInfo from "@scoreboard/round-info/CricketRoundInfo";
@@ -33,6 +33,8 @@ const Cricket = () => {
     turn,
     setCurrentPlayer,
     setTurn,
+    onDeleteInput,
+    onResetGame,
   } = useGame();
   const navigation = useNavigation();
 
@@ -44,20 +46,12 @@ const Cricket = () => {
       nextPlayer: {},
       leadingScore: 0,
       disabledButtons: [] as boolean[],
+      playerScore: "",
     });
 
   const { present: presentTurn } = undoState;
 
-  // useEffect(() => {
-  //   console.log(`-------New State--------`);
-  //   console.log(`Past Turn: `);
-  //   console.log(pastTurn);
-  //   console.log(`----------------------`);
-  //   console.log(`Present Turn: `);
-  //   console.log(presentTurn);
-  //   console.log(`---------------------`);
-  //   console.log("");
-  // }, [playerState]);
+  let playerScoreArray = playerScore.split(",");
 
   // assign a ref to turn to enable or disable calculator buttons that are closed
   const previousTurn = useRef(-1);
@@ -73,20 +67,10 @@ const Cricket = () => {
     false,
   ]);
 
-  // remove last element from playerScore
-  const onDeleteInput = () => {
-    setPlayerScore((prev) =>
-      prev
-        .split(",")
-        .splice(0, prev.split(",").length - 1)
-        .toString()
-    );
-  };
-
-  const onHandleSubmit = () => {
+  const onHandleTurnCharge = () => {
     previousTurn.current = turn;
     // convert string array into numbers and push into current player scoreList
-    playerScore.split(",").forEach((score) => {
+    playerScoreArray.forEach((score) => {
       const newScore = parseInt(score, 10);
       !isNaN(newScore) && currentPlayer.scoreList.push(newScore);
     });
@@ -103,15 +87,17 @@ const Cricket = () => {
           player.score = newScore;
           if (player.stats.highScore < newScore)
             player.stats.highScore = newScore;
+          player.stats.darts += 3;
           return player;
         }
       })
     );
     // check current player array for maximum marks
     const declareWinner = targets
-      .map((target) => {
-        return currentPlayer.scoreList.filter((num) => num === target).length;
-      })
+      .map(
+        (target) =>
+          currentPlayer.scoreList.filter((num) => num === target).length
+      )
       .every((hit) => hit >= 3);
     // if player has all marks and leading score
     if (declareWinner && currentPlayer.score >= leadingScore) {
@@ -125,6 +111,33 @@ const Cricket = () => {
     }
   };
 
+  // if player has more then three marks on a number assign score
+  const handleScoreChange = (playerArray: Array<number>) => {
+    let newScore: number[] = [];
+    targets.forEach((target) => {
+      let countedScore = playerArray.filter((hitNum) => hitNum === target);
+      countedScore.splice(0, 3);
+      newScore.push(countedScore.reduce((a, b) => a + b, 0));
+    });
+
+    return newScore.reduce((a, b) => a + b, 0);
+  };
+
+  const onHandleSubmit = () => {
+    setUndoState({
+      turn,
+      round,
+      player: JSON.parse(JSON.stringify(currentPlayer)),
+      leadingScore: leadingScore,
+      nextPlayer: JSON.parse(
+        JSON.stringify(selectedPlayers[(turn + 1) % selectedPlayers.length])
+      ),
+      disabledButtons: [...disableButton],
+      playerScore: playerScore,
+    });
+    onHandleTurnCharge();
+  };
+
   const onDeclareWinner = () => {
     selectedPlayers.forEach((player) => {
       onUpdatePlayerStats("cricket", player, currentPlayer);
@@ -132,39 +145,17 @@ const Cricket = () => {
 
     setGameOver({ isOver: true, game: "cricket" });
 
-    gameOverAlert({ playerName: currentPlayer.name, onResetGame, navigation });
+    gameOverAlert({
+      playerName: currentPlayer.name,
+      onResetGame: resetGame,
+      navigation,
+      variant: "cricket",
+    });
   };
 
-  // reset game
-  const onResetGame = () => {
-    setSelectedPlayers((prev) =>
-      prev.map((player) => {
-        player.score = 0;
-        player.scoreList = [];
-        player.stats.highScore = 0;
-        return player;
-      })
-    );
-
-    setDisableButton((prev) =>
-      prev.map((value) => {
-        return (value = false);
-      })
-    );
-
-    setLeadingScore(0);
-    setRound(1);
-  };
-
-  // if player has more then three marks on a number assign score
-  const handleScoreChange = (playerArray: Array<number>) => {
-    let newScore = [];
-    for (let i = 0; i < targets.length; i++) {
-      let countedScore = playerArray.filter((hitNum) => hitNum === targets[i]);
-      countedScore.splice(0, 3);
-      newScore.push(countedScore.reduce((a, b) => a + b, 0));
-    }
-    return newScore.reduce((a, b) => a + b, 0);
+  const resetGame = (variant: PlayableGameVariants) => {
+    onResetGame(variant);
+    setDisableButton((prev) => prev.map((value) => (value = false)));
   };
 
   // disable buttons if all players have number closed
@@ -173,18 +164,16 @@ const Cricket = () => {
       // loop over target array
       for (let i = 0; i < targets.length; i++) {
         // map over playerList
-        let checkNumOfMarks = selectedPlayers.map((player) => {
+        let checkNumOfMarks: number[] = selectedPlayers.map((player) => {
           // if player.id is equal to currentPlayer
           if (player.id === currentPlayer.id) {
             // make shallow copy of scorelist
             let hitArray = [...player.scoreList];
             // convert current marks to array and push into copy of player scorelist
-            playerScore
-              .split(",")
-              .forEach(
-                (num) =>
-                  !isNaN(parseInt(num, 10)) && hitArray.push(parseInt(num, 10))
-              );
+            playerScoreArray.forEach(
+              (num) =>
+                !isNaN(parseInt(num, 10)) && hitArray.push(parseInt(num, 10))
+            );
             // filter updated scorelist copy to determine if number should be closed
             return hitArray.filter((hitNum) => hitNum === targets[i]).length;
           }
@@ -192,18 +181,18 @@ const Cricket = () => {
           return player.scoreList.filter((hitNum) => hitNum === targets[i])
             .length;
         });
-        // console.log(targets[i], checkNumOfMarks);
         // for each target we check against current marks
         const markClosed = checkNumOfMarks.every((num: number) => num >= 3);
         // if the marks are closed
         if (markClosed) {
           setDisableButton((prev) =>
-            prev.map((value, index) => {
+            prev.map((value, index) =>
               // if the index is equal to the index in targets we set mark disabled
-              if (index === i) return (value = true);
-              // or just return the value
-              else return value;
-            })
+              index === i
+                ? (value = true)
+                : // or just return the value
+                  value
+            )
           );
         }
       }
@@ -213,13 +202,9 @@ const Cricket = () => {
   const onUndoTurn = () => {
     undoTurn();
     setSelectedPlayers((prev) =>
-      prev.map((player) => {
-        if (player.id === presentTurn.player.id) {
-          return presentTurn.player;
-        } else {
-          return player;
-        }
-      })
+      prev.map((player) =>
+        player.id === presentTurn.player.id ? presentTurn.player : player
+      )
     );
 
     setCurrentPlayer(presentTurn.player);
@@ -227,11 +212,8 @@ const Cricket = () => {
     setRound(presentTurn.round);
     setLeadingScore(presentTurn.leadingScore);
     setDisableButton(presentTurn.disabledButtons);
+    setPlayerScore(presentTurn.playerScore);
   };
-
-  useEffect(() => {
-    disableInputButtons();
-  }, [playerScore, selectedPlayers]);
 
   // calculate hits for button display
   const calculateHits = (array: Array<string>) => [
@@ -244,59 +226,70 @@ const Cricket = () => {
     array.filter((hitNum) => hitNum === "25").length,
   ];
 
+  const calculatedHits = calculateHits(playerScoreArray);
+
+  const limitNumberOfHits = () => {
+    let hits = calculatedHits.filter((hit) => hit > 0);
+
+    const countOccurances = (word: string, text: string) =>
+      word.split(text).length - 1;
+
+    let count = countOccurances(playerScore, ",");
+
+    if (
+      hits.length > 3 ||
+      (hits.length > 0 && hits.reduce((a, b) => a + b) > 9)
+    ) {
+      setPlayerScore(
+        playerScore.slice(0, playerScore.indexOf(",") + 3 * (count - 1))
+      );
+    }
+  };
+
+  useEffect(() => {
+    disableInputButtons();
+    limitNumberOfHits();
+  }, [playerScore, selectedPlayers]);
+
   return (
     <View style={styles.container}>
       <CustomStackScreenHeader
         title="Cricket"
         canUndo={canUndo}
         onUndo={onUndoTurn}
-        navigation={navigation}
+        onResetGame={onResetGame}
       />
-      <View style={{ flex: 3 }}>
+      <View style={styles.scoreboardContainer}>
         <CricketHeader />
-        <>
-          {selectedPlayers.map((player) => {
-            return (
-              <CricketScoreboardBody
-                key={player.id}
-                player={player}
-                currentPlayer={currentPlayer}
-              />
-            );
-          })}
-        </>
+        {selectedPlayers.map((player) => (
+          <CricketScoreboardBody
+            key={player.id}
+            player={player}
+            currentPlayer={currentPlayer}
+            hitTargets={calculatedHits}
+          />
+        ))}
       </View>
       <View>
         <CricketRoundInfo
           currentPlayer={currentPlayer}
           round={round}
           leadingScore={leadingScore}
-          marks={calculateHits(playerScore.split(","))}
+          marks={calculatedHits}
+          points={handleScoreChange(
+            playerScoreArray.map((item) => parseInt(item, 10))
+          )}
+          allMarks={calculateHits(
+            currentPlayer.scoreList.map((item) => item.toString())
+          )}
         />
         <CalculatorButtons
           variant="cricket"
           value={playerScore}
           setValue={setPlayerScore}
-          onHandleSubmit={() => {
-            setUndoState({
-              turn,
-              round,
-              player: {
-                ...currentPlayer,
-                scoreList: [...currentPlayer.scoreList],
-              },
-              leadingScore: leadingScore,
-              nextPlayer: JSON.parse(
-                JSON.stringify(
-                  selectedPlayers[(turn + 1) % selectedPlayers.length]
-                )
-              ),
-              disabledButtons: [...disableButton],
-            });
-            onHandleSubmit();
-          }}
-          onDeleteInput={onDeleteInput}
-          hitTargets={calculateHits(playerScore.split(","))}
+          onHandleSubmit={onHandleSubmit}
+          onDeleteInput={() => onDeleteInput("cricket")}
+          hitTargets={calculatedHits}
           disabled={disableButton}
         />
       </View>
@@ -308,15 +301,5 @@ export default Cricket;
 
 const styles = StyleSheet.create({
   container: { flex: 1, flexDirection: "column" },
+  scoreboardContainer: { flex: 2.75, marginTop: 20 },
 });
-
-/* TODO:
- * - Players should not to be able to score any more then 9 marks per round
- * - Round Info:
- *   - Marks per round
- *   - Points per round
- *   - Total Marks
- *   - Turn Points display
- * - Styling for all components
- * - Probably should look at the functions to see if can be refactored or reused - there is a lot of manipulating arrays
- */
