@@ -1,6 +1,9 @@
 import React, { useCallback } from "react";
 import { TouchableOpacity, StyleSheet } from "react-native";
-import { GestureHandlerRootView } from "react-native-gesture-handler";
+import {
+  GestureHandlerRootView,
+  ScrollView,
+} from "react-native-gesture-handler";
 import DraggableFlatList, {
   RenderItemParams,
 } from "react-native-draggable-flatlist";

@@ -7,12 +7,12 @@ export const onCreateTable = ({
   transaction,
   table,
 }: SqlControllerProps<null>) =>
-  transaction.executeSql(`CREATE TABLE IF NOT EXISTS 
-  ${table} (id INTEGER PRIMARY KEY AUTOINCREMENT, 
-  name TEXT,
-  selected INTEGER DEFAULT 1
-  )
-`);
+  transaction.executeSql(`
+    CREATE TABLE IF NOT EXISTS 
+      ${table} (id INTEGER PRIMARY KEY AUTOINCREMENT, 
+      name TEXT, selected INTEGER DEFAULT 1
+    )
+  `);
 
 // READ
 export const onGetPlayers = ({
@@ -29,9 +29,8 @@ export const onGetPlayers = ({
         args,
         // callback to the transaction
         (_, { rows: { _array } }) => {
-          setStateFunc(
+          setStateFunc(() =>
             _array.map((item) => {
-              // onGetPlayerStats(item, setPlayersFunc);
               item.id,
                 item.name,
                 item.selected === 1
@@ -44,21 +43,16 @@ export const onGetPlayers = ({
               item.stats = {
                 darts: 0,
                 highScore: 0,
-                gamesWon: 0,
-                gamesLost: 0,
-                gamesPlayed: 0,
                 oneDartAverage: 0,
               };
               return item;
             })
           );
-          return _array;
         },
         // error during the transaction
-        (_, error) => {
+        (_, error) =>
           // console.log(`db error load players \n`, error);
-          return false;
-        }
+          false
       )
     : null;
 
@@ -83,10 +77,9 @@ export const onAddPlayer = ({
           }
           // console.log(`successfully added player`);
         },
-        (_, error) => {
+        (_, error) =>
           // console.log(`insert player error \n`, error);
-          return false;
-        }
+          false
       )
     : null;
 
@@ -110,21 +103,18 @@ export const onUpdateSelectedPlayer = ({
 export const onDeletePlayer = ({
   transaction,
   table,
-  args,
+  args = [],
   setStateFunc,
-  mainState,
 }: SqlControllerProps<IPlayer>) =>
-  args !== undefined && setStateFunc !== undefined && mainState !== undefined
+  setStateFunc !== undefined
     ? transaction.executeSql(
         `DELETE FROM ${table} WHERE (id) = (?) `,
         args,
         (_, resultSet) => {
           if (resultSet.rowsAffected > 0) {
-            let newList = mainState.filter((player) => {
-              if (player.id === args[0]) return false;
-              else return true;
-            });
-            setStateFunc(newList);
+            setStateFunc((prev) =>
+              prev.filter((player) => (player.id === args[0] ? false : true))
+            );
           }
         },
         (_, error) => {

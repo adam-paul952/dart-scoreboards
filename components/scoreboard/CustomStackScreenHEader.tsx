@@ -5,6 +5,7 @@ import { useNavigation } from "@react-navigation/native";
 
 import { Text, View } from "@components/Themed";
 import CustomButton from "@components/CustomButton";
+import { FontAwesome5Icon } from "@components/button-icons/ButtonIcons";
 
 import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
 
@@ -12,10 +13,6 @@ import Colors from "../../constants/Colors";
 import useColorScheme from "../../hooks/useColorScheme";
 
 import { PlayableGameVariants } from "../../hooks/useGame";
-import {
-  AntDesignIcon,
-  FontAwesome5Icon,
-} from "@components/button-icons/ButtonIcons";
 
 interface CustomStackScreenHeaderProps {
   canUndo: boolean;
@@ -37,13 +34,7 @@ const CustomStackScreenHeader = (props: CustomStackScreenHeaderProps) => {
   };
 
   return (
-    <View
-      style={
-        title !== "Killer"
-          ? styles.headerContainer
-          : [styles.headerContainer, { flex: 0.33 }]
-      }
-    >
+    <View style={styles.headerContainer}>
       <CustomButton
         title="Go Back"
         textStyle={styles.headerButtonText}
@@ -99,13 +90,13 @@ export default CustomStackScreenHeader;
 
 const styles = StyleSheet.create({
   headerContainer: {
-    flex: 0.9,
     flexDirection: "row",
     alignItems: "flex-end",
     marginHorizontal: 5,
     borderBottomWidth: 0.5,
     borderBottomColor: "lightgray",
     marginBottom: 5,
+    height: 110,
   },
   headerButton: {
     backgroundColor: "transparent",

@@ -40,7 +40,6 @@ export type RootStackParamList = {
   "x01-outchart": { currentPlayerScore?: number };
   "killer-setup": undefined;
   "display-statistics": { variant: GameVariants };
-  "undo-modal": undefined;
 };
 
 export type RootStackScreenProps<Screen extends keyof RootStackParamList> =

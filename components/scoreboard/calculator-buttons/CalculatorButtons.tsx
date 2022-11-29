@@ -44,9 +44,19 @@ const CalculatorButtons = (props: CalculatorButtonsProps) => {
       .sort();
     // fill in empty spaces with disabled block for visual display
     if (data.length % 3 === 0) data.push("Del", "", "Enter");
-    else if (data.length % 2 === 0 || data.length % 5 === 0) {
+    else if (data.length % 5 === 0) {
       data.splice(data.length - 1, 0, "");
       data.push("Del", "", "Enter");
+    } else if (data.length % 2 === 0) {
+      data.map((item, index) => {
+        if (index % 3 === 0) {
+          data.splice(index + 1, 0, "");
+        }
+        return item;
+      });
+      data.push("Del", "", "Enter");
+      // data.splice(data.length - 1, 0, "");
+      // data.push("Del", "", "Enter");
     } else {
       data.splice(data.length - 1, 0, "Del");
       data.splice(data.length, 0, "Enter");
@@ -112,7 +122,6 @@ const CalculatorButtons = (props: CalculatorButtonsProps) => {
 
         return isDisabled;
       }
-      // if disabled prop isn't defined return false
     }
 
     return isDisabled;

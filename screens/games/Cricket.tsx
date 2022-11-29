@@ -15,9 +15,15 @@ import CricketRoundInfo from "@scoreboard/round-info/CricketRoundInfo";
 import CalculatorButtons from "@scoreboard/calculator-buttons/CalculatorButtons";
 import gameOverAlert from "@components/GameOverAlert";
 
+import { NativeStackScreenProps } from "@react-navigation/native-stack";
+import { RootStackParamList } from "types";
+
+type CricketProps = NativeStackScreenProps<RootStackParamList, "cricket">;
+
 const targets = [20, 19, 18, 17, 16, 15, 25];
 
-const Cricket = () => {
+const Cricket = ({ route }: CricketProps) => {
+  const variant = route.name;
   const { onUpdatePlayerStats, setGameOver } = usePlayerStats();
   const { selectedPlayers, setSelectedPlayers } = usePlayerState();
   const {
@@ -124,32 +130,36 @@ const Cricket = () => {
   };
 
   const onHandleSubmit = () => {
+    let player = JSON.parse(JSON.stringify(currentPlayer));
+    let nextPlayer = JSON.parse(
+      JSON.stringify(selectedPlayers[(turn + 1) % selectedPlayers.length])
+    );
+
     setUndoState({
       turn,
       round,
-      player: JSON.parse(JSON.stringify(currentPlayer)),
-      leadingScore: leadingScore,
-      nextPlayer: JSON.parse(
-        JSON.stringify(selectedPlayers[(turn + 1) % selectedPlayers.length])
-      ),
+      player,
+      leadingScore,
+      nextPlayer,
       disabledButtons: [...disableButton],
-      playerScore: playerScore,
+      playerScore,
     });
+
     onHandleTurnCharge();
   };
 
   const onDeclareWinner = () => {
     selectedPlayers.forEach((player) => {
-      onUpdatePlayerStats("cricket", player, currentPlayer);
+      onUpdatePlayerStats(variant, player, currentPlayer);
     });
 
-    setGameOver({ isOver: true, game: "cricket" });
+    setGameOver({ isOver: true, game: variant });
 
     gameOverAlert({
       playerName: currentPlayer.name,
       onResetGame: resetGame,
       navigation,
-      variant: "cricket",
+      variant,
     });
   };
 
@@ -288,7 +298,7 @@ const Cricket = () => {
           value={playerScore}
           setValue={setPlayerScore}
           onHandleSubmit={onHandleSubmit}
-          onDeleteInput={() => onDeleteInput("cricket")}
+          onDeleteInput={() => onDeleteInput(variant)}
           hitTargets={calculatedHits}
           disabled={disableButton}
         />

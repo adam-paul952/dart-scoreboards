@@ -16,12 +16,21 @@ import BaseballRoundInfo from "@scoreboard/round-info/BaseballRoundInfo";
 
 import gameOverAlert from "@components/GameOverAlert";
 
+import { NativeStackScreenProps } from "@react-navigation/native-stack";
+import { RootStackParamList } from "types";
+
+type BaseballRouteProps = NativeStackScreenProps<
+  RootStackParamList,
+  "baseball"
+>;
+
 let winner: { id: number; name: string } = {
   id: 0,
   name: "",
 };
 
-const Baseball = () => {
+const Baseball = ({ route }: BaseballRouteProps) => {
+  const variant = route.name;
   const { selectedPlayers, setSelectedPlayers } = usePlayerState();
   const { onUpdatePlayerStats, setGameOver } = usePlayerStats();
   const {
@@ -140,17 +149,17 @@ const Baseball = () => {
 
     if (winner) {
       selectedPlayers.forEach((player) => {
-        onUpdatePlayerStats("baseball", player, winner);
+        onUpdatePlayerStats(variant, player, winner);
       });
     }
 
-    setGameOver({ isOver: true, game: "baseball" });
+    setGameOver({ isOver: true, game: variant });
     // alert game over with winner name
     gameOverAlert({
       playerName: winner.name,
       onResetGame,
       navigation,
-      variant: "baseball",
+      variant,
     });
   };
 
@@ -168,15 +177,17 @@ const Baseball = () => {
   };
 
   const onHandleSubmit = () => {
+    let player = JSON.parse(JSON.stringify(currentPlayer));
+    let nextPlayer = JSON.parse(
+      JSON.stringify(selectedPlayers[(turn + 1) % selectedPlayers.length])
+    );
     // assign state to undo redo
     setUndoState({
       turn,
       round,
-      player: JSON.parse(JSON.stringify(currentPlayer)),
-      leadingScore: leadingScore,
-      nextPlayer: JSON.parse(
-        JSON.stringify(selectedPlayers[(turn + 1) % selectedPlayers.length])
-      ),
+      player,
+      leadingScore,
+      nextPlayer,
     });
     onHandleTurnChange();
   };
@@ -197,6 +208,7 @@ const Baseball = () => {
         title="Baseball"
         canUndo={canUndo}
         onUndo={onUndo}
+        onResetGame={onResetGame}
       />
       <View style={styles.scoreboardContainer}>
         <BaseballHeader />
@@ -219,7 +231,7 @@ const Baseball = () => {
         <CalculatorButtons
           variant="baseball"
           onHandleSubmit={onHandleSubmit}
-          onDeleteInput={() => onDeleteInput("baseball")}
+          onDeleteInput={() => onDeleteInput(variant)}
           setValue={setPlayerScore}
         />
       </View>

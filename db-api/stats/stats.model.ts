@@ -68,10 +68,9 @@ export const onInsertNewRow = ({
     `INSERT INTO ${table} (player_id) values (?)`,
     args,
     () => {},
-    (_, error) => {
+    (_, error) =>
       // console.log(error);
-      return false;
-    }
+      false
   );
 
 // READ
@@ -82,12 +81,23 @@ export const onGetPlayerStats = <T>({
   setStateFunc,
 }: SqlControllerProps<T>) => {
   let sqlStatement = "";
-  if (
-    table === "baseball_stats" ||
-    table === "cricket_stats" ||
-    table === "elimination_stats" ||
-    table === "killer_stats"
-  )
+
+  if (table === "x01_stats")
+    sqlStatement = `
+  SELECT playerlist.id, playerlist.name,
+  ${table}.games_won, ${table}.games_lost, 
+  ${table}.games_played, ${table}.highscore, ${table}.one_dart_average
+  FROM playerlist 
+  INNER JOIN ${table} ON (${table}.player_id = playerlist.id)
+  `;
+  else if (table === "stats")
+    sqlStatement = `
+  SELECT stats.games_played, stats.games_won, 
+  stats.games_lost, stats.one_dart_average, playerlist.id, playerlist.name 
+  FROM playerlist 
+  INNER JOIN stats ON (stats.player_id = playerlist.id)
+  `;
+  else
     sqlStatement = `
     SELECT ${table}.games_played, ${table}.games_won, 
       ${table}.games_lost, ${table}.highscore, 
@@ -95,34 +105,19 @@ export const onGetPlayerStats = <T>({
     FROM playerlist 
     INNER JOIN ${table} ON (${table}.player_id = playerlist.id)
     `;
-  else if (table === "x01_stats")
-    sqlStatement = `
-    SELECT playerlist.id, playerlist.name,
-      ${table}.games_won, ${table}.games_lost, 
-      ${table}.games_played, ${table}.highscore, ${table}.one_dart_average
-    FROM playerlist 
-    INNER JOIN ${table} ON (${table}.player_id = playerlist.id)
-    `;
-  else
-    sqlStatement = `
-    SELECT stats.games_played, stats.games_won, 
-    stats.games_lost, stats.one_dart_average, playerlist.id, playerlist.name 
-    FROM playerlist 
-    INNER JOIN stats ON (stats.player_id = playerlist.id)
-    `;
 
-  if (setStateFunc !== undefined)
-    transaction.executeSql(
-      sqlStatement,
-      args,
-      (_, { rows: { _array } }) => {
-        setStateFunc(() => _array.map((item) => item));
-      },
-      (_, error) => {
-        // console.log(error);
-        return false;
-      }
-    );
+  setStateFunc !== undefined
+    ? transaction.executeSql(
+        sqlStatement,
+        args,
+        (_, { rows: { _array } }) => {
+          setStateFunc(() => _array.map((item) => item));
+        },
+        (_, error) =>
+          // console.log(error);
+          false
+      )
+    : null;
 };
 
 // UPDATE
@@ -138,10 +133,9 @@ export const onUpdateOverallStats = ({
     `,
     args,
     () => {},
-    (_, error) => {
+    (_, error) =>
       // console.log(error);
-      return false;
-    }
+      false
   );
 
 export const onUpdatePlayerStats = ({
@@ -157,10 +151,9 @@ export const onUpdatePlayerStats = ({
     `,
     args,
     () => {},
-    (_, error) => {
+    (_, error) =>
       // console.log(error);
-      return false;
-    }
+      false
   );
 };
 

@@ -21,7 +21,6 @@ export interface SqlControllerProps<T> {
   args?: (string | number | null)[];
   state?: T;
   setStateFunc?: React.Dispatch<React.SetStateAction<T[]>>;
-  mainState?: T[];
 }
 
 db.exec([{ sql: "PRAGMA foreign_keys = ON;", args: [] }], false, () =>

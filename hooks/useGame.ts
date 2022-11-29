@@ -44,15 +44,24 @@ const useGame = () => {
         player.score = 0;
         player.stats.highScore = 0;
         if (variant === "baseball") player.scoreList = new Array(10).fill(0);
-        if (variant === "cricket" || variant === "elimination") {
+        if (
+          variant === "cricket" ||
+          variant === "elimination" ||
+          variant === "x01"
+        ) {
           player.scoreList = [];
         }
-        if (variant === "cricket") player.stats.darts = 0;
-        if (assignedLives !== undefined && variant === "elimination")
-          player.lives = assignedLives;
+        if (variant === "cricket" || variant === "x01") player.stats.darts = 0;
+        if (assignedLives !== undefined) {
+          variant === "elimination" && (player.lives = assignedLives);
+          variant === "x01" && (player.score = assignedLives);
+        }
         if (variant === "killer") {
           player.lives = 0;
           player.killer = false;
+        }
+        if (variant === "x01") {
+          player.stats.oneDartAverage = 0;
         }
         return player;
       })

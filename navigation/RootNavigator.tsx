@@ -5,14 +5,8 @@
 
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { RootStackParamList, RootStackScreenProps } from "../types";
-import {
-  AntDesignIcon,
-  FontAwesome5Icon,
-} from "../components/button-icons/ButtonIcons";
-
-import { MaterialCommunityIcons } from "@expo/vector-icons";
-
 import { Pressable } from "react-native";
+
 import Colors from "../constants/Colors";
 import useColorScheme from "../hooks/useColorScheme";
 
@@ -31,7 +25,8 @@ import ResumeGame from "../screens/ResumeGame";
 import X01OutChart from "../screens/games/X01OutChart";
 import KillerSetup from "../screens/games/KillerSetup";
 import DisplayStatistics from "../screens/statistics/DisplayStatistics";
-import UndoModal from "@components/UndoModal";
+
+import { AntDesignIcon } from "../components/button-icons/ButtonIcons";
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
@@ -103,27 +98,6 @@ const RootNavigator = () => {
           name="x01"
           component={X01}
           options={{ title: "X01", headerShown: false }}
-          // options={({ navigation, route }: RootStackScreenProps<"x01">) => ({
-          //   title: "X01",
-          //   headerRight: () => (
-          //     <Pressable
-          //       onPress={() => navigation.navigate("x01-outchart")}
-          //       style={({ pressed }) => [
-          //         {
-          //           opacity: pressed ? 0.5 : 1,
-          //         },
-          //         { position: "absolute", bottom: -13, right: 5 },
-          //       ]}
-          //       accessibilityHint="x01-outshot-left"
-          //     >
-          //       <FontAwesome5Icon
-          //         name="clipboard-list"
-          //         size={23}
-          //         color={Colors[colorScheme].text}
-          //       />
-          //     </Pressable>
-          //   ),
-          // })}
         />
         <Stack.Screen
           name="elimination"
@@ -164,13 +138,6 @@ const RootNavigator = () => {
           name="display-statistics"
           component={DisplayStatistics}
           options={{ title: "Statistics" }}
-        />
-      </Stack.Group>
-      <Stack.Group screenOptions={{ presentation: "transparentModal" }}>
-        <Stack.Screen
-          name="undo-modal"
-          component={UndoModal}
-          options={{ title: "" }}
         />
       </Stack.Group>
     </Stack.Navigator>

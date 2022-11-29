@@ -16,7 +16,15 @@ import X01InputRow from "@components/scoreboard/X01InputRow";
 import CalculatorButtons from "@scoreboard/calculator-buttons/CalculatorButtons";
 import gameOverAlert from "@components/GameOverAlert";
 
-const X01 = () => {
+import { NativeStackScreenProps } from "@react-navigation/native-stack";
+import { RootStackParamList } from "types";
+
+type X01Props = NativeStackScreenProps<RootStackParamList, "x01">;
+
+let winner = { id: 0, name: "" };
+
+const X01 = ({ route }: X01Props) => {
+  const variant = route.name;
   const { selectedPlayers, setSelectedPlayers } = usePlayerState();
   const { onUpdatePlayerStats, setGameOver } = usePlayerStats();
   const {
@@ -28,20 +36,16 @@ const X01 = () => {
     assignCurrentPlayerHighScore,
     setCurrentPlayer,
     nextPlayer,
+    onResetGame,
   } = useGame();
   const navigation = useNavigation();
-  const [playerState, { set: setCurrentState, undo: undoTurn, canUndo }] =
+  const [undoState, { set: setUndoState, undo: undoTurn, canUndo }] =
     useUndoRedo({
       player: { ...currentPlayer },
       nextPlayer: {},
     });
 
-  const { present: presentTurn } = playerState;
-
-  // useEffect(() => {
-  //   // console.log(`Present Turn: `);
-  //   // console.log(presentTurn);
-  // }, [presentTurn]);
+  const { present: presentTurn } = undoState;
 
   // state to manage input error and disable buttons
   const [inputError, setInputError] = useState<boolean>(false);
@@ -49,8 +53,6 @@ const X01 = () => {
 
   // set X01 points
   const [x01Points] = useState(currentPlayer.score);
-
-  let winner = { id: 0, name: "" };
 
   // check user input for error
   const checkForInputError = () => {
@@ -77,13 +79,12 @@ const X01 = () => {
   }, [playerScore]);
 
   // handle submit action enter button
-  const onHandleSubmit = () => {
+  const onHandleTurnChange = () => {
     // convert input to number
     let score = parseInt(playerScore.slice(0, 3), 10);
     if (isNaN(score)) score = 0;
     handleScoreChange(score);
     changeTurns();
-    // changeRounds();
   };
 
   const handleScoreChange = (score: number) => {
@@ -117,32 +118,20 @@ const X01 = () => {
       winner = { id: currentPlayer.id!, name: currentPlayer.name };
 
       selectedPlayers.forEach((player) => {
-        onUpdatePlayerStats("x01", player, winner);
+        onUpdatePlayerStats(variant, player, winner);
       });
 
-      setGameOver({ isOver: true, game: "x01" });
+      setGameOver({ isOver: true, game: variant });
 
       gameOverAlert({
         playerName: winner.name,
-        onResetGame: resetGame,
+        onResetGame,
         navigation,
-        variant: "x01",
+        variant,
+        assignedLives: x01Points,
       });
     }
     return true;
-  };
-
-  // reset game if playing again
-  const resetGame = () => {
-    setSelectedPlayers((prev) =>
-      prev.map((player) => {
-        player.score = x01Points;
-        player.scoreList = [];
-        player.stats.darts = 0;
-        player.stats.oneDartAverage = 0;
-        return player;
-      })
-    );
   };
 
   const handleStatsChange = () => {
@@ -154,17 +143,21 @@ const X01 = () => {
   const onUndo = () => {
     undoTurn();
     setSelectedPlayers((prev) =>
-      prev.map((player) => {
-        if (player.id === presentTurn.player.id) {
-          return presentTurn.player;
-        } else {
-          return player;
-        }
-      })
+      prev.map((player) =>
+        player.id === presentTurn.player.id ? presentTurn.player : player
+      )
     );
+
     setCurrentPlayer(presentTurn.player);
-    // setTurn(presentTurn.turn);
-    // setRound(presentTurn.round);
+  };
+
+  const onHandleSubmit = () => {
+    setUndoState({
+      player: JSON.parse(JSON.stringify(currentPlayer)),
+      nextPlayer: JSON.parse(JSON.stringify(nextPlayer)),
+    });
+
+    onHandleTurnChange();
   };
 
   return (
@@ -173,7 +166,7 @@ const X01 = () => {
         title="X01"
         onUndo={onUndo}
         canUndo={canUndo}
-        onResetGame={resetGame}
+        onResetGame={onResetGame}
         currentPlayerScore={currentPlayer.score}
       />
       <View style={styles.headerRow}>
@@ -195,14 +188,8 @@ const X01 = () => {
           value={playerScore}
           setValue={setPlayerScore}
           disabled={disabled}
-          onHandleSubmit={() => {
-            setCurrentState({
-              player: JSON.parse(JSON.stringify(currentPlayer)),
-              nextPlayer: JSON.parse(JSON.stringify(nextPlayer)),
-            });
-            onHandleSubmit();
-          }}
-          onDeleteInput={() => onDeleteInput("x01")}
+          onHandleSubmit={onHandleSubmit}
+          onDeleteInput={() => onDeleteInput(variant)}
         />
       </View>
     </View>

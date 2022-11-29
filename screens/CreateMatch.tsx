@@ -14,6 +14,7 @@ import {
   x01Data,
   eliminationData,
 } from "../constants/data/createMatch";
+import { ScrollView } from "react-native-gesture-handler";
 
 const CreateMatch = () => {
   const navigation = useNavigation();
@@ -196,9 +197,11 @@ const styles = StyleSheet.create({
     width: "100%",
     position: "absolute",
     bottom: 0,
+    borderTopWidth: 1,
+    borderTopColor: "lightgray",
   },
   buttonStyle: {
-    marginBottom: 20,
+    marginVertical: 10,
     width: "80%",
     alignSelf: "center",
   },

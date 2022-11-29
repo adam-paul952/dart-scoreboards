@@ -16,6 +16,14 @@ import CalculatorButtons from "@scoreboard/calculator-buttons/CalculatorButtons"
 
 import gameOverAlert from "@components/GameOverAlert";
 
+import { NativeStackScreenProps } from "@react-navigation/native-stack";
+import { RootStackParamList } from "types";
+
+type EliminationProps = NativeStackScreenProps<
+  RootStackParamList,
+  "elimination"
+>;
+
 // set variables
 let winner: { id?: number; name: string } = {
   id: undefined,
@@ -24,7 +32,8 @@ let winner: { id?: number; name: string } = {
 
 let roundScore = 0;
 
-const Elimination = () => {
+const Elimination = ({ route }: EliminationProps) => {
+  const variant = route.name;
   const { selectedPlayers, setSelectedPlayers } = usePlayerState();
   const { onUpdatePlayerStats, setGameOver } = usePlayerStats();
   const {
@@ -77,14 +86,14 @@ const Elimination = () => {
       onUpdatePlayerStats("elimination", player, winner);
     });
 
-    setGameOver({ isOver: true, game: "elimination" });
+    setGameOver({ isOver: true, game: variant });
 
     // alert game over with winner name
     gameOverAlert({
       playerName: winner.name,
       onResetGame,
       navigation,
-      variant: "elimination",
+      variant,
       assignedLives: eliminationLives,
     });
   };
@@ -202,7 +211,7 @@ const Elimination = () => {
         <CalculatorButtons
           variant="elimination"
           onHandleSubmit={onHandleSubmit}
-          onDeleteInput={() => onDeleteInput("elimination")}
+          onDeleteInput={() => onDeleteInput(variant)}
           setValue={setPlayerScore}
         />
       </View>

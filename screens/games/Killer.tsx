@@ -7,10 +7,11 @@ import useGame from "../../hooks/useGame";
 import useUndoRedo from "../../hooks/useUndoRedo";
 import usePlayerStats from "../../hooks/usePlayerStats";
 
-import { Text, TextInput, View } from "../../components/Themed";
+import { View } from "../../components/Themed";
 import CustomStackScreenHeader from "@components/scoreboard/CustomStackScreenHeader";
 import KillerHeader from "@scoreboard/header/KillerHeader";
 import KillerScoreboardBody from "@components/scoreboard/body/KillerScoreboardBody";
+import KillerRoundInfo from "@components/scoreboard/round-info/KillerRoundInfo";
 import CalculatorButtons from "@components/scoreboard/calculator-buttons/CalculatorButtons";
 
 import gameOverAlert from "@components/GameOverAlert";
@@ -22,6 +23,8 @@ type KillerProps = NativeStackScreenProps<RootStackParamList, "killer">;
 
 const Killer = ({ route }: KillerProps) => {
   const { playerTargets } = route.params;
+  const variant = route.name;
+
   const { selectedPlayers, setSelectedPlayers } = usePlayerState();
   const { onUpdatePlayerStats, setGameOver } = usePlayerStats();
   const {
@@ -39,7 +42,8 @@ const Killer = ({ route }: KillerProps) => {
     onResetGame,
   } = useGame();
   const navigation = useNavigation();
-  const [playerState, { set: setCurrentState, undo: undoTurn, canUndo }] =
+
+  const [undoState, { set: setUndoState, undo: undoTurn, canUndo }] =
     useUndoRedo({
       turn: 0,
       round: 1,
@@ -47,14 +51,23 @@ const Killer = ({ route }: KillerProps) => {
       nextPlayer: {},
     });
 
+  const { present: presentTurn } = undoState;
+
+  // useEffect(() => {
+  //   console.log(`-----------------`);
+  //   console.log(`Present State: `);
+  //   console.log(presentTurn);
+  // }, [presentTurn]);
+
   // assign targets based on player scores
   const [targets] = useState<Array<number>>(playerTargets);
 
-  const onHandleSubmit = () => {
+  const onHandleTurnChange = () => {
     const hits = playerScore.split("").map((score) => parseInt(score, 10));
     const count = targets.map(
       (num) => hits.filter((hit) => hit === num).length
     );
+
     let playerScoreIndex = targets.indexOf(currentPlayer.score);
     setSelectedPlayers((prev) =>
       prev.map((player) => {
@@ -80,15 +93,50 @@ const Killer = ({ route }: KillerProps) => {
     );
     if (currentPlayer.killer === true) {
       selectedPlayers.forEach((player) => {
-        if (playerIsOut.some((value) => value.name === player.name)) return;
+        if (playerIsOut.some((value) => value.id === player.id)) return;
         else if (player.lives === 0) {
-          setPlayerIsOut((prev) => [...prev, player]);
+          setPlayerIsOut((prev) => prev.concat(player));
         }
       });
     }
 
     changeTurns();
     changeRounds();
+  };
+
+  const onDeclareWinner = (winner: IPlayer) => {
+    selectedPlayers.forEach((player) => {
+      onUpdatePlayerStats("killer", player, winner);
+    });
+
+    setGameOver({ isOver: true, game: variant });
+
+    gameOverAlert({
+      playerName: winner.name,
+      onResetGame,
+      navigation,
+      variant,
+    });
+  };
+
+  const onUndoTurn = () => {
+    undoTurn();
+  };
+
+  const onHandleSubmit = () => {
+    let player = JSON.parse(JSON.stringify(currentPlayer));
+    let nextPlayer = JSON.parse(
+      JSON.stringify(selectedPlayers[(turn + 1) % selectedPlayers.length])
+    );
+
+    setUndoState({
+      turn,
+      round,
+      player,
+      nextPlayer,
+    });
+
+    onHandleTurnChange();
   };
 
   // when screen is focused re-assign current player to reflect sorted list
@@ -115,36 +163,19 @@ const Killer = ({ route }: KillerProps) => {
   // check length of eliminated players - if only one player remaining then declare winner
   useEffect(() => {
     if (playerIsOut.length === selectedPlayers.length - 1) {
-      let winner = selectedPlayers.filter((player) => {
-        if (!playerIsOut.includes(player)) {
-          return player;
-        }
-      });
+      let winner = selectedPlayers.filter(
+        (player) => !playerIsOut.includes(player) && player
+      );
 
-      assignPlayerStats(winner[0]);
+      onDeclareWinner(winner[0]);
     }
   }, [playerIsOut]);
-
-  const assignPlayerStats = (winner: IPlayer) => {
-    selectedPlayers.forEach((player) => {
-      onUpdatePlayerStats("killer", player, winner);
-    });
-
-    setGameOver({ isOver: true, game: "killer" });
-
-    gameOverAlert({
-      playerName: winner.name,
-      onResetGame,
-      navigation,
-      variant: "killer",
-    });
-  };
 
   return (
     <View style={{ flex: 1 }}>
       <CustomStackScreenHeader
         title="Killer"
-        onUndo={undoTurn}
+        onUndo={onUndoTurn}
         canUndo={canUndo}
         onResetGame={onResetGame}
       />
@@ -160,60 +191,12 @@ const Killer = ({ route }: KillerProps) => {
           );
         })}
       </ScrollView>
-      <>
-        <View
-          style={{
-            flexDirection: "row",
-            justifyContent: "space-evenly",
-          }}
-        >
-          <View
-            style={{
-              width: "45%",
-              paddingHorizontal: 5,
-              justifyContent: "center",
-              alignItems: "center",
-            }}
-          >
-            <Text
-              style={{
-                fontSize: 20,
-                fontWeight: "600",
-                textDecorationLine: "underline",
-              }}
-            >
-              {currentPlayer.name} to throw
-            </Text>
-          </View>
-          <View style={{ width: "33%" }}>
-            <Text style={[{ textAlign: "center" }]}>Points</Text>
-            <TextInput
-              style={styles.scoreInput}
-              editable={false}
-              showSoftInputOnFocus={false}
-              value=""
-              textAlign="center"
-            />
-          </View>
-        </View>
-        <View
-          style={{
-            flexDirection: "row",
-            justifyContent: "space-evenly",
-            borderTopWidth: 1,
-            borderTopColor: "lightgray",
-          }}
-        >
-          <Text style={{ fontSize: 15 }}>Round: {round}</Text>
-          <Text style={{ fontSize: 15 }}>Place</Text>
-          <Text style={{ fontSize: 15 }}>Holder</Text>
-        </View>
-      </>
+      <KillerRoundInfo currentPlayer={currentPlayer} round={round} />
       <View style={{}}>
         <CalculatorButtons
           variant="killer"
           onHandleSubmit={onHandleSubmit}
-          onDeleteInput={() => onDeleteInput("killer")}
+          onDeleteInput={() => onDeleteInput(variant)}
           setValue={setPlayerScore}
         />
       </View>
@@ -223,14 +206,4 @@ const Killer = ({ route }: KillerProps) => {
 
 export default Killer;
 
-const styles = StyleSheet.create({
-  scoreInput: {
-    borderWidth: 1,
-    borderColor: "gray",
-    marginBottom: 10,
-    height: 50,
-    padding: 10,
-    fontSize: 20,
-    borderRadius: 15,
-  },
-});
+const styles = StyleSheet.create({});

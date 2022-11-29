@@ -68,8 +68,7 @@ export const updateSelectedPlayer = (state: { selected: number; id: number }) =>
 // DELETE
 export const deletePlayer = (
   playerId: number,
-  setStateFunc: React.Dispatch<React.SetStateAction<IPlayer[]>>,
-  mainState: IPlayer[]
+  setStateFunc: React.Dispatch<React.SetStateAction<IPlayer[]>>
 ) =>
   db.transaction(
     (tx) =>
@@ -78,7 +77,6 @@ export const deletePlayer = (
         table: DbTables.Players,
         args: [playerId],
         setStateFunc,
-        mainState,
       }),
     (error) => {
       // console.log(dbError, error);

@@ -11,7 +11,7 @@ import {
   onUpdatePlayerStats,
 } from "./stats.model";
 
-const assignTableType = (game: string) => {
+const assignTableType = (game: GameVariants) => {
   switch (game) {
     case "baseball":
       return DbTables.Baseball;
@@ -52,32 +52,11 @@ export const createTables = () =>
 export const insertNewStatsRow = (newId: number) =>
   db.transaction(
     (tx) => {
-      onInsertNewRow({
-        transaction: tx,
-        table: DbTables.Overall,
-        args: [newId],
+      Object.values(DbTables).forEach((value) => {
+        value === "playerlist" || value === "resume_game"
+          ? null
+          : onInsertNewRow({ transaction: tx, table: value, args: [newId] });
       });
-      onInsertNewRow({
-        transaction: tx,
-        table: DbTables.Baseball,
-        args: [newId],
-      });
-      onInsertNewRow({
-        transaction: tx,
-        table: DbTables.Cricket,
-        args: [newId],
-      });
-      onInsertNewRow({
-        transaction: tx,
-        table: DbTables.Elimination,
-        args: [newId],
-      });
-      onInsertNewRow({
-        transaction: tx,
-        table: DbTables.Killer,
-        args: [newId],
-      });
-      onInsertNewRow({ transaction: tx, table: DbTables.X01, args: [newId] });
     },
     (error) => {
       // console.log(dbError, error);
@@ -132,12 +111,11 @@ export const updatePlayerStats = (
 export const dropTables = () =>
   db.transaction(
     (tx) => {
-      onDropTables({ transaction: tx, table: DbTables.Overall });
-      onDropTables({ transaction: tx, table: DbTables.Baseball });
-      onDropTables({ transaction: tx, table: DbTables.Cricket });
-      onDropTables({ transaction: tx, table: DbTables.Elimination });
-      onDropTables({ transaction: tx, table: DbTables.Killer });
-      onDropTables({ transaction: tx, table: DbTables.X01 });
+      Object.values(DbTables).forEach((table) => {
+        table === "playerlist" || table === "resume_game"
+          ? null
+          : onDropTables({ transaction: tx, table });
+      });
     },
     (error) => {
       // console.log(dbError, error);
