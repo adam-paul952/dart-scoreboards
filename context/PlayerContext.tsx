@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
 
-import useSqlite from "../hooks/useSqlite";
+import usePlayerlist from "../hooks/usePlayerlist";
+import usePlayerStats from "../hooks/usePlayerStats";
 
 interface PlayerContext {
   playerList: IPlayer[];
@@ -32,16 +33,23 @@ export interface IPlayerStats {
 const PlayerStateContext = createContext({} as PlayerContext);
 
 const PlayerListProvider = ({ children }: { children: React.ReactNode }) => {
-  const { createTable, getPlayerlist, onAddPlayerToDb, onDeletePlayerFromDb } =
-    useSqlite();
+  const {
+    onCreatePlayerlist,
+    onGetPlayerlist,
+    onAddPlayerToDb,
+    onDeletePlayerFromDb,
+  } = usePlayerlist();
+
+  const { onCreateStats } = usePlayerStats();
 
   const [playerList, setPlayerList] = useState<IPlayer[]>([]);
 
   const [selectedPlayers, setSelectedPlayers] = useState<IPlayer[]>([]);
 
   useEffect(() => {
-    createTable();
-    getPlayerlist(setPlayerList);
+    onCreatePlayerlist();
+    onCreateStats();
+    onGetPlayerlist(setPlayerList);
   }, []);
 
   const onAddPlayer = (player: IPlayer) => {
@@ -49,7 +57,7 @@ const PlayerListProvider = ({ children }: { children: React.ReactNode }) => {
   };
 
   const onDeletePlayer = (id: number) => {
-    onDeletePlayerFromDb(id, setPlayerList, playerList);
+    onDeletePlayerFromDb(id, setPlayerList);
   };
 
   const togglePlayerSelect = (id: number) => {

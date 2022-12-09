@@ -1,7 +1,6 @@
 import React from "react";
 import { StyleSheet } from "react-native";
 
-import useSqlite from "../../hooks/useSqlite";
 import usePlayerStats, {
   GameStats,
   OverallStats,
@@ -30,8 +29,8 @@ const DisplayStatistics = ({ route }: DisplayStatisticsProps) => {
     eliminationStats,
     killerStats,
     x01Stats,
+    calculateWinPercent,
   } = usePlayerStats();
-  const { calculateWinPercent } = useSqlite();
 
   const assignStatsArray = (
     game: GameVariants

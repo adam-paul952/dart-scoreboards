@@ -9,6 +9,7 @@ import {
   NavigatorScreenParams,
 } from "@react-navigation/native";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
+import { LoadResumeGameState } from "./hooks/useResumeGame";
 
 declare global {
   namespace ReactNavigation {
@@ -30,7 +31,7 @@ export type RootStackParamList = {
   "create-player": undefined;
   "manage-players": undefined;
   "create-match": undefined;
-  baseball: undefined;
+  baseball: LoadResumeGameState<any> | undefined;
   cricket: undefined;
   elimination: undefined;
   x01: undefined;

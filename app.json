@@ -2,7 +2,7 @@
   "expo": {
     "name": "dart-scoreboards",
     "slug": "dart-scoreboards",
-    "version": "1.0.2",
+    "version": "1.0.3",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "scheme": "myapp",
@@ -25,10 +25,15 @@
         "backgroundColor": "#ffffff"
       },
       "package": "com.adam.paul.dartscoreboards",
-      "versionCode": 3
+      "versionCode": 4
     },
     "web": {
       "favicon": "./assets/images/favicon.png"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "58a690c2-b322-4ce2-8844-fe831398a2d5"
+      }
     }
   }
 }

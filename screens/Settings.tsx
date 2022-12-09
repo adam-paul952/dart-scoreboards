@@ -2,15 +2,28 @@ import React from "react";
 import { Alert, StyleSheet } from "react-native";
 
 import { usePlayerState } from "@context/PlayerContext";
+import usePlayerlist from "../hooks/usePlayerlist";
+import usePlayerStats from "../hooks/usePlayerStats";
+import useResumeGame from "../hooks/useResumeGame";
+
 import { Text, View } from "../components/Themed";
-
 import CustomButton from "@components/CustomButton";
-
-import useSqlite from "../hooks/useSqlite";
 
 const UserSettings = () => {
   const { setPlayerList } = usePlayerState();
-  const { createTable, dropTable } = useSqlite();
+  const { onCreateResumeTable, onDropResumeTable } = useResumeGame();
+  const { onCreateStats, onDropPlayerStats } = usePlayerStats();
+  const { onCreatePlayerlist, onDropPlayerlist } = usePlayerlist();
+
+  const onDropPress = () => {
+    onDropResumeTable();
+    // onDropPlayerStats();
+    // onDropPlayerlist(setPlayerList);
+
+    // onCreatePlayerlist();
+    // onCreateStats();
+    onCreateResumeTable();
+  };
 
   const onDeleteAllPlayerInfo = () => {
     Alert.alert(
@@ -19,10 +32,7 @@ const UserSettings = () => {
       [
         {
           text: "Delete",
-          onPress: () => {
-            dropTable(setPlayerList);
-            createTable();
-          },
+          onPress: () => onDropPress(),
         },
         { text: "Cancel", style: "cancel" },
       ],
@@ -62,7 +72,6 @@ const UserSettings = () => {
             buttonStyle={{
               backgroundColor: "rgba(255,0,0,0.6)",
               paddingHorizontal: 20,
-              // marginRight: 0,
               borderRadius: 0,
             }}
             onPressOut={onDeleteAllPlayerInfo}

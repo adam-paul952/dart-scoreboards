@@ -178,6 +178,8 @@ const Killer = ({ route }: KillerProps) => {
         onUndo={onUndoTurn}
         canUndo={canUndo}
         onResetGame={onResetGame}
+        onAddGame={() => {}}
+        variant={variant}
       />
       <ScrollView style={{}}>
         <KillerHeader />

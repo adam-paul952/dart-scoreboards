@@ -1,5 +1,5 @@
 import React from "react";
-import { StyleSheet } from "react-native";
+import { Alert, StyleSheet } from "react-native";
 
 import { useNavigation } from "@react-navigation/native";
 
@@ -20,17 +20,49 @@ interface CustomStackScreenHeaderProps {
   title: "Baseball" | "Cricket" | "Elimination" | "Killer" | "X01";
   onResetGame: (variant: PlayableGameVariants) => void;
   currentPlayerScore?: number;
+  onAddGame: () => void;
+  variant: PlayableGameVariants;
 }
 
 const CustomStackScreenHeader = (props: CustomStackScreenHeaderProps) => {
-  const { canUndo, onUndo, title, onResetGame, currentPlayerScore } = props;
+  const {
+    canUndo,
+    onUndo,
+    title,
+    onResetGame,
+    currentPlayerScore,
+    onAddGame,
+    variant,
+  } = props;
 
   const colorScheme = useColorScheme();
   const navigation = useNavigation();
 
   const onGoBack = () => {
-    onResetGame("cricket");
+    onResetGame(variant);
     navigation.goBack();
+  };
+
+  const saveGameAlert = () => {
+    Alert.alert(
+      "Alert",
+      "You're game is unfinished - would you like to save it?",
+      [
+        {
+          text: "No",
+          onPress: () => {
+            onGoBack();
+          },
+        },
+        {
+          text: "Yes",
+          onPress: () => {
+            onAddGame();
+            onGoBack();
+          },
+        },
+      ]
+    );
   };
 
   return (
@@ -39,7 +71,7 @@ const CustomStackScreenHeader = (props: CustomStackScreenHeaderProps) => {
         title="Go Back"
         textStyle={styles.headerButtonText}
         buttonStyle={styles.headerButton}
-        onPressIn={onGoBack}
+        onPressIn={saveGameAlert}
       >
         <Ionicons
           name="arrow-back"

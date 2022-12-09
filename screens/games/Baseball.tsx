@@ -4,8 +4,9 @@ import { useNavigation } from "@react-navigation/native";
 
 import { usePlayerState } from "../../context/PlayerContext";
 import useGame from "../../hooks/useGame";
-import useUndoRedo from "../../hooks/useUndoRedo";
+import useUndoRedo, { UndoState } from "../../hooks/useUndoRedo";
 import usePlayerStats from "../../hooks/usePlayerStats";
+import useResumeGame from "../../hooks/useResumeGame";
 
 import { View } from "../../components/Themed";
 import CustomStackScreenHeader from "@components/scoreboard/CustomStackScreenHeader";
@@ -33,6 +34,7 @@ const Baseball = ({ route }: BaseballRouteProps) => {
   const variant = route.name;
   const { selectedPlayers, setSelectedPlayers } = usePlayerState();
   const { onUpdatePlayerStats, setGameOver } = usePlayerStats();
+  const { onAddGameToStorage } = useResumeGame();
   const {
     playerScore,
     setPlayerScore,
@@ -51,6 +53,7 @@ const Baseball = ({ route }: BaseballRouteProps) => {
     setTurn,
     setCurrentPlayer,
     onResetGame,
+    nextPlayer,
   } = useGame();
   const navigation = useNavigation();
 
@@ -63,7 +66,7 @@ const Baseball = ({ route }: BaseballRouteProps) => {
       leadingScore: 0,
     });
 
-  const { present: presentPlayer } = undoState;
+  const { present: presentPlayer, past: undoPast } = undoState;
 
   const roundRef = useRef(round);
 
@@ -178,16 +181,14 @@ const Baseball = ({ route }: BaseballRouteProps) => {
 
   const onHandleSubmit = () => {
     let player = JSON.parse(JSON.stringify(currentPlayer));
-    let nextPlayer = JSON.parse(
-      JSON.stringify(selectedPlayers[(turn + 1) % selectedPlayers.length])
-    );
+    let nextPlayerUndo = JSON.parse(JSON.stringify(nextPlayer));
     // assign state to undo redo
     setUndoState({
       turn,
       round,
       player,
       leadingScore,
-      nextPlayer,
+      nextPlayer: nextPlayerUndo,
     });
     onHandleTurnChange();
   };
@@ -202,6 +203,65 @@ const Baseball = ({ route }: BaseballRouteProps) => {
       });
   }, [currentPlayer]);
 
+  const onAddGame = () => {
+    let players = selectedPlayers.map((player) => {
+      return {
+        id: player.id,
+        name: player.name,
+        score: player.score,
+      };
+    });
+
+    let date = new Date().toLocaleDateString("en-CA", {
+      weekday: "long",
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+    });
+    let time = new Date().toLocaleTimeString("en-CA", {
+      hour12: true,
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+
+    let undoStateToSave = {
+      past: [...undoPast].concat(presentPlayer),
+      present: presentPlayer,
+      future: [...undoState.future],
+    };
+
+    onAddGameToStorage({
+      variant,
+      undoState: JSON.stringify(undoStateToSave),
+      players: JSON.stringify(players),
+      date,
+      time: time.slice(0, 5),
+    });
+  };
+
+  const routes = navigation.getState()?.routes;
+
+  useEffect(() => {
+    const unsubscribe = navigation.addListener("focus", () => {
+      const resumeGameState = routes[routes.length - 1].params;
+      // console.log(`The routes object: `, routes);
+      if (routes[routes.length - 2].name === "resume-game")
+        console.log(`Resume game state: \n`, resumeGameState);
+      else return;
+    });
+
+    return unsubscribe;
+  }, [navigation]);
+
+  // useEffect(() => {
+  //   console.log(`--------------------`);
+  //   console.log(`Past: `);
+  //   console.log(undoPast);
+  //   console.log(`-------------`);
+  //   console.log(`Present: `);
+  //   console.log(presentPlayer);
+  // }, [undoState]);
+
   return (
     <View style={styles.container}>
       <CustomStackScreenHeader
@@ -209,6 +269,8 @@ const Baseball = ({ route }: BaseballRouteProps) => {
         canUndo={canUndo}
         onUndo={onUndo}
         onResetGame={onResetGame}
+        onAddGame={onAddGame}
+        variant={variant}
       />
       <View style={styles.scoreboardContainer}>
         <BaseballHeader />

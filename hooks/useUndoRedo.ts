@@ -14,7 +14,7 @@ export interface Actions<T> {
   canRedo: boolean;
 }
 
-interface State<T> {
+export interface UndoState<T> {
   past: T[];
   present: T;
   future: T[];
@@ -25,7 +25,7 @@ interface Action<T> {
   newPresent?: T;
 }
 
-const reducer = <T>(state: State<T>, action: Action<T>) => {
+const reducer = <T>(state: UndoState<T>, action: Action<T>) => {
   const { past, present, future } = state;
   const { type, newPresent } = action;
 
@@ -79,11 +79,11 @@ const initialState = {
   future: [],
 };
 
-const useUndoRedo = <T>(initialPresent: T): [State<T>, Actions<T>] => {
+const useUndoRedo = <T>(initialPresent: T): [UndoState<T>, Actions<T>] => {
   const [state, dispatch] = useReducer(reducer, {
     ...initialState,
     present: initialPresent,
-  }) as [State<T>, React.Dispatch<Action<T>>];
+  }) as [UndoState<T>, React.Dispatch<Action<T>>];
 
   const canUndo = state.past.length !== 0;
   const canRedo = state.future.length !== 0;

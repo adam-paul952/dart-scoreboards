@@ -3,6 +3,8 @@ import { useEffect, useState } from "react";
 import {
   updatePlayerStats,
   getPlayerStats,
+  createTables,
+  dropTables,
 } from "../db-api/stats/stats.controller";
 
 import { GameVariants } from "../types";
@@ -37,10 +39,6 @@ const usePlayerStats = () => {
   const [killerStats, setKillerStats] = useState<GameStats[]>([]);
   const [x01Stats, setX01Stats] = useState<X01Stats[]>([]);
 
-  // TODO: we don't need to get all only on stats screen
-  // maybe we should breakthese out into a switch statement
-  // to use in individual games & remove useEffect from hook
-
   // assign stats for all games to state
   const onGetAllStats = () => {
     getPlayerStats(setOverallStats, "overall");
@@ -54,6 +52,8 @@ const usePlayerStats = () => {
   useEffect(() => {
     onGetAllStats();
   }, []);
+
+  const onCreateStats = () => createTables();
 
   const onFormatStatsArray = (
     array: (OverallStats | GameStats | X01Stats)[],
@@ -214,6 +214,17 @@ const usePlayerStats = () => {
     if (isGameOver.isOver) assignStatsToDB(isGameOver.game);
   }, [isGameOver]);
 
+  const calculateWinPercent = (
+    gamesWon: number,
+    gamesPlayed: number
+  ): number => {
+    let score = (gamesWon / gamesPlayed) * 100;
+    if (isNaN(score)) return 0;
+    else return score;
+  };
+
+  const onDropPlayerStats = () => dropTables();
+
   return {
     overallStats,
     setOverallStats,
@@ -229,6 +240,10 @@ const usePlayerStats = () => {
     setX01Stats,
     onUpdatePlayerStats,
     setGameOver,
+    onGetAllStats,
+    calculateWinPercent,
+    onCreateStats,
+    onDropPlayerStats,
   };
 };
 

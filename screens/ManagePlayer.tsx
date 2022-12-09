@@ -3,7 +3,7 @@ import { FlatList, StyleSheet } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 
 import { IPlayer, usePlayerState } from "@context/PlayerContext";
-import useSqlite from "../hooks/useSqlite";
+import usePlayerlist from "../hooks/usePlayerlist";
 
 import { Text, View } from "@components/Themed";
 import PlayerItem from "@components/PlayerItem";
@@ -11,7 +11,7 @@ import CustomButton from "@components/CustomButton";
 
 const ManagePlayerScreen = () => {
   const { playerList, onDeletePlayer, togglePlayerSelect } = usePlayerState();
-  const { updateSelectedPlayerlist } = useSqlite();
+  const { updateSelectedPlayerlist } = usePlayerlist();
   const navigation = useNavigation();
 
   const disableButton = () => {
@@ -29,6 +29,7 @@ const ManagePlayerScreen = () => {
       else selected = 0;
       updateSelectedPlayerlist({ selected, id: player.id });
     });
+
     navigation.navigate("create-match");
   };
 
