@@ -32,7 +32,7 @@ export type RootStackParamList = {
   "manage-players": undefined;
   "create-match": undefined;
   baseball: LoadResumeGameState<any> | undefined;
-  cricket: undefined;
+  cricket: LoadResumeGameState<any> | undefined;
   elimination: undefined;
   x01: undefined;
   killer: { playerTargets: Array<number> };

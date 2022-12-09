@@ -4,7 +4,7 @@ import { useNavigation } from "@react-navigation/native";
 
 import { usePlayerState } from "../../context/PlayerContext";
 import useGame from "../../hooks/useGame";
-import useUndoRedo, { UndoState } from "../../hooks/useUndoRedo";
+import useUndoRedo from "../../hooks/useUndoRedo";
 import usePlayerStats from "../../hooks/usePlayerStats";
 import useResumeGame from "../../hooks/useResumeGame";
 
@@ -34,7 +34,7 @@ const Baseball = ({ route }: BaseballRouteProps) => {
   const variant = route.name;
   const { selectedPlayers, setSelectedPlayers } = usePlayerState();
   const { onUpdatePlayerStats, setGameOver } = usePlayerStats();
-  const { onAddGameToStorage } = useResumeGame();
+  const { onAddGame } = useResumeGame();
   const {
     playerScore,
     setPlayerScore,
@@ -66,7 +66,7 @@ const Baseball = ({ route }: BaseballRouteProps) => {
       leadingScore: 0,
     });
 
-  const { present: presentPlayer, past: undoPast } = undoState;
+  const { present: presentPlayer } = undoState;
 
   const roundRef = useRef(round);
 
@@ -203,42 +203,6 @@ const Baseball = ({ route }: BaseballRouteProps) => {
       });
   }, [currentPlayer]);
 
-  const onAddGame = () => {
-    let players = selectedPlayers.map((player) => {
-      return {
-        id: player.id,
-        name: player.name,
-        score: player.score,
-      };
-    });
-
-    let date = new Date().toLocaleDateString("en-CA", {
-      weekday: "long",
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-    });
-    let time = new Date().toLocaleTimeString("en-CA", {
-      hour12: true,
-      hour: "2-digit",
-      minute: "2-digit",
-    });
-
-    let undoStateToSave = {
-      past: [...undoPast].concat(presentPlayer),
-      present: presentPlayer,
-      future: [...undoState.future],
-    };
-
-    onAddGameToStorage({
-      variant,
-      undoState: JSON.stringify(undoStateToSave),
-      players: JSON.stringify(players),
-      date,
-      time: time.slice(0, 5),
-    });
-  };
-
   const routes = navigation.getState()?.routes;
 
   useEffect(() => {
@@ -262,6 +226,8 @@ const Baseball = ({ route }: BaseballRouteProps) => {
   //   console.log(presentPlayer);
   // }, [undoState]);
 
+  const addGame = () => onAddGame(variant, selectedPlayers, undoState);
+
   return (
     <View style={styles.container}>
       <CustomStackScreenHeader
@@ -269,7 +235,7 @@ const Baseball = ({ route }: BaseballRouteProps) => {
         canUndo={canUndo}
         onUndo={onUndo}
         onResetGame={onResetGame}
-        onAddGame={onAddGame}
+        onAddGame={addGame}
         variant={variant}
       />
       <View style={styles.scoreboardContainer}>

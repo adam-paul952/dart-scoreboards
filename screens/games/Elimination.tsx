@@ -6,6 +6,7 @@ import { usePlayerState } from "../../context/PlayerContext";
 import useGame from "../../hooks/useGame";
 import useUndoRedo from "../../hooks/useUndoRedo";
 import usePlayerStats from "../../hooks/usePlayerStats";
+import useResumeGame from "../../hooks/useResumeGame";
 
 import { View } from "../../components/Themed";
 import CustomStackScreenHeader from "@components/scoreboard/CustomStackScreenHeader";
@@ -36,6 +37,7 @@ const Elimination = ({ route }: EliminationProps) => {
   const variant = route.name;
   const { selectedPlayers, setSelectedPlayers } = usePlayerState();
   const { onUpdatePlayerStats, setGameOver } = usePlayerStats();
+  const { onAddGame } = useResumeGame();
   const {
     currentPlayer,
     playerScore,
@@ -184,6 +186,10 @@ const Elimination = ({ route }: EliminationProps) => {
     onHandleTurnChange();
   };
 
+  const routes = navigation.getState()?.routes;
+
+  const addGame = () => onAddGame(variant, selectedPlayers, undoState);
+
   return (
     <View style={styles.container}>
       <CustomStackScreenHeader
@@ -191,6 +197,8 @@ const Elimination = ({ route }: EliminationProps) => {
         onUndo={onUndo}
         canUndo={canUndo}
         onResetGame={onResetGame}
+        onAddGame={addGame}
+        variant={variant}
       />
       <View style={styles.scoreboardContainer}>
         <EliminationHeader />

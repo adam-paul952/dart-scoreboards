@@ -6,6 +6,7 @@ import { usePlayerState } from "../../context/PlayerContext";
 import useGame, { PlayableGameVariants } from "../../hooks/useGame";
 import useUndoRedo from "../../hooks/useUndoRedo";
 import usePlayerStats from "../../hooks/usePlayerStats";
+import useResumeGame from "../../hooks/useResumeGame";
 
 import { View } from "../../components/Themed";
 import CustomStackScreenHeader from "@components/scoreboard/CustomStackScreenHeader";
@@ -26,6 +27,7 @@ const Cricket = ({ route }: CricketProps) => {
   const variant = route.name;
   const { onUpdatePlayerStats, setGameOver } = usePlayerStats();
   const { selectedPlayers, setSelectedPlayers } = usePlayerState();
+  const { onAddGame } = useResumeGame();
   const {
     playerScore,
     setPlayerScore,
@@ -261,6 +263,22 @@ const Cricket = ({ route }: CricketProps) => {
     limitNumberOfHits();
   }, [playerScore, selectedPlayers]);
 
+  const addGame = () => onAddGame(variant, selectedPlayers, undoState);
+
+  const routes = navigation.getState()?.routes;
+
+  useEffect(() => {
+    const unsubscribe = navigation.addListener("focus", () => {
+      const resumeGameState = routes[routes.length - 1].params;
+      // console.log(`The routes object: `, routes);
+      if (routes[routes.length - 2].name === "resume-game")
+        console.log(`Resume game state: \n`, resumeGameState);
+      else return;
+    });
+
+    return unsubscribe;
+  }, [navigation]);
+
   return (
     <View style={styles.container}>
       <CustomStackScreenHeader
@@ -268,6 +286,8 @@ const Cricket = ({ route }: CricketProps) => {
         canUndo={canUndo}
         onUndo={onUndoTurn}
         onResetGame={onResetGame}
+        variant={variant}
+        onAddGame={addGame}
       />
       <View style={styles.scoreboardContainer}>
         <CricketHeader />

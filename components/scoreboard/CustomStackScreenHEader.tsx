@@ -13,6 +13,7 @@ import Colors from "../../constants/Colors";
 import useColorScheme from "../../hooks/useColorScheme";
 
 import { PlayableGameVariants } from "../../hooks/useGame";
+import { IPlayer } from "@context/PlayerContext";
 
 interface CustomStackScreenHeaderProps {
   canUndo: boolean;

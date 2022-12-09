@@ -6,6 +6,7 @@ import { usePlayerState, IPlayer } from "@context/PlayerContext";
 import useGame from "../../hooks/useGame";
 import useUndoRedo from "../../hooks/useUndoRedo";
 import usePlayerStats from "../../hooks/usePlayerStats";
+import useResumeGame from "../../hooks/useResumeGame";
 
 import { View } from "../../components/Themed";
 import CustomStackScreenHeader from "@components/scoreboard/CustomStackScreenHeader";
@@ -27,6 +28,7 @@ const Killer = ({ route }: KillerProps) => {
 
   const { selectedPlayers, setSelectedPlayers } = usePlayerState();
   const { onUpdatePlayerStats, setGameOver } = usePlayerStats();
+  const { onAddGame } = useResumeGame();
   const {
     onDeleteInput,
     currentPlayer,
@@ -171,6 +173,8 @@ const Killer = ({ route }: KillerProps) => {
     }
   }, [playerIsOut]);
 
+  const addGame = () => onAddGame(variant, selectedPlayers, undoState);
+
   return (
     <View style={{ flex: 1 }}>
       <CustomStackScreenHeader
@@ -178,7 +182,7 @@ const Killer = ({ route }: KillerProps) => {
         onUndo={onUndoTurn}
         canUndo={canUndo}
         onResetGame={onResetGame}
-        onAddGame={() => {}}
+        onAddGame={addGame}
         variant={variant}
       />
       <ScrollView style={{}}>
