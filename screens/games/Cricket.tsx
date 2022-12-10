@@ -282,7 +282,6 @@ const Cricket = ({ route }: CricketProps) => {
   return (
     <View style={styles.container}>
       <CustomStackScreenHeader
-        title="Cricket"
         canUndo={canUndo}
         onUndo={onUndoTurn}
         onResetGame={onResetGame}

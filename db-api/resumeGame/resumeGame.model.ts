@@ -38,6 +38,8 @@ export const onGetAllGames = ({
             item.time;
             item.players = JSON.parse(item.selected_players);
             item.undoState = JSON.parse(item.state);
+            delete item.selected_players;
+            delete item.state;
             return item;
           })
         );
@@ -63,6 +65,24 @@ export const onAddGame = ({
     },
     (_, error) => {
       console.log(`Inert new game error: `, error);
+      return false;
+    }
+  );
+
+export const onUpdateResumeGame = ({
+  transaction,
+  table,
+  args,
+}: SqlControllerProps<null>) =>
+  transaction.executeSql(
+    `UPDATE ${table} 
+    SET state = (?), selected_players = (?), date = (?), time = (?) 
+    WHERE id = (?)
+    `,
+    args,
+    () => {},
+    (_, error) => {
+      console.log(error);
       return false;
     }
   );

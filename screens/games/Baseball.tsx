@@ -34,7 +34,7 @@ const Baseball = ({ route }: BaseballRouteProps) => {
   const variant = route.name;
   const { selectedPlayers, setSelectedPlayers } = usePlayerState();
   const { onUpdatePlayerStats, setGameOver } = usePlayerStats();
-  const { onAddGame } = useResumeGame();
+  const { onAddGame, onUpdateSavedGame } = useResumeGame();
   const {
     playerScore,
     setPlayerScore,
@@ -205,33 +205,46 @@ const Baseball = ({ route }: BaseballRouteProps) => {
 
   const routes = navigation.getState()?.routes;
 
+  const resumeGameId = useRef(null);
+
   useEffect(() => {
     const unsubscribe = navigation.addListener("focus", () => {
       const resumeGameState = routes[routes.length - 1].params;
       // console.log(`The routes object: `, routes);
-      if (routes[routes.length - 2].name === "resume-game")
-        console.log(`Resume game state: \n`, resumeGameState);
-      else return;
+      if (routes[routes.length - 2].name === "resume-game") {
+        // console.log(`Resume game state: \n`);
+        // console.log(resumeGameState);
+        if (resumeGameState !== undefined) {
+          resumeGameId.current = resumeGameState.id;
+          setUndoState(resumeGameState.undoState);
+          setTurn(
+            () =>
+              (resumeGameState.undoState.present.turn + 1) %
+              resumeGameState.players.length
+          );
+          setRound(() =>
+            turn === 0
+              ? resumeGameState.undoState.present.round + 1
+              : resumeGameState.undoState.present.round
+          );
+          setCurrentPlayer(resumeGameState.undoState.present.nextPlayer);
+          setLeadingScore(resumeGameState.undoState.present.leadingScore);
+          setSelectedPlayers(() => resumeGameState.players);
+        }
+      } else return;
     });
 
     return unsubscribe;
   }, [navigation]);
 
-  // useEffect(() => {
-  //   console.log(`--------------------`);
-  //   console.log(`Past: `);
-  //   console.log(undoPast);
-  //   console.log(`-------------`);
-  //   console.log(`Present: `);
-  //   console.log(presentPlayer);
-  // }, [undoState]);
-
-  const addGame = () => onAddGame(variant, selectedPlayers, undoState);
+  const addGame = () =>
+    resumeGameId.current !== null
+      ? onAddGame(variant, selectedPlayers, undoState, resumeGameId.current)
+      : onAddGame(variant, selectedPlayers, undoState);
 
   return (
     <View style={styles.container}>
       <CustomStackScreenHeader
-        title="Baseball"
         canUndo={canUndo}
         onUndo={onUndo}
         onResetGame={onResetGame}

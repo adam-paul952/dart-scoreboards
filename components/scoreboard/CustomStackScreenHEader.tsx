@@ -18,7 +18,6 @@ import { IPlayer } from "@context/PlayerContext";
 interface CustomStackScreenHeaderProps {
   canUndo: boolean;
   onUndo: () => void;
-  title: "Baseball" | "Cricket" | "Elimination" | "Killer" | "X01";
   onResetGame: (variant: PlayableGameVariants) => void;
   currentPlayerScore?: number;
   onAddGame: () => void;
@@ -29,7 +28,6 @@ const CustomStackScreenHeader = (props: CustomStackScreenHeaderProps) => {
   const {
     canUndo,
     onUndo,
-    title,
     onResetGame,
     currentPlayerScore,
     onAddGame,
@@ -80,8 +78,10 @@ const CustomStackScreenHeader = (props: CustomStackScreenHeaderProps) => {
           color={Colors[colorScheme].text}
         />
       </CustomButton>
-      <Text style={styles.headerText}>{title}</Text>
-      {title === "X01" ? (
+      <Text style={styles.headerText}>
+        {variant.charAt(0).toUpperCase() + variant.slice(1)}
+      </Text>
+      {variant === "x01" ? (
         <CustomButton
           title="X01 OutChart"
           textStyle={styles.headerButtonText}

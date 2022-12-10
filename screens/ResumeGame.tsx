@@ -8,8 +8,14 @@ import { Text, View } from "../components/Themed";
 import { PlayableGameVariants } from "../hooks/useGame";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { RootStackParamList } from "types";
+import { PlayerListProvider } from "@context/PlayerContext";
 
 type ResumeGameProps = NativeStackScreenProps<RootStackParamList, "baseball">;
+
+export type StateToPass = Exclude<
+  LoadResumeGameState<any>,
+  "date, time, variant"
+>;
 
 const ResumeGame = ({ navigation }: ResumeGameProps) => {
   const { onGetAllSavedGames, onDeleteGame } = useResumeGame();
@@ -22,11 +28,28 @@ const ResumeGame = ({ navigation }: ResumeGameProps) => {
     onGetAllSavedGames(setGameState);
   }, []);
 
+  // calculate hits for button display
+  const calculateHits = (array: Array<number>) =>
+    [
+      array.filter((hitNum) => hitNum === 20).length,
+      array.filter((hitNum) => hitNum === 19).length,
+      array.filter((hitNum) => hitNum === 18).length,
+      array.filter((hitNum) => hitNum === 17).length,
+      array.filter((hitNum) => hitNum === 16).length,
+      array.filter((hitNum) => hitNum === 15).length,
+      array.filter((hitNum) => hitNum === 25).length,
+    ].reduce((a, b) => a + b);
+
   const onHandleResumeGame = (
     game: PlayableGameVariants,
     state: LoadResumeGameState<any>
   ) => {
-    game === "baseball" && navigation.navigate(game, state);
+    game === "baseball" &&
+      navigation.navigate(game, {
+        id: state.id,
+        players: state.players,
+        undoState: state.undoState,
+      });
     game === "cricket" && navigation.navigate(game, state);
   };
 
@@ -57,6 +80,11 @@ const ResumeGame = ({ navigation }: ResumeGameProps) => {
               <View key={player.id} style={styles.playerRow}>
                 <Text style={styles.textStyle}>{player.name}</Text>
                 <Text style={styles.textStyle}>{player.score}</Text>
+                {item.variant === "cricket" ? (
+                  <Text style={[styles.textStyle]}>
+                    {calculateHits(player.scoreList)} mrks
+                  </Text>
+                ) : null}
               </View>
             );
           })}

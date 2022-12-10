@@ -169,7 +169,6 @@ const X01 = ({ route }: X01Props) => {
   return (
     <View style={styles.container}>
       <CustomStackScreenHeader
-        title="X01"
         onUndo={onUndo}
         canUndo={canUndo}
         onResetGame={onResetGame}

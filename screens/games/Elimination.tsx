@@ -193,7 +193,6 @@ const Elimination = ({ route }: EliminationProps) => {
   return (
     <View style={styles.container}>
       <CustomStackScreenHeader
-        title={"Elimination"}
         onUndo={onUndo}
         canUndo={canUndo}
         onResetGame={onResetGame}

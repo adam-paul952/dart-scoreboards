@@ -6,6 +6,7 @@ import {
   onDropTable,
   onGetAllGames,
   onDeleteGame,
+  onUpdateResumeGame,
 } from "./resumeGame.model";
 
 // CREATE
@@ -45,7 +46,17 @@ export const addGame = (data: SaveResumeGameState) =>
     (error) => console.log(dbError, error)
   );
 
-export const onUpdateGame = () => {};
+export const onUpdateGame = (data: SaveResumeGameState) => {
+  const { undoState, players, date, time, id } = data;
+  id !== undefined &&
+    db.transaction((tx) => {
+      onUpdateResumeGame({
+        transaction: tx,
+        table: DbTables.Resume,
+        args: [undoState, players, date, time, id],
+      });
+    });
+};
 
 // DELETE
 export const deleteSavedGame = (id: number, setStateFunc: any) =>

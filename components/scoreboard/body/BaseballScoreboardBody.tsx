@@ -30,7 +30,13 @@ const BaseballScoreboardBody = (props: IBaseballScoreboardBodyProps) => {
     >
       {playersOut ? <View style={styles.strikeThrough} /> : null}
       <View style={[styles.transparentBg, { flex: 3 }]}>
-        <Text style={[styles.textSize, { paddingLeft: 3 }]}>{player.name}</Text>
+        <Text
+          style={[styles.textSize, { paddingLeft: 3 }]}
+          numberOfLines={1}
+          ellipsizeMode="tail"
+        >
+          {player.name}
+        </Text>
       </View>
       {player.scoreList.map((score, index) => {
         return (

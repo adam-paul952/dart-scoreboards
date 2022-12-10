@@ -178,7 +178,6 @@ const Killer = ({ route }: KillerProps) => {
   return (
     <View style={{ flex: 1 }}>
       <CustomStackScreenHeader
-        title="Killer"
         onUndo={onUndoTurn}
         canUndo={canUndo}
         onResetGame={onResetGame}
