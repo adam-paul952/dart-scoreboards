@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useRef } from "react";
 import { StyleSheet } from "react-native";
 import { useNavigation } from "@react-navigation/native";
+import { useKeepAwake } from "expo-keep-awake";
 
 import { usePlayerState } from "../../context/PlayerContext";
 import useGame, { PlayableGameVariants } from "../../hooks/useGame";
@@ -24,6 +25,8 @@ type CricketProps = NativeStackScreenProps<RootStackParamList, "cricket">;
 const targets = [20, 19, 18, 17, 16, 15, 25];
 
 const Cricket = ({ route }: CricketProps) => {
+  // keep device awake during game
+  useKeepAwake();
   const variant = route.name;
   const { onUpdatePlayerStats, setGameOver } = usePlayerStats();
   const { selectedPlayers, setSelectedPlayers } = usePlayerState();
@@ -43,6 +46,7 @@ const Cricket = ({ route }: CricketProps) => {
     setTurn,
     onDeleteInput,
     onResetGame,
+    nextPlayer,
   } = useGame();
   const navigation = useNavigation();
 
@@ -132,17 +136,12 @@ const Cricket = ({ route }: CricketProps) => {
   };
 
   const onHandleSubmit = () => {
-    let player = JSON.parse(JSON.stringify(currentPlayer));
-    let nextPlayer = JSON.parse(
-      JSON.stringify(selectedPlayers[(turn + 1) % selectedPlayers.length])
-    );
-
     setUndoState({
       turn,
       round,
-      player,
+      player: JSON.parse(JSON.stringify(currentPlayer)),
       leadingScore,
-      nextPlayer,
+      nextPlayer: JSON.parse(JSON.stringify(nextPlayer)),
       disabledButtons: [...disableButton],
       playerScore,
     });
@@ -269,11 +268,31 @@ const Cricket = ({ route }: CricketProps) => {
 
   useEffect(() => {
     const unsubscribe = navigation.addListener("focus", () => {
-      const resumeGameState = routes[routes.length - 1].params;
-      // console.log(`The routes object: `, routes);
-      if (routes[routes.length - 2].name === "resume-game")
-        console.log(`Resume game state: \n`, resumeGameState);
-      else return;
+      const previousScreen = routes[routes.length - 2].name;
+      const resumeGameState = route.params;
+      // console.log(`The routes object: `, resumeGameState);
+
+      // console.log(`From the route prop: `, route.params);
+      if (previousScreen === "resume-game" && resumeGameState !== undefined) {
+        resumeGameState.undoState.past.forEach((item) => setUndoState(item));
+        setUndoState(resumeGameState.undoState.present);
+        setTurn(
+          () =>
+            (resumeGameState.undoState.present.turn + 1) %
+            resumeGameState.players.length
+        );
+        setRound(() =>
+          turn === 0
+            ? resumeGameState.undoState.present.round + 1
+            : resumeGameState.undoState.present.round
+        );
+        setCurrentPlayer(resumeGameState.undoState.present.nextPlayer);
+        setLeadingScore(resumeGameState.undoState.present.leadingScore);
+        setSelectedPlayers(() => resumeGameState.players);
+        setDisableButton(
+          () => resumeGameState.undoState.present.disabledButtons
+        );
+      } else return;
     });
 
     return unsubscribe;

@@ -1,6 +1,7 @@
 import React, { useEffect, useRef } from "react";
 import { Alert, StyleSheet } from "react-native";
 import { useNavigation } from "@react-navigation/native";
+import { useKeepAwake } from "expo-keep-awake";
 
 import { usePlayerState } from "../../context/PlayerContext";
 import useGame from "../../hooks/useGame";
@@ -17,6 +18,7 @@ import BaseballRoundInfo from "@scoreboard/round-info/BaseballRoundInfo";
 
 import gameOverAlert from "@components/GameOverAlert";
 
+import { IPlayer } from "../../context/PlayerContext";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { RootStackParamList } from "types";
 
@@ -31,10 +33,12 @@ let winner: { id: number; name: string } = {
 };
 
 const Baseball = ({ route }: BaseballRouteProps) => {
+  // keep device awake while on game screen
+  useKeepAwake();
   const variant = route.name;
   const { selectedPlayers, setSelectedPlayers } = usePlayerState();
   const { onUpdatePlayerStats, setGameOver } = usePlayerStats();
-  const { onAddGame, onUpdateSavedGame } = useResumeGame();
+  const { onAddGame } = useResumeGame();
   const {
     playerScore,
     setPlayerScore,
@@ -205,32 +209,28 @@ const Baseball = ({ route }: BaseballRouteProps) => {
 
   const routes = navigation.getState()?.routes;
 
-  const resumeGameId = useRef(null);
-
   useEffect(() => {
     const unsubscribe = navigation.addListener("focus", () => {
-      const resumeGameState = routes[routes.length - 1].params;
-      // console.log(`The routes object: `, routes);
-      if (routes[routes.length - 2].name === "resume-game") {
-        // console.log(`Resume game state: \n`);
-        // console.log(resumeGameState);
-        if (resumeGameState !== undefined) {
-          resumeGameId.current = resumeGameState.id;
-          setUndoState(resumeGameState.undoState);
-          setTurn(
-            () =>
-              (resumeGameState.undoState.present.turn + 1) %
-              resumeGameState.players.length
-          );
-          setRound(() =>
-            turn === 0
-              ? resumeGameState.undoState.present.round + 1
-              : resumeGameState.undoState.present.round
-          );
-          setCurrentPlayer(resumeGameState.undoState.present.nextPlayer);
-          setLeadingScore(resumeGameState.undoState.present.leadingScore);
-          setSelectedPlayers(() => resumeGameState.players);
-        }
+      const previousScreen = routes[routes.length - 2].name;
+      const resumeGameState = route.params;
+      if (previousScreen === "resume-game" && resumeGameState !== undefined) {
+        // loop over undo past to assign to undo state
+        // maybe create an extra function in useUndoRedo to handle this?
+        resumeGameState.undoState.past.forEach((item) => setUndoState(item));
+        setUndoState(resumeGameState.undoState.present);
+        setTurn(
+          () =>
+            (resumeGameState.undoState.present.turn + 1) %
+            resumeGameState.players.length
+        );
+        setRound(() =>
+          turn === 0
+            ? resumeGameState.undoState.present.round + 1
+            : resumeGameState.undoState.present.round
+        );
+        setCurrentPlayer(resumeGameState.undoState.present.nextPlayer);
+        setLeadingScore(resumeGameState.undoState.present.leadingScore);
+        setSelectedPlayers(() => resumeGameState.players);
       } else return;
     });
 
@@ -238,8 +238,8 @@ const Baseball = ({ route }: BaseballRouteProps) => {
   }, [navigation]);
 
   const addGame = () =>
-    resumeGameId.current !== null
-      ? onAddGame(variant, selectedPlayers, undoState, resumeGameId.current)
+    route.params?.id !== undefined
+      ? onAddGame(variant, selectedPlayers, undoState, route.params.id)
       : onAddGame(variant, selectedPlayers, undoState);
 
   return (

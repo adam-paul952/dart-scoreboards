@@ -1,4 +1,3 @@
-import { SaveResumeGameState } from "hooks/useResumeGame";
 import db, { dbError, DbTables } from "..";
 import {
   onAddGame,
@@ -8,6 +7,12 @@ import {
   onDeleteGame,
   onUpdateResumeGame,
 } from "./resumeGame.model";
+
+import {
+  SaveResumeGameState,
+  LoadResumeGameState,
+} from "../../hooks/useResumeGame";
+import { GameUndoState } from "../../screens/ResumeGame";
 
 // CREATE
 export const createTable = () =>
@@ -21,7 +26,11 @@ export const createTable = () =>
   );
 
 // READ
-export const getGames = (setStateFunc: any) =>
+export const getGames = (
+  setStateFunc: React.Dispatch<
+    React.SetStateAction<LoadResumeGameState<GameUndoState>[]>
+  >
+) =>
   db.transaction(
     (tx) => {
       onGetAllGames({ transaction: tx, table: DbTables.Resume, setStateFunc });
@@ -59,7 +68,12 @@ export const onUpdateGame = (data: SaveResumeGameState) => {
 };
 
 // DELETE
-export const deleteSavedGame = (id: number, setStateFunc: any) =>
+export const deleteSavedGame = (
+  id: number,
+  setStateFunc: React.Dispatch<
+    React.SetStateAction<LoadResumeGameState<GameUndoState>[]>
+  >
+) =>
   db.transaction(
     (tx) => {
       onDeleteGame({

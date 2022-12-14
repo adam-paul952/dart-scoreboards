@@ -5,24 +5,38 @@ import useResumeGame, { LoadResumeGameState } from "../hooks/useResumeGame";
 
 import { Text, View } from "../components/Themed";
 
+import { IPlayer } from "@context/PlayerContext";
 import { PlayableGameVariants } from "../hooks/useGame";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { RootStackParamList } from "types";
-import { PlayerListProvider } from "@context/PlayerContext";
 
 type ResumeGameProps = NativeStackScreenProps<RootStackParamList, "baseball">;
 
-export type StateToPass = Exclude<
-  LoadResumeGameState<any>,
-  "date, time, variant"
+export type StateToPass = Omit<
+  LoadResumeGameState<GameUndoState>,
+  "date" | "time" | "variant"
 >;
+
+interface BaseballUndoState {
+  turn: number;
+  round: number;
+  player: IPlayer;
+  nextPlayer: IPlayer;
+  leadingScore: number;
+}
+interface CricketUndoState extends BaseballUndoState {
+  disabledButtons: boolean[];
+  playerScore: string;
+}
+
+export type GameUndoState = BaseballUndoState & CricketUndoState;
 
 const ResumeGame = ({ navigation }: ResumeGameProps) => {
   const { onGetAllSavedGames, onDeleteGame } = useResumeGame();
 
-  const [resumeGameState, setGameState] = useState<LoadResumeGameState<any>[]>(
-    []
-  );
+  const [resumeGameState, setGameState] = useState<
+    LoadResumeGameState<GameUndoState>[]
+  >([]);
 
   useEffect(() => {
     onGetAllSavedGames(setGameState);
@@ -42,15 +56,23 @@ const ResumeGame = ({ navigation }: ResumeGameProps) => {
 
   const onHandleResumeGame = (
     game: PlayableGameVariants,
-    state: LoadResumeGameState<any>
+    state: LoadResumeGameState<GameUndoState>
   ) => {
     game === "baseball" &&
+      navigation.navigate({
+        name: game,
+        params: {
+          id: state.id,
+          players: state.players,
+          undoState: state.undoState,
+        },
+      });
+    game === "cricket" &&
       navigation.navigate(game, {
         id: state.id,
         players: state.players,
         undoState: state.undoState,
       });
-    game === "cricket" && navigation.navigate(game, state);
   };
 
   const removeSavedGameAlert = (id: number) =>
@@ -59,7 +81,11 @@ const ResumeGame = ({ navigation }: ResumeGameProps) => {
       { text: "Yes", onPress: () => onDeleteGame(id, setGameState) },
     ]);
 
-  const renderItem = ({ item }: { item: LoadResumeGameState<any> }) => {
+  const renderItem = ({
+    item,
+  }: {
+    item: LoadResumeGameState<GameUndoState>;
+  }) => {
     return (
       <Pressable
         style={({ pressed }) => [

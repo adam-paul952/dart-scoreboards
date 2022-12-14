@@ -9,7 +9,7 @@ import useColorScheme from "../../../hooks/useColorScheme";
 import { IPlayer } from "@context/PlayerContext";
 interface IX01ScoreboardBodyProps {
   selectedPlayers: IPlayer[];
-  currentPlayer: any;
+  currentPlayer: IPlayer;
 }
 
 const X01ScoreboardBody = (props: IX01ScoreboardBodyProps) => {

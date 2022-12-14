@@ -1,5 +1,6 @@
-import { LoadResumeGameState } from "hooks/useResumeGame";
 import { SqlControllerProps } from "..";
+import { LoadResumeGameState } from "../../hooks/useResumeGame";
+import { GameUndoState } from "../../screens/ResumeGame";
 
 // CREATE
 export const onCreateTable = ({
@@ -21,7 +22,7 @@ export const onGetAllGames = ({
   table,
   args = [],
   setStateFunc,
-}: SqlControllerProps<null>) => {
+}: SqlControllerProps<LoadResumeGameState<GameUndoState>>) => {
   setStateFunc !== undefined &&
     transaction.executeSql(
       `
@@ -93,7 +94,7 @@ export const onDeleteGame = ({
   table,
   args = [],
   setStateFunc,
-}: SqlControllerProps<LoadResumeGameState<null>>) =>
+}: SqlControllerProps<LoadResumeGameState<GameUndoState>>) =>
   setStateFunc !== undefined
     ? transaction.executeSql(
         `DELETE FROM ${table} WHERE id = (?)`,

@@ -191,8 +191,8 @@ const usePlayerStats = () => {
         break;
 
       case "x01":
-        setX01Stats((prev: any) =>
-          prev.map((item: any) => {
+        setX01Stats((prev) =>
+          prev.map((item) => {
             if (item.id === player.id && item.id !== winner.id) {
               item.games_played += 1;
               item.games_lost += 1;

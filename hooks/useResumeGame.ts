@@ -12,6 +12,7 @@ import {
 import { UndoState } from "./useUndoRedo";
 import { IPlayer } from "@context/PlayerContext";
 import { PlayableGameVariants } from "./useGame";
+import { GameUndoState } from "../screens/ResumeGame";
 
 export interface ResumeGameState {
   id?: number;
@@ -34,14 +35,22 @@ const useResumeGame = () => {
   // create
   const onCreateResumeTable = () => createTable();
   // read
-  const onGetAllSavedGames = (setStateFunc: any) => getGames(setStateFunc);
+  const onGetAllSavedGames = (
+    setStateFunc: React.Dispatch<
+      React.SetStateAction<LoadResumeGameState<GameUndoState>[]>
+    >
+  ) => getGames(setStateFunc);
   // update
   const onAddGameToStorage = (data: SaveResumeGameState) => addGame(data);
 
   const onUpdateSavedGame = (data: SaveResumeGameState) => onUpdateGame(data);
   // delete
-  const onDeleteGame = (id: number, setStateFunc: any) =>
-    deleteSavedGame(id, setStateFunc);
+  const onDeleteGame = (
+    id: number,
+    setStateFunc: React.Dispatch<
+      React.SetStateAction<LoadResumeGameState<GameUndoState>[]>
+    >
+  ) => deleteSavedGame(id, setStateFunc);
 
   const onDropResumeTable = () => dropTable();
 
@@ -61,10 +70,10 @@ const useResumeGame = () => {
     })
     .slice(0, 5);
 
-  const onAddGame = (
+  const onAddGame = <T>(
     variant: PlayableGameVariants,
     selectedPlayers: IPlayer[],
-    undoState: any,
+    undoState: UndoState<T>,
     id?: number
   ) => {
     let players = JSON.stringify(selectedPlayers.map((player) => player));
