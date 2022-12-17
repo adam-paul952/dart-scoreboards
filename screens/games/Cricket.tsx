@@ -1,6 +1,5 @@
 import React, { useEffect, useState, useRef } from "react";
 import { StyleSheet } from "react-native";
-import { useNavigation } from "@react-navigation/native";
 import { useKeepAwake } from "expo-keep-awake";
 
 import { usePlayerState } from "../../context/PlayerContext";
@@ -24,7 +23,7 @@ type CricketProps = NativeStackScreenProps<RootStackParamList, "cricket">;
 
 const targets = [20, 19, 18, 17, 16, 15, 25];
 
-const Cricket = ({ route }: CricketProps) => {
+const Cricket = ({ route, navigation }: CricketProps) => {
   // keep device awake during game
   useKeepAwake();
   const variant = route.name;
@@ -48,7 +47,6 @@ const Cricket = ({ route }: CricketProps) => {
     onResetGame,
     nextPlayer,
   } = useGame();
-  const navigation = useNavigation();
 
   const [undoState, { set: setUndoState, undo: undoTurn, canUndo }] =
     useUndoRedo({

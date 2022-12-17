@@ -10,7 +10,10 @@ import { PlayableGameVariants } from "../hooks/useGame";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { RootStackParamList } from "types";
 
-type ResumeGameProps = NativeStackScreenProps<RootStackParamList, "baseball">;
+type ResumeGameProps = NativeStackScreenProps<
+  RootStackParamList,
+  "resume-game"
+>;
 
 export type StateToPass = Omit<
   LoadResumeGameState<GameUndoState>,
@@ -42,6 +45,12 @@ const ResumeGame = ({ navigation }: ResumeGameProps) => {
     onGetAllSavedGames(setGameState);
   }, []);
 
+  // useEffect(() => {
+  //   resumeGameState.forEach((game) => {
+  //     game.variant === "x01" && console.log(game);
+  //   });
+  // }, [resumeGameState]);
+
   // calculate hits for button display
   const calculateHits = (array: Array<number>) =>
     [
@@ -58,21 +67,20 @@ const ResumeGame = ({ navigation }: ResumeGameProps) => {
     game: PlayableGameVariants,
     state: LoadResumeGameState<GameUndoState>
   ) => {
-    game === "baseball" &&
-      navigation.navigate({
-        name: game,
-        params: {
+    game === "baseball" || game === "cricket"
+      ? navigation.navigate(game, {
           id: state.id,
           players: state.players,
           undoState: state.undoState,
-        },
-      });
-    game === "cricket" &&
-      navigation.navigate(game, {
-        id: state.id,
-        players: state.players,
-        undoState: state.undoState,
-      });
+        })
+      : game === "elimination" || game === "x01"
+      ? navigation.navigate(game, {
+          id: state.id,
+          players: state.players,
+          undoState: state.undoState,
+          settings: state.settings,
+        })
+      : null;
   };
 
   const removeSavedGameAlert = (id: number) =>
@@ -81,62 +89,67 @@ const ResumeGame = ({ navigation }: ResumeGameProps) => {
       { text: "Yes", onPress: () => onDeleteGame(id, setGameState) },
     ]);
 
+  const keyExtractor = (_: any, index: number) => index.toString();
+
   const renderItem = ({
     item,
   }: {
     item: LoadResumeGameState<GameUndoState>;
   }) => {
+    const { id, variant, players, undoState, settings, date, time } = item;
     return (
       <Pressable
         style={({ pressed }) => [
           { opacity: pressed ? 0.5 : 1 },
           styles.buttonContainer,
         ]}
-        onLongPress={() =>
-          item.id !== undefined ? removeSavedGameAlert(item.id) : null
-        }
-        onPressOut={() => onHandleResumeGame(item.variant, item)}
+        onLongPress={() => (id !== undefined ? removeSavedGameAlert(id) : null)}
+        onPressOut={() => onHandleResumeGame(variant, item)}
       >
         <View>
           <Text style={styles.gameText}>
-            {item.variant.charAt(0).toUpperCase() + item.variant.slice(1)}
+            {variant.charAt(0).toUpperCase() + variant.slice(1)}
           </Text>
-          {item.players.map((player) => {
+          {players.map((player) => {
             return (
               <View key={player.id} style={styles.playerRow}>
                 <Text style={styles.textStyle}>{player.name}</Text>
                 <Text style={styles.textStyle}>{player.score}</Text>
-                {item.variant === "cricket" ? (
-                  <Text style={[styles.textStyle]}>
-                    {calculateHits(player.scoreList)} mrks
-                  </Text>
-                ) : null}
+                <Text style={[styles.textStyle]}>
+                  {variant === "cricket"
+                    ? `${calculateHits(player.scoreList)} mrks`
+                    : variant === "elimination"
+                    ? `${player.lives}`
+                    : null}
+                </Text>
               </View>
             );
           })}
         </View>
         <View style={styles.bottomAlignColumn}>
-          {item.variant === "elimination" ? <Text>Lives:</Text> : null}
-          {item.variant === "x01" ? <Text>Points:</Text> : null}
-          {item.variant === "baseball" ? (
-            <Text style={styles.textStyle}>
-              Inning: {item.undoState.present.round}
-            </Text>
-          ) : (
-            <Text style={styles.textStyle}>
-              Round: {item.undoState.present.round}
-            </Text>
-          )}
-
           <Text style={styles.textStyle}>
-            Turn: {item.undoState.present.turn}
+            {variant === "elimination"
+              ? "Lives: "
+              : variant === "x01"
+              ? "Points: "
+              : null}
+            {settings}
           </Text>
+          {variant === "x01" ? null : (
+            <>
+              <Text style={styles.textStyle}>
+                {variant === "baseball" ? "Inning: " : "Round: "}
+                {undoState.present.round}
+              </Text>
+              <Text style={styles.textStyle}>
+                Turn: {undoState.present.turn}
+              </Text>
+            </>
+          )}
         </View>
         <View style={styles.bottomAlignColumn}>
-          <Text style={styles.textStyle}>{item.date}</Text>
-          <Text style={[{ textAlign: "right" }, styles.textStyle]}>
-            {item.time}
-          </Text>
+          <Text style={styles.textStyle}>{date}</Text>
+          <Text style={[{ textAlign: "right" }, styles.textStyle]}>{time}</Text>
         </View>
       </Pressable>
     );
@@ -147,7 +160,7 @@ const ResumeGame = ({ navigation }: ResumeGameProps) => {
       <FlatList
         data={resumeGameState}
         renderItem={renderItem}
-        keyExtractor={(_, index) => index.toString()}
+        keyExtractor={keyExtractor}
       />
     </View>
   );

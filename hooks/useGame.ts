@@ -16,7 +16,7 @@ const useGame = () => {
   const [leadingScore, setLeadingScore] = useState<number>(0);
 
   // delete input
-  const onDeleteInput = (variant: PlayableGameVariants) => {
+  const onDeleteInput = (variant?: PlayableGameVariants) => {
     if (variant === "killer")
       setPlayerScore((prev) =>
         prev

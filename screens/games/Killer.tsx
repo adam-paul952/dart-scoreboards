@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { ScrollView, StyleSheet } from "react-native";
-import { useNavigation } from "@react-navigation/native";
+import { useKeepAwake } from "expo-keep-awake";
 
 import { usePlayerState, IPlayer } from "@context/PlayerContext";
 import useGame from "../../hooks/useGame";
@@ -22,9 +22,13 @@ import { RootStackParamList } from "types";
 
 type KillerProps = NativeStackScreenProps<RootStackParamList, "killer">;
 
-const Killer = ({ route }: KillerProps) => {
-  const { playerTargets } = route.params;
-  const variant = route.name;
+const Killer = ({ route, navigation }: KillerProps) => {
+  // keep device unlocked during game
+  useKeepAwake();
+
+  const { name, params } = route;
+  const { playerTargets } = params;
+  const variant = name;
 
   const { selectedPlayers, setSelectedPlayers } = usePlayerState();
   const { onUpdatePlayerStats, setGameOver } = usePlayerStats();
@@ -43,7 +47,6 @@ const Killer = ({ route }: KillerProps) => {
     setPlayerIsOut,
     onResetGame,
   } = useGame();
-  const navigation = useNavigation();
 
   const [undoState, { set: setUndoState, undo: undoTurn, canUndo }] =
     useUndoRedo({
@@ -55,11 +58,11 @@ const Killer = ({ route }: KillerProps) => {
 
   const { present: presentTurn } = undoState;
 
-  // useEffect(() => {
-  //   console.log(`-----------------`);
-  //   console.log(`Present State: `);
-  //   console.log(presentTurn);
-  // }, [presentTurn]);
+  useEffect(() => {
+    console.log(`-----------------`);
+    console.log(`Present State: `);
+    console.log(presentTurn);
+  }, [presentTurn]);
 
   // assign targets based on player scores
   const [targets] = useState<Array<number>>(playerTargets);

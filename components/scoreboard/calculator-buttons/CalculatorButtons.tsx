@@ -10,8 +10,10 @@ import { cricketButtons } from "@scoreboard/calculator-buttons/constants";
 
 import type { PlayableGameVariants } from "../../../hooks/useGame";
 
+type CalculatorButtonVariants = PlayableGameVariants | "killer-setup";
+
 interface CalculatorButtonsProps {
-  variant: PlayableGameVariants;
+  variant: CalculatorButtonVariants;
   value?: string;
   setValue?: React.Dispatch<React.SetStateAction<string>>;
   disabled?: boolean | Array<boolean>;

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { StyleSheet } from "react-native";
-import { useNavigation } from "@react-navigation/native";
+import { useKeepAwake } from "expo-keep-awake";
 
 import { usePlayerState } from "../../context/PlayerContext";
 import useGame from "../../hooks/useGame";
@@ -33,8 +33,13 @@ let winner: { id?: number; name: string } = {
 
 let roundScore = 0;
 
-const Elimination = ({ route }: EliminationProps) => {
-  const variant = route.name;
+const Elimination = ({ route, navigation }: EliminationProps) => {
+  // keep device unlocked during game
+  useKeepAwake();
+
+  const { name, params } = route;
+  const variant = name;
+
   const { selectedPlayers, setSelectedPlayers } = usePlayerState();
   const { onUpdatePlayerStats, setGameOver } = usePlayerStats();
   const { onAddGame } = useResumeGame();
@@ -57,8 +62,6 @@ const Elimination = ({ route }: EliminationProps) => {
     onResetGame,
   } = useGame();
 
-  const navigation = useNavigation();
-
   const [undoState, { set: setUndoState, undo: undoTurn, canUndo }] =
     useUndoRedo({
       turn: 0,
@@ -72,7 +75,6 @@ const Elimination = ({ route }: EliminationProps) => {
 
   const [eliminationLives] = useState(currentPlayer.lives);
 
-  // if player has 0 lives; player is out change turns
   useEffect(() => {
     if (currentPlayer.lives === 0) {
       changeTurns();
@@ -85,6 +87,7 @@ const Elimination = ({ route }: EliminationProps) => {
       if (player.lives > 0) {
         winner = player;
       }
+
       onUpdatePlayerStats("elimination", player, winner);
     });
 
@@ -161,6 +164,19 @@ const Elimination = ({ route }: EliminationProps) => {
     if (checkForWinningPlayer === 1) declareWinner();
   };
 
+  const onHandleSubmit = () => {
+    setUndoState({
+      turn,
+      round,
+      player: JSON.parse(JSON.stringify(currentPlayer)),
+      leadingScore,
+      nextPlayer: JSON.parse(JSON.stringify(nextPlayer)),
+    });
+
+    onHandleTurnChange();
+  };
+
+  // handle setting undo state on Undo
   const onUndo = () => {
     undoTurn();
     setSelectedPlayers((prev) =>
@@ -175,20 +191,40 @@ const Elimination = ({ route }: EliminationProps) => {
     setLeadingScore(presentTurn.leadingScore);
   };
 
-  const onHandleSubmit = () => {
-    setUndoState({
-      turn,
-      round,
-      player: JSON.parse(JSON.stringify(currentPlayer)),
-      leadingScore,
-      nextPlayer: JSON.parse(JSON.stringify(nextPlayer)),
-    });
-    onHandleTurnChange();
-  };
-
+  // handle saving game details if game is unfinished
   const routes = navigation.getState()?.routes;
 
-  const addGame = () => onAddGame(variant, selectedPlayers, undoState);
+  const addGame = () =>
+    params?.id !== undefined
+      ? onAddGame(
+          variant,
+          selectedPlayers,
+          undoState,
+          eliminationLives,
+          params?.id
+        )
+      : onAddGame(variant, selectedPlayers, undoState, eliminationLives);
+
+  // handle setting state if user is resuming a saved game
+  useEffect(() => {
+    const unsubscribe = navigation.addListener("focus", () => {
+      const previousScreen = routes[routes.length - 2].name;
+      const resumeGameState = params;
+
+      if (previousScreen === "resume-game" && resumeGameState !== undefined) {
+        const { players, undoState } = resumeGameState;
+        const { present } = undoState;
+
+        setSelectedPlayers(() => players);
+        setCurrentPlayer(present.nextPlayer);
+        setTurn(() => (present.turn + 1) % resumeGameState.players.length);
+        setRound(() => (turn === 0 ? present.round + 1 : present.round));
+        setLeadingScore(present.leadingScore);
+      } else return;
+    });
+
+    return unsubscribe;
+  }, [navigation]);
 
   return (
     <View style={styles.container}>
@@ -216,7 +252,7 @@ const Elimination = ({ route }: EliminationProps) => {
       />
       <View>
         <CalculatorButtons
-          variant="elimination"
+          variant={variant}
           onHandleSubmit={onHandleSubmit}
           onDeleteInput={() => onDeleteInput(variant)}
           setValue={setPlayerScore}

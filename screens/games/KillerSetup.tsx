@@ -108,7 +108,7 @@ const KillerSetup = ({ navigation }: KillerSetupProps) => {
         <CalculatorButtons
           variant="killer-setup"
           onHandleSubmit={onHandleSubmit}
-          onDeleteInput={() => onDeleteInput("killer-setup")}
+          onDeleteInput={() => onDeleteInput()}
           setValue={setPlayerScore}
           disabled={isInputError}
         />

@@ -1,6 +1,5 @@
 import React, { useEffect, useRef } from "react";
 import { Alert, StyleSheet } from "react-native";
-import { useNavigation } from "@react-navigation/native";
 import { useKeepAwake } from "expo-keep-awake";
 
 import { usePlayerState } from "../../context/PlayerContext";
@@ -18,7 +17,6 @@ import BaseballRoundInfo from "@scoreboard/round-info/BaseballRoundInfo";
 
 import gameOverAlert from "@components/GameOverAlert";
 
-import { IPlayer } from "../../context/PlayerContext";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { RootStackParamList } from "types";
 
@@ -32,10 +30,12 @@ let winner: { id: number; name: string } = {
   name: "",
 };
 
-const Baseball = ({ route }: BaseballRouteProps) => {
+const Baseball = ({ route, navigation }: BaseballRouteProps) => {
   // keep device awake while on game screen
   useKeepAwake();
+
   const variant = route.name;
+
   const { selectedPlayers, setSelectedPlayers } = usePlayerState();
   const { onUpdatePlayerStats, setGameOver } = usePlayerStats();
   const { onAddGame } = useResumeGame();
@@ -59,7 +59,6 @@ const Baseball = ({ route }: BaseballRouteProps) => {
     onResetGame,
     nextPlayer,
   } = useGame();
-  const navigation = useNavigation();
 
   const [undoState, { set: setUndoState, undo: undoTurn, canUndo }] =
     useUndoRedo({
@@ -95,6 +94,7 @@ const Baseball = ({ route }: BaseballRouteProps) => {
       : (currentPlayer.scoreList[9] += roundScore);
     // calculate total by reducing scorelist
     const overallScore = currentPlayer.scoreList.reduce((a, b) => a + b);
+
     assignCurrentPlayerHighScore(currentPlayer);
     changeTurns();
     changeRounds();
@@ -177,6 +177,7 @@ const Baseball = ({ route }: BaseballRouteProps) => {
         player.id === presentPlayer.player.id ? presentPlayer.player : player
       )
     );
+
     setCurrentPlayer(presentPlayer.player);
     setTurn(presentPlayer.turn);
     setRound(presentPlayer.round);
@@ -194,6 +195,7 @@ const Baseball = ({ route }: BaseballRouteProps) => {
       leadingScore,
       nextPlayer: nextPlayerUndo,
     });
+
     onHandleTurnChange();
   };
 
@@ -228,6 +230,7 @@ const Baseball = ({ route }: BaseballRouteProps) => {
             ? resumeGameState.undoState.present.round + 1
             : resumeGameState.undoState.present.round
         );
+
         setCurrentPlayer(resumeGameState.undoState.present.nextPlayer);
         setLeadingScore(resumeGameState.undoState.present.leadingScore);
         setSelectedPlayers(() => resumeGameState.players);
@@ -270,7 +273,7 @@ const Baseball = ({ route }: BaseballRouteProps) => {
           leadingScore={leadingScore}
         />
         <CalculatorButtons
-          variant="baseball"
+          variant={variant}
           onHandleSubmit={onHandleSubmit}
           onDeleteInput={() => onDeleteInput(variant)}
           setValue={setPlayerScore}

@@ -24,11 +24,13 @@ export interface ResumeGameState {
 export interface SaveResumeGameState extends ResumeGameState {
   players: string;
   undoState: string;
+  gameSettings?: number | null;
 }
 
 export interface LoadResumeGameState<T> extends ResumeGameState {
   players: IPlayer[];
   undoState: UndoState<T>;
+  settings?: number | null;
 }
 
 const useResumeGame = () => {
@@ -74,6 +76,7 @@ const useResumeGame = () => {
     variant: PlayableGameVariants,
     selectedPlayers: IPlayer[],
     undoState: UndoState<T>,
+    gameSettings?: number,
     id?: number
   ) => {
     let players = JSON.stringify(selectedPlayers.map((player) => player));
@@ -99,6 +102,7 @@ const useResumeGame = () => {
           players,
           date: getDate,
           time: getTime,
+          gameSettings: gameSettings === undefined ? null : gameSettings,
         });
   };
 

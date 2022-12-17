@@ -44,12 +44,19 @@ export const getGames = (
 export const addGame = (data: SaveResumeGameState) =>
   db.transaction(
     (tx) => {
-      const { variant, undoState, players, date, time } = data;
+      const {
+        variant,
+        undoState,
+        players,
+        date,
+        time,
+        gameSettings = null,
+      } = data;
       // console.log([variant, undoState, players, date, time]);
       onAddGame({
         transaction: tx,
         table: DbTables.Resume,
-        args: [variant, undoState, players, date, time],
+        args: [variant, undoState, players, date, time, gameSettings],
       });
     },
     (error) => console.log(dbError, error)

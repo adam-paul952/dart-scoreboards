@@ -12,7 +12,7 @@ export const onCreateTable = ({
     ${table} (id INTEGER PRIMARY KEY AUTOINCREMENT, 
     name TEXT NOT NULL, state TEXT NOT NULL, 
     selected_players TEXT NOT NULL, date TEXT NOT NULL,
-    time TEXT NOT NULL
+    time TEXT NOT NULL, settings INTEGER
   )
 `);
 
@@ -37,6 +37,7 @@ export const onGetAllGames = ({
             item.variant = item.name;
             item.date;
             item.time;
+            item.settings;
             item.players = JSON.parse(item.selected_players);
             item.undoState = JSON.parse(item.state);
             delete item.selected_players;
@@ -59,7 +60,9 @@ export const onAddGame = ({
   args,
 }: SqlControllerProps<null>) =>
   transaction.executeSql(
-    `INSERT INTO ${table} (name, state, selected_players, date, time) values (?, ?, ?, ?, ?)`,
+    `INSERT INTO ${table} 
+      (name, state, selected_players, date, time, settings) 
+      values (?, ?, ?, ?, ?, ?)`,
     args,
     (_, resultSet) => {
       console.log(`Results from add to DB: `, resultSet);

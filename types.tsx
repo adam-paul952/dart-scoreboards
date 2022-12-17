@@ -33,8 +33,8 @@ export type RootStackParamList = {
   "create-match": undefined;
   baseball: StateToPass | undefined;
   cricket: StateToPass | undefined;
-  elimination: undefined;
-  x01: undefined;
+  elimination: StateToPass | undefined;
+  x01: StateToPass | undefined;
   killer: { playerTargets: Array<number> };
   statistics: undefined;
   "resume-game": undefined;

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Alert, StyleSheet } from "react-native";
-import { useNavigation } from "@react-navigation/native";
+import { useKeepAwake } from "expo-keep-awake";
 
 import { usePlayerState } from "../../context/PlayerContext";
 import useGame from "../../hooks/useGame";
@@ -24,7 +24,10 @@ type X01Props = NativeStackScreenProps<RootStackParamList, "x01">;
 
 let winner = { id: 0, name: "" };
 
-const X01 = ({ route }: X01Props) => {
+const X01 = ({ route, navigation }: X01Props) => {
+  // keep screen unlocked during game
+  useKeepAwake();
+
   const variant = route.name;
   const { selectedPlayers, setSelectedPlayers } = usePlayerState();
   const { onUpdatePlayerStats, setGameOver } = usePlayerStats();
@@ -40,7 +43,7 @@ const X01 = ({ route }: X01Props) => {
     nextPlayer,
     onResetGame,
   } = useGame();
-  const navigation = useNavigation();
+
   const [undoState, { set: setUndoState, undo: undoTurn, canUndo }] =
     useUndoRedo({
       player: { ...currentPlayer },
@@ -164,7 +167,39 @@ const X01 = ({ route }: X01Props) => {
 
   const routes = navigation.getState()?.routes;
 
-  const addGame = () => onAddGame(variant, selectedPlayers, undoState);
+  useEffect(() => {
+    const unsubscribe = navigation.addListener("focus", () => {
+      const previousScreen = routes[routes.length - 2].name;
+      const resumeGameState = route.params;
+      if (previousScreen === "resume-game" && resumeGameState !== undefined) {
+        console.log(`ResumeGameState: \n`, resumeGameState.players);
+
+        resumeGameState.undoState.past.forEach((state) => setUndoState(state));
+        setUndoState(resumeGameState.undoState.present);
+        let currentTurn = 0;
+        resumeGameState.players.forEach((player) => {
+          player.stats.darts > currentTurn
+            ? (currentTurn += player.stats.darts)
+            : setCurrentPlayer(player);
+        });
+        // setCurrentPlayer(resumeGameState.undoState.present.player);
+        setSelectedPlayers(() => resumeGameState.players);
+      } else return;
+    });
+
+    return unsubscribe;
+  }, [navigation]);
+
+  const addGame = () =>
+    route.params?.id !== undefined
+      ? onAddGame(variant, selectedPlayers, undoState, x01Points)
+      : onAddGame(
+          variant,
+          selectedPlayers,
+          undoState,
+          x01Points,
+          route.params?.id
+        );
 
   return (
     <View style={styles.container}>
