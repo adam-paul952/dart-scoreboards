@@ -15,13 +15,17 @@ const UserSettings = () => {
   const { onCreateStats, onDropPlayerStats } = usePlayerStats();
   const { onCreatePlayerlist, onDropPlayerlist } = usePlayerlist();
 
-  const onDropPress = () => {
-    onDropResumeTable();
-    // onDropPlayerStats();
-    // onDropPlayerlist(setPlayerList);
+  const onDropPlayerData = () => {
+    onDropPlayerStats();
+    onDropPlayerlist(setPlayerList);
 
-    // onCreatePlayerlist();
-    // onCreateStats();
+    onCreatePlayerlist();
+    onCreateStats();
+  };
+
+  const onDropGames = () => {
+    onDropResumeTable();
+
     onCreateResumeTable();
   };
 
@@ -32,7 +36,22 @@ const UserSettings = () => {
       [
         {
           text: "Delete",
-          onPress: () => onDropPress(),
+          onPress: () => onDropPlayerData(),
+        },
+        { text: "Cancel", style: "cancel" },
+      ],
+      { cancelable: true }
+    );
+  };
+
+  const onDeleteAllSavedGames = () => {
+    Alert.alert(
+      "WARNING:",
+      "Are you sure you wish to delete all saved games? \n\nThis action cannot be undone",
+      [
+        {
+          text: "Delete",
+          onPress: () => onDropGames(),
         },
         { text: "Cancel", style: "cancel" },
       ],
@@ -50,10 +69,8 @@ const UserSettings = () => {
           backgroundColor: "#fff",
         }}
       >
-        <Text style={{ fontSize: 20 }}>
-          This is where registered {"\n"} user settings will be:
-        </Text>
-        <Text style={{ fontSize: 20 }}>Delete Account, Edit account ....</Text>
+        <Text style={{ fontSize: 20 }}></Text>
+        <Text style={{ fontSize: 20 }}></Text>
       </View>
       <View style={{ flex: 0.1 }}>
         <View
@@ -75,7 +92,28 @@ const UserSettings = () => {
               borderRadius: 0,
             }}
             onPressOut={onDeleteAllPlayerInfo}
-          ></CustomButton>
+          />
+        </View>
+      </View>
+      <View style={{ flex: 0.1 }}>
+        <View
+          style={{
+            flexDirection: "row",
+            paddingHorizontal: 10,
+            backgroundColor: "rgba(255,0,0,0.3)",
+            alignItems: "center",
+          }}
+        >
+          <Text style={{ flex: 1, fontSize: 20 }}>Erase all Saved Games</Text>
+          <CustomButton
+            title="Erase"
+            buttonStyle={{
+              backgroundColor: "rgba(255,0,0,0.6)",
+              paddingHorizontal: 20,
+              borderRadius: 0,
+            }}
+            onPressOut={onDeleteAllSavedGames}
+          />
         </View>
       </View>
     </View>

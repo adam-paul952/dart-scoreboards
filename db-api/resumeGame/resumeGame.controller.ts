@@ -36,7 +36,7 @@ export const getGames = (
       onGetAllGames({ transaction: tx, table: DbTables.Resume, setStateFunc });
     },
     (error) => {
-      console.log(dbError, error);
+      // console.log(dbError, error);
     }
   );
 
@@ -59,7 +59,9 @@ export const addGame = (data: SaveResumeGameState) =>
         args: [variant, undoState, players, date, time, gameSettings],
       });
     },
-    (error) => console.log(dbError, error)
+    (error) => {
+      // console.log(dbError, error);
+    }
   );
 
 export const onUpdateGame = (data: SaveResumeGameState) => {
@@ -90,7 +92,9 @@ export const deleteSavedGame = (
         setStateFunc,
       });
     },
-    (error) => console.log(dbError, error)
+    (error) => {
+      // console.log(dbError, error);
+    }
   );
 
 export const dropTable = () =>

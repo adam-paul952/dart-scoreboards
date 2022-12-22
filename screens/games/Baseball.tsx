@@ -253,6 +253,7 @@ const Baseball = ({ route, navigation }: BaseballRouteProps) => {
         onResetGame={onResetGame}
         onAddGame={addGame}
         variant={variant}
+        navigation={navigation}
       />
       <View style={styles.scoreboardContainer}>
         <BaseballHeader />

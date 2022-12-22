@@ -47,7 +47,7 @@ export const onGetAllGames = ({
         );
       },
       (_, error) => {
-        console.log(`db error loading games: `, error);
+        // console.log(`db error loading games: `, error);
         return false;
       }
     );
@@ -86,7 +86,7 @@ export const onUpdateResumeGame = ({
     args,
     () => {},
     (_, error) => {
-      console.log(error);
+      // console.log(error);
       return false;
     }
   );
@@ -112,7 +112,7 @@ export const onDeleteGame = ({
           }
         },
         (_, error) => {
-          console.log(`error removing saved game \n`, error);
+          // console.log(`error removing saved game \n`, error);
           return false;
         }
       )

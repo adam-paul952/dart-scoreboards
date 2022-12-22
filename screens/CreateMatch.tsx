@@ -1,6 +1,5 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { StyleSheet } from "react-native";
-import { useNavigation } from "@react-navigation/native";
 
 import { IPlayer, usePlayerState } from "../context/PlayerContext";
 
@@ -14,10 +13,16 @@ import {
   x01Data,
   eliminationData,
 } from "../constants/data/createMatch";
-import { ScrollView } from "react-native-gesture-handler";
 
-const CreateMatch = () => {
-  const navigation = useNavigation();
+import { NativeStackScreenProps } from "@react-navigation/native-stack";
+import { RootStackParamList } from "types";
+
+type CreateMatchProps = NativeStackScreenProps<
+  RootStackParamList,
+  "create-match"
+>;
+
+const CreateMatch = ({ navigation }: CreateMatchProps) => {
   const { selectedPlayers, setSelectedPlayers, togglePlayerSelect } =
     usePlayerState();
   // game to be selected
@@ -26,37 +31,37 @@ const CreateMatch = () => {
   const [points, setPoints] = useState<number | null>(null);
 
   // disable button if game is null or specific game options are not set
-  const disableButton = () => {
-    if (game === null) return true;
-    else if (game === "x01" && points === null) return true;
-    else if (game === "elimination" && points === null) return true;
-    else return false;
-  };
+  const disableButton = () =>
+    game === null
+      ? true
+      : game === "x01" && points === null
+      ? true
+      : game === "elimination" && points === null
+      ? true
+      : false;
 
   // if x01 is selected set points to player
-  const setX01Points = () => {
-    if (points !== null)
-      setSelectedPlayers((prev: IPlayer[]) =>
-        prev.map((player) => {
-          player.score = points;
-          return player;
-        })
-      );
-  };
+  const setX01Points = () =>
+    points !== null &&
+    setSelectedPlayers((prev) =>
+      prev.map((player) => {
+        player.score = points;
+        return player;
+      })
+    );
 
   // if elimination - set lives to player
-  const setEliminationLives = () => {
-    if (points !== null)
-      setSelectedPlayers((prev: IPlayer[]) =>
-        prev.map((player) => {
-          player.lives = points;
-          return player;
-        })
-      );
-  };
+  const setEliminationLives = () =>
+    points !== null &&
+    setSelectedPlayers((prev) =>
+      prev.map((player) => {
+        player.lives = points;
+        return player;
+      })
+    );
 
   const resetPlayerState = () => {
-    setSelectedPlayers((prev: IPlayer[]) =>
+    setSelectedPlayers((prev) =>
       prev.map((player) => {
         player.score = 0;
         player.scoreList = [];
@@ -69,22 +74,14 @@ const CreateMatch = () => {
 
   // handle conditions for setting state and navigation
   const onHandleSelect = () => {
-    if (game !== null)
-      if (game === "x01") {
-        resetPlayerState();
-        setX01Points();
-        navigation.navigate(game);
-      } else if (game === "elimination") {
-        resetPlayerState();
-        setEliminationLives();
-        navigation.navigate(game);
-      } else if (game === "killer") {
-        resetPlayerState();
-        navigation.navigate("killer-setup");
-      } else {
-        resetPlayerState();
-        navigation.navigate(game);
-      }
+    game !== null &&
+      (game === "x01"
+        ? setX01Points()
+        : game === "elimination"
+        ? setEliminationLives()
+        : game === "killer"
+        ? navigation.navigate("killer-setup")
+        : navigation.navigate(game));
   };
 
   const shufflePlayerList = (array: IPlayer[]) => {
@@ -107,6 +104,14 @@ const CreateMatch = () => {
     return array;
   };
 
+  useEffect(() => {
+    const unsubscribe = navigation.addListener("focus", () =>
+      resetPlayerState()
+    );
+
+    return unsubscribe;
+  }, [navigation]);
+
   return (
     <View style={styles.container}>
       <View
@@ -120,22 +125,21 @@ const CreateMatch = () => {
           value={game}
           setValue={setGame}
         />
-        {game === "x01" && (
+        {game === "x01" ? (
           <Dropdown
             data={x01Data}
             label="Points:"
             value={points}
             setValue={setPoints}
           />
-        )}
-        {game === "elimination" && (
+        ) : game === "elimination" ? (
           <Dropdown
             data={eliminationData}
             label="Lives:"
             value={points}
             setValue={setPoints}
           />
-        )}
+        ) : null}
       </View>
       <View style={{ flexGrow: 1, paddingVertical: 10 }}>
         <View
@@ -179,9 +183,7 @@ const CreateMatch = () => {
           title="Continue to Game"
           buttonStyle={styles.buttonStyle}
           disabled={disableButton()}
-          onPressOut={() => {
-            onHandleSelect();
-          }}
+          onPressOut={() => onHandleSelect()}
         />
       </View>
     </View>

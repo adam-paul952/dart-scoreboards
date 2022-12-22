@@ -1,19 +1,17 @@
 import React from "react";
 import { Alert, StyleSheet } from "react-native";
-
-import { useNavigation } from "@react-navigation/native";
+import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
 
 import { Text, View } from "@components/Themed";
 import CustomButton from "@components/CustomButton";
 import { FontAwesome5Icon } from "@components/button-icons/ButtonIcons";
 
-import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
-
 import Colors from "../../constants/Colors";
 import useColorScheme from "../../hooks/useColorScheme";
 
 import { PlayableGameVariants } from "../../hooks/useGame";
-import { IPlayer } from "@context/PlayerContext";
+import { NativeStackNavigationProp } from "@react-navigation/native-stack";
+import { RootStackParamList } from "types";
 
 interface CustomStackScreenHeaderProps {
   canUndo: boolean;
@@ -22,6 +20,11 @@ interface CustomStackScreenHeaderProps {
   currentPlayerScore?: number;
   onAddGame: () => void;
   variant: PlayableGameVariants;
+  navigation: NativeStackNavigationProp<
+    RootStackParamList,
+    PlayableGameVariants,
+    undefined
+  >;
 }
 
 const CustomStackScreenHeader = (props: CustomStackScreenHeaderProps) => {
@@ -32,14 +35,14 @@ const CustomStackScreenHeader = (props: CustomStackScreenHeaderProps) => {
     currentPlayerScore,
     onAddGame,
     variant,
+    navigation,
   } = props;
 
   const colorScheme = useColorScheme();
-  const navigation = useNavigation();
 
   const onGoBack = () => {
     onResetGame(variant);
-    navigation.goBack();
+    navigation.pop();
   };
 
   const saveGameAlert = () => {

@@ -39,11 +39,7 @@ const CalculatorButtons = (props: CalculatorButtonsProps) => {
   // assign calculator buttons
   if (variant === "cricket") data = cricketButtons;
   else if (variant === "killer") {
-    data = selectedPlayers
-      .map((player) => {
-        return player.score.toString();
-      })
-      .sort();
+    data = selectedPlayers.map((player) => player.score.toString()).sort();
     // fill in empty spaces with disabled block for visual display
     if (data.length % 3 === 0) data.push("Del", "", "Enter");
     else if (data.length % 5 === 0) {
@@ -51,9 +47,8 @@ const CalculatorButtons = (props: CalculatorButtonsProps) => {
       data.push("Del", "", "Enter");
     } else if (data.length % 2 === 0) {
       data.map((item, index) => {
-        if (index % 3 === 0) {
-          data.splice(index + 1, 0, "");
-        }
+        if (index % 3 === 0) data.splice(index + 1, 0, "");
+
         return item;
       });
       data.push("Del", "", "Enter");
@@ -129,8 +124,8 @@ const CalculatorButtons = (props: CalculatorButtonsProps) => {
     return isDisabled;
   };
 
-  const renderItem = ({ item, index }: { item: string; index: number }) => {
-    return hitTargets !== undefined ? (
+  const renderItem = ({ item, index }: { item: string; index: number }) =>
+    hitTargets !== undefined ? (
       <ButtonItem
         item={item}
         onButtonPress={onButtonPress}
@@ -146,7 +141,6 @@ const CalculatorButtons = (props: CalculatorButtonsProps) => {
         variant={variant}
       />
     );
-  };
 
   return (
     <FlatList

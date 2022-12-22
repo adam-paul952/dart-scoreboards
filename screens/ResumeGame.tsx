@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Alert, FlatList, Pressable, StyleSheet } from "react-native";
 
 import useResumeGame, { LoadResumeGameState } from "../hooks/useResumeGame";
+import useGame from "../hooks/useGame";
 
 import { Text, View } from "../components/Themed";
 
@@ -15,10 +16,11 @@ type ResumeGameProps = NativeStackScreenProps<
   "resume-game"
 >;
 
-export type StateToPass = Omit<
-  LoadResumeGameState<GameUndoState>,
-  "date" | "time" | "variant"
->;
+export interface StateToPass
+  extends Omit<
+    LoadResumeGameState<GameUndoState>,
+    "date" | "time" | "variant"
+  > {}
 
 interface BaseballUndoState {
   turn: number;
@@ -34,8 +36,11 @@ interface CricketUndoState extends BaseballUndoState {
 
 export type GameUndoState = BaseballUndoState & CricketUndoState;
 
+const targets = [20, 19, 18, 17, 16, 15, 25];
+
 const ResumeGame = ({ navigation }: ResumeGameProps) => {
   const { onGetAllSavedGames, onDeleteGame } = useResumeGame();
+  const { calculateHits } = useGame();
 
   const [resumeGameState, setGameState] = useState<
     LoadResumeGameState<GameUndoState>[]
@@ -45,23 +50,13 @@ const ResumeGame = ({ navigation }: ResumeGameProps) => {
     onGetAllSavedGames(setGameState);
   }, []);
 
-  // useEffect(() => {
-  //   resumeGameState.forEach((game) => {
-  //     game.variant === "x01" && console.log(game);
-  //   });
-  // }, [resumeGameState]);
+  const routes = navigation.getState()?.routes;
 
-  // calculate hits for button display
-  const calculateHits = (array: Array<number>) =>
-    [
-      array.filter((hitNum) => hitNum === 20).length,
-      array.filter((hitNum) => hitNum === 19).length,
-      array.filter((hitNum) => hitNum === 18).length,
-      array.filter((hitNum) => hitNum === 17).length,
-      array.filter((hitNum) => hitNum === 16).length,
-      array.filter((hitNum) => hitNum === 15).length,
-      array.filter((hitNum) => hitNum === 25).length,
-    ].reduce((a, b) => a + b);
+  // useEffect(() => {
+  //   const unsubscribe = navigation.addListener("focus", () => {
+  //     console.log(`Routes from ResumeGame: `, routes);
+  //   });
+  // }, [navigation]);
 
   const onHandleResumeGame = (
     game: PlayableGameVariants,
@@ -80,6 +75,16 @@ const ResumeGame = ({ navigation }: ResumeGameProps) => {
           undoState: state.undoState,
           settings: state.settings,
         })
+      : game === "killer"
+      ? navigation.navigate(game, {
+          id: state.id,
+          players: state.players,
+          undoState: state.undoState,
+          playerTargets:
+            typeof state.settings === "string"
+              ? state.settings.split(",").map((num) => parseInt(num, 10))
+              : [],
+        })
       : null;
   };
 
@@ -97,6 +102,7 @@ const ResumeGame = ({ navigation }: ResumeGameProps) => {
     item: LoadResumeGameState<GameUndoState>;
   }) => {
     const { id, variant, players, undoState, settings, date, time } = item;
+
     return (
       <Pressable
         style={({ pressed }) => [
@@ -117,7 +123,9 @@ const ResumeGame = ({ navigation }: ResumeGameProps) => {
                 <Text style={styles.textStyle}>{player.score}</Text>
                 <Text style={[styles.textStyle]}>
                   {variant === "cricket"
-                    ? `${calculateHits(player.scoreList)} mrks`
+                    ? `${calculateHits(player.scoreList, targets).reduce(
+                        (a, b) => a + b
+                      )} mrks`
                     : variant === "elimination"
                     ? `${player.lives}`
                     : null}
@@ -129,11 +137,10 @@ const ResumeGame = ({ navigation }: ResumeGameProps) => {
         <View style={styles.bottomAlignColumn}>
           <Text style={styles.textStyle}>
             {variant === "elimination"
-              ? "Lives: "
+              ? `Lives: ${settings}`
               : variant === "x01"
-              ? "Points: "
+              ? `Points: ${settings}`
               : null}
-            {settings}
           </Text>
           {variant === "x01" ? null : (
             <>

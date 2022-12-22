@@ -234,6 +234,7 @@ const Elimination = ({ route, navigation }: EliminationProps) => {
         onResetGame={onResetGame}
         onAddGame={addGame}
         variant={variant}
+        navigation={navigation}
       />
       <View style={styles.scoreboardContainer}>
         <EliminationHeader />

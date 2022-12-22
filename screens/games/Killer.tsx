@@ -8,13 +8,12 @@ import useUndoRedo from "../../hooks/useUndoRedo";
 import usePlayerStats from "../../hooks/usePlayerStats";
 import useResumeGame from "../../hooks/useResumeGame";
 
-import { View } from "../../components/Themed";
+import { View } from "@components/Themed";
 import CustomStackScreenHeader from "@components/scoreboard/CustomStackScreenHeader";
 import KillerHeader from "@scoreboard/header/KillerHeader";
 import KillerScoreboardBody from "@components/scoreboard/body/KillerScoreboardBody";
 import KillerRoundInfo from "@components/scoreboard/round-info/KillerRoundInfo";
 import CalculatorButtons from "@components/scoreboard/calculator-buttons/CalculatorButtons";
-
 import gameOverAlert from "@components/GameOverAlert";
 
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
@@ -27,8 +26,9 @@ const Killer = ({ route, navigation }: KillerProps) => {
   useKeepAwake();
 
   const { name, params } = route;
-  const { playerTargets } = params;
+  // const { playerTargets } = params;
   const variant = name;
+  const routes = navigation.getState()?.routes;
 
   const { selectedPlayers, setSelectedPlayers } = usePlayerState();
   const { onUpdatePlayerStats, setGameOver } = usePlayerStats();
@@ -46,6 +46,11 @@ const Killer = ({ route, navigation }: KillerProps) => {
     playerIsOut,
     setPlayerIsOut,
     onResetGame,
+    nextPlayer,
+    setTurn,
+    setRound,
+    calculateHits,
+    limitNumberOfHits,
   } = useGame();
 
   const [undoState, { set: setUndoState, undo: undoTurn, canUndo }] =
@@ -58,14 +63,20 @@ const Killer = ({ route, navigation }: KillerProps) => {
 
   const { present: presentTurn } = undoState;
 
-  useEffect(() => {
-    console.log(`-----------------`);
-    console.log(`Present State: `);
-    console.log(presentTurn);
-  }, [presentTurn]);
+  // useEffect(() => {
+  //   console.log(`-----------------`);
+  //   console.log(`Present State: `);
+  //   console.log(presentTurn);
+  // }, [presentTurn]);
 
   // assign targets based on player scores
-  const [targets] = useState<Array<number>>(playerTargets);
+  const [targets, setPlayerTargets] = useState<Array<number>>(
+    params.playerTargets
+  );
+
+  useEffect(() => {
+    console.log(`Targets: `, targets);
+  }, [targets]);
 
   const onHandleTurnChange = () => {
     const hits = playerScore.split("").map((score) => parseInt(score, 10));
@@ -91,9 +102,7 @@ const Killer = ({ route, navigation }: KillerProps) => {
           player.lives -= count[targets.indexOf(player.score)];
           if (player.lives < 0) player.lives = 0;
           return player;
-        } else {
-          return player;
-        }
+        } else return player;
       })
     );
     if (currentPlayer.killer === true) {
@@ -111,7 +120,7 @@ const Killer = ({ route, navigation }: KillerProps) => {
 
   const onDeclareWinner = (winner: IPlayer) => {
     selectedPlayers.forEach((player) => {
-      onUpdatePlayerStats("killer", player, winner);
+      onUpdatePlayerStats(variant, player, winner);
     });
 
     setGameOver({ isOver: true, game: variant });
@@ -126,19 +135,26 @@ const Killer = ({ route, navigation }: KillerProps) => {
 
   const onUndoTurn = () => {
     undoTurn();
+
+    setSelectedPlayers((prev) =>
+      prev.map((player) =>
+        presentTurn.player.id ? presentTurn.player : player
+      )
+    );
+    setCurrentPlayer(presentTurn.player);
+    setTurn(presentTurn.turn);
+    setRound(presentTurn.round);
   };
 
   const onHandleSubmit = () => {
     let player = JSON.parse(JSON.stringify(currentPlayer));
-    let nextPlayer = JSON.parse(
-      JSON.stringify(selectedPlayers[(turn + 1) % selectedPlayers.length])
-    );
+    let nextPlayerUndo = JSON.parse(JSON.stringify(nextPlayer));
 
     setUndoState({
       turn,
       round,
       player,
-      nextPlayer,
+      nextPlayer: nextPlayerUndo,
     });
 
     onHandleTurnChange();
@@ -147,8 +163,19 @@ const Killer = ({ route, navigation }: KillerProps) => {
   // when screen is focused re-assign current player to reflect sorted list
   useEffect(() => {
     const unsubscribe = navigation.addListener("focus", () => {
-      setSelectedPlayers((prev) => prev.sort((a, b) => a.score - b.score));
-      setCurrentPlayer(selectedPlayers[turn]);
+      if (routes[routes.length - 2].name === "killer-setup") {
+        setSelectedPlayers((prev) => prev.sort((a, b) => a.score - b.score));
+        setCurrentPlayer(selectedPlayers[turn]);
+        setPlayerTargets((prev) => prev.sort((a, b) => a - b));
+      } else if (routes[routes.length - 2].name === "resume-game") {
+        if ("players" in params && "undoState" in params) {
+          const { players, undoState, playerTargets } = params;
+
+          setSelectedPlayers(() => players);
+          setCurrentPlayer(undoState.present.nextPlayer);
+          setPlayerTargets(playerTargets);
+        }
+      } else return;
     });
 
     return unsubscribe;
@@ -176,7 +203,18 @@ const Killer = ({ route, navigation }: KillerProps) => {
     }
   }, [playerIsOut]);
 
-  const addGame = () => onAddGame(variant, selectedPlayers, undoState);
+  const addGame = () =>
+    onAddGame(variant, selectedPlayers, undoState, targets.toString());
+
+  const calculatedHits = calculateHits(playerScore.split(""), targets);
+
+  React.useEffect(() => {
+    console.log(`Calculated Hits: `, calculatedHits);
+  }, [calculatedHits]);
+
+  // useEffect(() => {
+  //   limitNumberOfHits(calculatedHits);
+  // }, [playerScore.split("")]);
 
   return (
     <View style={{ flex: 1 }}>
@@ -186,6 +224,7 @@ const Killer = ({ route, navigation }: KillerProps) => {
         onResetGame={onResetGame}
         onAddGame={addGame}
         variant={variant}
+        navigation={navigation}
       />
       <ScrollView style={{}}>
         <KillerHeader />
@@ -206,6 +245,7 @@ const Killer = ({ route, navigation }: KillerProps) => {
           onHandleSubmit={onHandleSubmit}
           onDeleteInput={() => onDeleteInput(variant)}
           setValue={setPlayerScore}
+          hitTargets={calculatedHits}
         />
       </View>
     </View>

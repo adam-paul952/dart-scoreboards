@@ -61,7 +61,7 @@ const ButtonItem = (props: ButtonItemProps) => {
       </CustomButton>
     );
   } else {
-    if (variant === "cricket") {
+    if (variant === "cricket" || variant === "killer") {
       return (
         <CustomButton
           buttonStyle={styles.item}

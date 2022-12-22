@@ -46,6 +46,8 @@ const Cricket = ({ route, navigation }: CricketProps) => {
     onDeleteInput,
     onResetGame,
     nextPlayer,
+    limitNumberOfHits,
+    calculateHits,
   } = useGame();
 
   const [undoState, { set: setUndoState, undo: undoTurn, canUndo }] =
@@ -224,40 +226,11 @@ const Cricket = ({ route, navigation }: CricketProps) => {
     setPlayerScore(presentTurn.playerScore);
   };
 
-  // calculate hits for button display
-  const calculateHits = (array: Array<string>) => [
-    array.filter((hitNum) => hitNum === "20").length,
-    array.filter((hitNum) => hitNum === "19").length,
-    array.filter((hitNum) => hitNum === "18").length,
-    array.filter((hitNum) => hitNum === "17").length,
-    array.filter((hitNum) => hitNum === "16").length,
-    array.filter((hitNum) => hitNum === "15").length,
-    array.filter((hitNum) => hitNum === "25").length,
-  ];
-
-  const calculatedHits = calculateHits(playerScoreArray);
-
-  const limitNumberOfHits = () => {
-    let hits = calculatedHits.filter((hit) => hit > 0);
-
-    const countOccurances = (word: string, text: string) =>
-      word.split(text).length - 1;
-
-    let count = countOccurances(playerScore, ",");
-
-    if (
-      hits.length > 3 ||
-      (hits.length > 0 && hits.reduce((a, b) => a + b) > 9)
-    ) {
-      setPlayerScore(
-        playerScore.slice(0, playerScore.indexOf(",") + 3 * (count - 1))
-      );
-    }
-  };
+  const calculatedHits = calculateHits(playerScoreArray, targets);
 
   useEffect(() => {
     disableInputButtons();
-    limitNumberOfHits();
+    limitNumberOfHits(calculatedHits);
   }, [playerScore, selectedPlayers]);
 
   const addGame = () => onAddGame(variant, selectedPlayers, undoState);
@@ -304,6 +277,7 @@ const Cricket = ({ route, navigation }: CricketProps) => {
         onResetGame={onResetGame}
         variant={variant}
         onAddGame={addGame}
+        navigation={navigation}
       />
       <View style={styles.scoreboardContainer}>
         <CricketHeader />
@@ -326,7 +300,8 @@ const Cricket = ({ route, navigation }: CricketProps) => {
             playerScoreArray.map((item) => parseInt(item, 10))
           )}
           allMarks={calculateHits(
-            currentPlayer.scoreList.map((item) => item.toString())
+            currentPlayer.scoreList.map((item) => item.toString()),
+            targets
           )}
         />
         <CalculatorButtons

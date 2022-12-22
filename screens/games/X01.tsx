@@ -172,7 +172,7 @@ const X01 = ({ route, navigation }: X01Props) => {
       const previousScreen = routes[routes.length - 2].name;
       const resumeGameState = route.params;
       if (previousScreen === "resume-game" && resumeGameState !== undefined) {
-        console.log(`ResumeGameState: \n`, resumeGameState.players);
+        // console.log(`ResumeGameState: \n`, resumeGameState.players);
 
         resumeGameState.undoState.past.forEach((state) => setUndoState(state));
         setUndoState(resumeGameState.undoState.present);
@@ -210,6 +210,7 @@ const X01 = ({ route, navigation }: X01Props) => {
         currentPlayerScore={currentPlayer.score}
         variant={variant}
         onAddGame={addGame}
+        navigation={navigation}
       />
       <View style={styles.headerRow}>
         <X01Header />

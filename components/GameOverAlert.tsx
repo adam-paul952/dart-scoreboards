@@ -1,11 +1,17 @@
 import { Alert } from "react-native";
 
 import { PlayableGameVariants } from "../hooks/useGame";
+import { NativeStackNavigationProp } from "@react-navigation/native-stack/lib/typescript/src/types";
+import { RootStackParamList } from "types";
 
 interface GameOverAlertProps {
   playerName: string;
   onResetGame: (variant: PlayableGameVariants, assignedLives?: number) => void;
-  navigation: any;
+  navigation: NativeStackNavigationProp<
+    RootStackParamList,
+    PlayableGameVariants,
+    undefined
+  >;
   variant: PlayableGameVariants;
   assignedLives?: number;
 }

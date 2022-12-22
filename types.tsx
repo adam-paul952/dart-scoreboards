@@ -25,6 +25,11 @@ export type GameVariants =
   | "killer"
   | "x01";
 
+interface KillerResumeGame {
+  playerTargets: Array<number>;
+}
+type KillerStateToPass = Omit<StateToPass, "settings"> & KillerResumeGame;
+
 export type RootStackParamList = {
   Root: NavigatorScreenParams<RootTabParamList> | undefined;
   NotFound: undefined;
@@ -35,7 +40,7 @@ export type RootStackParamList = {
   cricket: StateToPass | undefined;
   elimination: StateToPass | undefined;
   x01: StateToPass | undefined;
-  killer: { playerTargets: Array<number> };
+  killer: KillerStateToPass | KillerResumeGame;
   statistics: undefined;
   "resume-game": undefined;
   "x01-outchart": { currentPlayerScore?: number };

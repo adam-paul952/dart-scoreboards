@@ -26,7 +26,7 @@ const assignTableType = (game: GameVariants) => {
     case "overall":
       return DbTables.Overall;
     default:
-      console.log(`Invalid game type supplied to Stats Controller`);
+      // console.log(`Invalid game type supplied to Stats Controller`);
       break;
   }
 };

@@ -17,21 +17,21 @@ const useGame = () => {
 
   // delete input
   const onDeleteInput = (variant?: PlayableGameVariants) => {
-    if (variant === "killer")
-      setPlayerScore((prev) =>
-        prev
-          .split("")
-          .splice(0, prev.split("").length - 1)
-          .toString()
-      );
-    else if (variant === "cricket")
-      setPlayerScore((prev) =>
-        prev
-          .split(",")
-          .splice(0, prev.split(",").length - 1)
-          .toString()
-      );
-    else setPlayerScore("");
+    variant === "killer"
+      ? setPlayerScore((prev) =>
+          prev
+            .split("")
+            .splice(0, prev.split("").length - 1)
+            .toString()
+        )
+      : variant === "cricket"
+      ? setPlayerScore((prev) =>
+          prev
+            .split(",")
+            .splice(0, prev.split(",").length - 1)
+            .toString()
+        )
+      : setPlayerScore("");
   };
 
   // reset game if playing again
@@ -102,9 +102,41 @@ const useGame = () => {
     });
   };
 
-  const [playerIsOut, setPlayerIsOut] = useState<any[]>([]);
+  const [playerIsOut, setPlayerIsOut] = useState<Array<IPlayer>>([]);
 
   const nextPlayer = selectedPlayers[(turn + 1) % selectedPlayers.length];
+
+  const limitNumberOfHits = (calculatedHits: Array<number>) => {
+    let hits = calculatedHits.filter((hit) => hit > 0);
+
+    const countOccurances = (scoreArray: string, text: string) =>
+      scoreArray.split(text).length - 1;
+
+    let count = countOccurances(playerScore, ",");
+
+    if (
+      hits.length > 3 ||
+      (hits.length > 0 && hits.reduce((a, b) => a + b) > 9)
+    ) {
+      setPlayerScore(
+        playerScore.slice(0, playerScore.indexOf(",") + 3 * (count - 1))
+      );
+    }
+  };
+
+  // calculate hits for button display
+  const calculateHits = (
+    array: Array<string | number>,
+    targets: Array<string | number>
+  ) =>
+    targets.map(
+      (target) =>
+        array.filter((hitNum) =>
+          typeof hitNum === "string"
+            ? hitNum === target.toString()
+            : hitNum === target
+        ).length
+    );
 
   return {
     playerScore,
@@ -125,6 +157,8 @@ const useGame = () => {
     setPlayerIsOut,
     nextPlayer,
     onResetGame,
+    limitNumberOfHits,
+    calculateHits,
   };
 };
 
