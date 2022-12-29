@@ -10,7 +10,7 @@ import useResumeGame from "../../hooks/useResumeGame";
 
 import { View } from "../../components/Themed";
 import CustomStackScreenHeader from "@components/scoreboard/CustomStackScreenHeader";
-import CricketHeader from "@scoreboard/header/CricketHeader";
+import GameScoreboardHeader from "@components/scoreboard/header/GameScoreboardHeader";
 import CricketScoreboardBody from "@scoreboard/body/CricketScoreboardBody";
 import CricketRoundInfo from "@scoreboard/round-info/CricketRoundInfo";
 import CalculatorButtons from "@scoreboard/calculator-buttons/CalculatorButtons";
@@ -280,7 +280,7 @@ const Cricket = ({ route, navigation }: CricketProps) => {
         navigation={navigation}
       />
       <View style={styles.scoreboardContainer}>
-        <CricketHeader />
+        <GameScoreboardHeader variant={variant} />
         {selectedPlayers.map((player) => (
           <CricketScoreboardBody
             key={player.id}

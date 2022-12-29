@@ -10,7 +10,7 @@ import useResumeGame from "../../hooks/useResumeGame";
 
 import { View } from "../../components/Themed";
 import CustomStackScreenHeader from "@components/scoreboard/CustomStackScreenHeader";
-import EliminationHeader from "@components/scoreboard/header/EliminationHeader";
+import GameScoreboardHeader from "@components/scoreboard/header/GameScoreboardHeader";
 import EliminationScoreboardBody from "@components/scoreboard/body/EliminationScoreboardBody";
 import EliminationRoundInfo from "@components/scoreboard/round-info/EliminationRoundInfo";
 import CalculatorButtons from "@scoreboard/calculator-buttons/CalculatorButtons";
@@ -237,7 +237,7 @@ const Elimination = ({ route, navigation }: EliminationProps) => {
         navigation={navigation}
       />
       <View style={styles.scoreboardContainer}>
-        <EliminationHeader />
+        <GameScoreboardHeader variant={variant} />
         {selectedPlayers.map((player) => (
           <EliminationScoreboardBody
             key={player.name}

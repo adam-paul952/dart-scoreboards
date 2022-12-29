@@ -76,9 +76,9 @@ const CreateMatch = ({ navigation }: CreateMatchProps) => {
   const onHandleSelect = () => {
     game !== null &&
       (game === "x01"
-        ? setX01Points()
+        ? (setX01Points(), navigation.navigate(game))
         : game === "elimination"
-        ? setEliminationLives()
+        ? (setEliminationLives(), navigation.navigate(game))
         : game === "killer"
         ? navigation.navigate("killer-setup")
         : navigation.navigate(game));

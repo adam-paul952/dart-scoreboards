@@ -1,8 +1,6 @@
 import React from "react";
 import { FlatList } from "react-native";
 
-import { usePlayerState } from "@context/PlayerContext";
-
 import ButtonItem from "./ButtonItem";
 
 import { regularButtons } from "@scoreboard/calculator-buttons/constants";
@@ -20,6 +18,7 @@ interface CalculatorButtonsProps {
   onHandleSubmit: () => void;
   onDeleteInput: () => void;
   hitTargets?: Array<number>;
+  playerTargets?: Array<number>;
 }
 
 const CalculatorButtons = (props: CalculatorButtonsProps) => {
@@ -31,15 +30,18 @@ const CalculatorButtons = (props: CalculatorButtonsProps) => {
     variant,
     onDeleteInput,
     hitTargets,
+    playerTargets,
   } = props;
 
-  const { selectedPlayers } = usePlayerState();
-
   let data: string[] = [];
+
   // assign calculator buttons
   if (variant === "cricket") data = cricketButtons;
   else if (variant === "killer") {
-    data = selectedPlayers.map((player) => player.score.toString()).sort();
+    playerTargets !== undefined &&
+      (data = playerTargets
+        .sort((a, b) => a - b)
+        .map((target) => target.toString()));
     // fill in empty spaces with disabled block for visual display
     if (data.length % 3 === 0) data.push("Del", "", "Enter");
     else if (data.length % 5 === 0) {
@@ -52,8 +54,6 @@ const CalculatorButtons = (props: CalculatorButtonsProps) => {
         return item;
       });
       data.push("Del", "", "Enter");
-      // data.splice(data.length - 1, 0, "");
-      // data.push("Del", "", "Enter");
     } else {
       data.splice(data.length - 1, 0, "Del");
       data.splice(data.length, 0, "Enter");

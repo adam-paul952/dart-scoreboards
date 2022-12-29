@@ -10,7 +10,7 @@ import useResumeGame from "../../hooks/useResumeGame";
 
 import { View } from "@components/Themed";
 import CustomStackScreenHeader from "@components/scoreboard/CustomStackScreenHeader";
-import KillerHeader from "@scoreboard/header/KillerHeader";
+import GameScoreboardHeader from "@components/scoreboard/header/GameScoreboardHeader";
 import KillerScoreboardBody from "@components/scoreboard/body/KillerScoreboardBody";
 import KillerRoundInfo from "@components/scoreboard/round-info/KillerRoundInfo";
 import CalculatorButtons from "@components/scoreboard/calculator-buttons/CalculatorButtons";
@@ -227,16 +227,14 @@ const Killer = ({ route, navigation }: KillerProps) => {
         navigation={navigation}
       />
       <ScrollView style={{}}>
-        <KillerHeader />
-        {selectedPlayers.map((player) => {
-          return (
-            <KillerScoreboardBody
-              key={player.name}
-              player={player}
-              currentPlayer={currentPlayer.id}
-            />
-          );
-        })}
+        <GameScoreboardHeader variant={variant} />
+        {selectedPlayers.map((player) => (
+          <KillerScoreboardBody
+            key={player.name}
+            player={player}
+            currentPlayer={currentPlayer.id}
+          />
+        ))}
       </ScrollView>
       <KillerRoundInfo currentPlayer={currentPlayer} round={round} />
       <View style={{}}>
@@ -246,6 +244,7 @@ const Killer = ({ route, navigation }: KillerProps) => {
           onDeleteInput={() => onDeleteInput(variant)}
           setValue={setPlayerScore}
           hitTargets={calculatedHits}
+          playerTargets={targets}
         />
       </View>
     </View>

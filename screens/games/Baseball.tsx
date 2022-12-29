@@ -10,7 +10,7 @@ import useResumeGame from "../../hooks/useResumeGame";
 
 import { View } from "../../components/Themed";
 import CustomStackScreenHeader from "@components/scoreboard/CustomStackScreenHeader";
-import BaseballHeader from "@scoreboard/header/BaseballHeader";
+import GameScoreboardHeader from "@components/scoreboard/header/GameScoreboardHeader";
 import BaseballScoreboardBody from "@scoreboard/body/BaseballScoreboardBody";
 import CalculatorButtons from "@scoreboard/calculator-buttons/CalculatorButtons";
 import BaseballRoundInfo from "@scoreboard/round-info/BaseballRoundInfo";
@@ -77,7 +77,7 @@ const Baseball = ({ route, navigation }: BaseballRouteProps) => {
   useEffect(() => {
     setSelectedPlayers((prev) =>
       prev.map((player) => {
-        player.scoreList = new Array(10).fill(0);
+        player.scoreList = new Array(10).fill("");
         return player;
       })
     );
@@ -256,7 +256,7 @@ const Baseball = ({ route, navigation }: BaseballRouteProps) => {
         navigation={navigation}
       />
       <View style={styles.scoreboardContainer}>
-        <BaseballHeader />
+        <GameScoreboardHeader variant={variant} />
         {selectedPlayers.map((player) => (
           <BaseballScoreboardBody
             key={player.id}
