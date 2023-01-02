@@ -11,7 +11,6 @@ import useResumeGame from "../../hooks/useResumeGame";
 import { View } from "../../components/Themed";
 import CustomStackScreenHeader from "@components/scoreboard/CustomStackScreenHeader";
 import GameScoreboardHeader from "@components/scoreboard/header/GameScoreboardHeader";
-import BaseballScoreboardBody from "@scoreboard/body/BaseballScoreboardBody";
 import CalculatorButtons from "@scoreboard/calculator-buttons/CalculatorButtons";
 import BaseballRoundInfo from "@scoreboard/round-info/BaseballRoundInfo";
 
@@ -19,6 +18,7 @@ import gameOverAlert from "@components/GameOverAlert";
 
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { RootStackParamList } from "types";
+import GameScoreboardBody from "@components/scoreboard/body/GameScoreboardBody";
 
 type BaseballRouteProps = NativeStackScreenProps<
   RootStackParamList,
@@ -257,14 +257,12 @@ const Baseball = ({ route, navigation }: BaseballRouteProps) => {
       />
       <View style={styles.scoreboardContainer}>
         <GameScoreboardHeader variant={variant} />
-        {selectedPlayers.map((player) => (
-          <BaseballScoreboardBody
-            key={player.id}
-            player={player}
-            currentPlayer={currentPlayer.id!}
-            playersOut={playerIsOut.some((item) => item.id === player.id)}
-          />
-        ))}
+        <GameScoreboardBody
+          variant={variant}
+          selectedPlayers={selectedPlayers}
+          currentPlayer={currentPlayer.id}
+          playersOut={playerIsOut}
+        />
       </View>
       <View>
         <BaseballRoundInfo

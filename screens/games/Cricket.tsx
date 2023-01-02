@@ -11,13 +11,13 @@ import useResumeGame from "../../hooks/useResumeGame";
 import { View } from "../../components/Themed";
 import CustomStackScreenHeader from "@components/scoreboard/CustomStackScreenHeader";
 import GameScoreboardHeader from "@components/scoreboard/header/GameScoreboardHeader";
-import CricketScoreboardBody from "@scoreboard/body/CricketScoreboardBody";
 import CricketRoundInfo from "@scoreboard/round-info/CricketRoundInfo";
 import CalculatorButtons from "@scoreboard/calculator-buttons/CalculatorButtons";
 import gameOverAlert from "@components/GameOverAlert";
 
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { RootStackParamList } from "types";
+import GameScoreboardBody from "@components/scoreboard/body/GameScoreboardBody";
 
 type CricketProps = NativeStackScreenProps<RootStackParamList, "cricket">;
 
@@ -281,14 +281,12 @@ const Cricket = ({ route, navigation }: CricketProps) => {
       />
       <View style={styles.scoreboardContainer}>
         <GameScoreboardHeader variant={variant} />
-        {selectedPlayers.map((player) => (
-          <CricketScoreboardBody
-            key={player.id}
-            player={player}
-            currentPlayer={currentPlayer}
-            hitTargets={calculatedHits}
-          />
-        ))}
+        <GameScoreboardBody
+          variant={variant}
+          selectedPlayers={selectedPlayers}
+          currentPlayer={currentPlayer.id}
+          hitTargets={calculatedHits}
+        />
       </View>
       <View>
         <CricketRoundInfo

@@ -11,7 +11,7 @@ import useResumeGame from "../../hooks/useResumeGame";
 import { View } from "@components/Themed";
 import CustomStackScreenHeader from "@components/scoreboard/CustomStackScreenHeader";
 import GameScoreboardHeader from "@components/scoreboard/header/GameScoreboardHeader";
-import X01ScoreboardBody from "@scoreboard/body/X01ScoreboardBody";
+import GameScoreboardBody from "@components/scoreboard/body/GameScoreboardBody";
 import X01PlayerInfo from "@scoreboard/round-info/X01PlayerInfo";
 import X01InputRow from "@components/scoreboard/X01InputRow";
 import CalculatorButtons from "@scoreboard/calculator-buttons/CalculatorButtons";
@@ -214,9 +214,10 @@ const X01 = ({ route, navigation }: X01Props) => {
       />
       <View style={styles.headerRow}>
         <GameScoreboardHeader variant={variant} />
-        <X01ScoreboardBody
+        <GameScoreboardBody
+          variant={variant}
           selectedPlayers={selectedPlayers}
-          currentPlayer={currentPlayer}
+          currentPlayer={currentPlayer.id}
         />
       </View>
       <X01InputRow

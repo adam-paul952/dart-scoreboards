@@ -8,7 +8,7 @@
     "ios": "expo start --ios",
     "web": "expo start --web",
     "test": "jest --watchAll",
-    "test-coverage": "jest --watchAll --coverage --verbose"
+    "test-coverage": "jest --coverage --verbose"
   },
   "jest": {
     "preset": "jest-expo",
