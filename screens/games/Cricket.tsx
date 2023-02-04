@@ -79,6 +79,15 @@ const Cricket = ({ route, navigation }: CricketProps) => {
     false,
   ]);
 
+  // useEffect(() => {
+  //   setSelectedPlayers((prev) =>
+  //     prev.map((player) => {
+  //       player.scoreList = new Array(7).fill(0);
+  //       return player;
+  //     })
+  //   );
+  // }, []);
+
   const onHandleTurnCharge = () => {
     previousTurn.current = turn;
     // convert string array into numbers and push into current player scoreList
@@ -241,9 +250,7 @@ const Cricket = ({ route, navigation }: CricketProps) => {
     const unsubscribe = navigation.addListener("focus", () => {
       const previousScreen = routes[routes.length - 2].name;
       const resumeGameState = route.params;
-      // console.log(`The routes object: `, resumeGameState);
 
-      // console.log(`From the route prop: `, route.params);
       if (previousScreen === "resume-game" && resumeGameState !== undefined) {
         resumeGameState.undoState.past.forEach((item) => setUndoState(item));
         setUndoState(resumeGameState.undoState.present);

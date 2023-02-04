@@ -1,47 +1,67 @@
 import { Alert } from "react-native";
 
 import { PlayableGameVariants } from "../hooks/useGame";
+
 import { NativeStackNavigationProp } from "@react-navigation/native-stack/lib/typescript/src/types";
 import { RootStackParamList } from "types";
 
 interface GameOverAlertProps {
-  playerName: string;
-  onResetGame: (variant: PlayableGameVariants, assignedLives?: number) => void;
+  winner: {
+    id: number;
+    name: string;
+  };
   navigation: NativeStackNavigationProp<
     RootStackParamList,
     PlayableGameVariants,
     undefined
   >;
   variant: PlayableGameVariants;
+  undo: () => void;
+  gameEnd: () => void;
   assignedLives?: number;
 }
 
 const gameOverAlert = ({
-  playerName,
-  onResetGame,
+  winner,
   navigation,
-  variant,
-  assignedLives,
+  undo,
+  gameEnd,
 }: GameOverAlertProps) => {
-  let resetGameFunc =
-    assignedLives !== undefined
-      ? onResetGame(variant, assignedLives)
-      : onResetGame(variant);
+  const callUndo = () => {
+    console.log(`Undo called from alert`);
+
+    undo();
+  };
 
   return Alert.alert(
     "Game Over",
-    `${playerName} has won the game!\n\nCongratulations!`,
+    `${winner.name} has won the game!\n\nCongratulations!`,
     [
       {
-        text: "Create Match",
+        text: "Undo Last",
+        onPress: callUndo,
+      },
+      {
+        text: "Create New",
         onPress: () => {
-          onResetGame(variant);
+          gameEnd();
           navigation.navigate("create-match");
         },
         style: "cancel",
       },
-      { text: "Play Again", onPress: () => resetGameFunc },
-    ]
+      {
+        text: "Rematch",
+        onPress: gameEnd,
+      },
+    ],
+    {
+      cancelable: true,
+      onDismiss: () => callUndo(),
+      // onDismiss: () =>
+      //   Alert.alert(
+      //     "This alert was dismissed by tapping outside of the alert dialog."
+      //   ),
+    }
   );
 };
 

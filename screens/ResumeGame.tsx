@@ -25,7 +25,7 @@ export interface StateToPass
 interface BaseballUndoState {
   turn: number;
   round: number;
-  player: IPlayer;
+  currentPlayer: IPlayer;
   nextPlayer: IPlayer;
   leadingScore: number;
 }

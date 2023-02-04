@@ -8,12 +8,15 @@
     "ios": "expo start --ios",
     "web": "expo start --web",
     "test": "jest --watchAll",
-    "test-coverage": "jest --coverage --verbose"
+    "test:coverage": "jest --coverage --verbose"
   },
   "jest": {
     "preset": "jest-expo",
     "transformIgnorePatterns": [
       "node_modules/(?!((jest-)?react-native|@react-native(-community)?)|expo(nent)?|@expo(nent)?/.*|@expo-google-fonts/.*|react-navigation|@react-navigation/.*|@unimodules/.*|unimodules|sentry-expo|native-base|react-native-svg)"
+    ],
+    "setupFilesAfterEnv": [
+      "@testing-library/jest-native/extend-expect"
     ]
   },
   "dependencies": {
@@ -27,6 +30,7 @@
     "expo-checkbox": "~2.2.0",
     "expo-constants": "~13.2.4",
     "expo-font": "~10.2.0",
+    "expo-keep-awake": "~10.2.0",
     "expo-linking": "~3.2.4",
     "expo-splash-screen": "~0.16.2",
     "expo-sqlite": "^10.3.0",
@@ -45,13 +49,13 @@
     "react-native-screens": "~3.15.0",
     "react-native-swipeable-item": "^2.0.9",
     "react-native-uuid": "^2.0.1",
-    "react-native-web": "~0.18.7",
-    "expo-keep-awake": "~10.2.0"
+    "react-native-web": "~0.18.7"
   },
   "devDependencies": {
     "@babel/core": "^7.12.9",
+    "@testing-library/jest-native": "^5.4.1",
     "@testing-library/react-native": "^11.0.0",
-    "@types/jest": "^29.0.0",
+    "@types/jest": "^29.2.5",
     "@types/react": "~18.0.14",
     "@types/react-native": "~0.69.1",
     "@types/react-test-renderer": "^18.0.0",

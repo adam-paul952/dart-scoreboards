@@ -4,15 +4,14 @@ import {
   fireEvent,
   render,
   waitFor,
+  screen,
 } from "@testing-library/react-native";
 
 import ButtonItem from "../ButtonItem";
 
-let mockFn = jest.fn();
-// mockFn.mockImplementationOnce((title:string) => jest.fn())
 const buttonProps = {
   item: "",
-  onButtonPress: () => mockFn,
+  onButtonPress: () => {},
   disabled: undefined,
   variant: "",
   hits: undefined,
@@ -22,49 +21,35 @@ describe("<ButtonItem />", () => {
   afterEach(cleanup);
 
   it("should render a disabled button with no text", () => {
-    const { getByA11yState } = render(<ButtonItem {...buttonProps} />);
-    const button = getByA11yState({ disabled: true });
-    // console.log(button.type);
+    render(<ButtonItem {...buttonProps} />);
+    const button = screen.getByA11yState({ disabled: true });
 
     expect(button.props.accessibilityState).toStrictEqual({ disabled: true });
     expect(button.props.title).toMatch("");
   });
 
   it("should render the delete button", () => {
-    const { getByRole } = render(<ButtonItem {...buttonProps} item="Del" />);
+    render(<ButtonItem {...buttonProps} item="Del" />);
 
-    const button = getByRole("button");
+    const button = screen.getByRole("button");
     expect(button.props.title).toMatch(/del/i);
   });
 
   it("should call the provided delete function", async () => {
     let title = "Del";
-    // let newMock = new mockFn();
-    // let buttonPress = (inputString:string) => jest.fn(inputString);
-    const { getByRole } = render(
-      <ButtonItem
-        {...buttonProps}
-        item={title}
-        // onButtonPress={() => mockFn()}
-      />
+    let buttonPress = jest.fn();
+
+    render(
+      <ButtonItem {...buttonProps} item={title} onButtonPress={buttonPress} />
     );
-    //   mockFn.mockImplementationOnce(() => jest.fn());
-    // console.log(mockFn.mock);
 
-    const button = getByRole("button");
-    // console.log(button.props);
-    // console.log(
-    //   button.props.children[0]["_owner"].pendingProps.onPressOut.toString()
-    // );
-    //   expect(mockFn).not.toHaveBeenCalled();
+    const button = screen.getByRole("button");
 
-    //   fireEvent.press(button);
+    fireEvent(button, "pressOut");
 
-    //   console.log(mockFn.mock);
-
-    //   expect(mockFn).toHaveBeenCalled();
-
-    // expect(button.props.onButtonPress).toHaveBeenCalled();
+    await waitFor(() => {
+      expect(buttonPress.mock.calls[0][0]).toMatch(title);
+    });
   });
 
   it("should render the enter button", () => {
@@ -74,17 +59,25 @@ describe("<ButtonItem />", () => {
     expect(button.props.title).toMatch(/enter/i);
   });
 
-  //   it("should call the provided handleSubmit function",()=>{
-  //     const {getByRole}=render(<ButtonItem {...buttonProps} item="Enter"/>)
-  //     const button = getByRole("button")
-  //   });
+  it("should call the provided handleSubmit function", async () => {
+    let item = "Enter";
+    let buttonPress = jest.fn();
+    render(
+      <ButtonItem {...buttonProps} item={item} onButtonPress={buttonPress} />
+    );
+    const button = screen.getByRole("button");
+
+    fireEvent(button, "pressOut");
+
+    await waitFor(() => {
+      expect(buttonPress.mock.calls[0][0]).toMatch(item);
+    });
+  });
 
   it("should render the hits if variant is cricket", () => {
-    const { getByRole } = render(
-      <ButtonItem {...buttonProps} item="1" hits={2} variant="cricket" />
-    );
+    render(<ButtonItem {...buttonProps} item="1" hits={2} variant="cricket" />);
 
-    const button = getByRole("button");
+    const button = screen.getByRole("button");
     const numHits =
       button.props.children[0].props.children[0].props.children.props.children
         .join()
@@ -94,11 +87,9 @@ describe("<ButtonItem />", () => {
   });
 
   it("should render the hits if variant is killer", () => {
-    const { getByRole } = render(
-      <ButtonItem {...buttonProps} item="1" hits={3} variant="killer" />
-    );
+    render(<ButtonItem {...buttonProps} item="1" hits={3} variant="killer" />);
 
-    const button = getByRole("button");
+    const button = screen.getByRole("button");
     const numHits =
       button.props.children[0].props.children[0].props.children.props.children
         .join()
@@ -108,20 +99,44 @@ describe("<ButtonItem />", () => {
   });
 
   it("should render a regular button", () => {
-    const { getByRole } = render(<ButtonItem {...buttonProps} item="3" />);
+    render(<ButtonItem {...buttonProps} item="3" />);
 
-    const button = getByRole("button");
+    const button = screen.getByRole("button");
     expect(button.props.title).toMatch(/3/i);
   });
-  // it("",()=>{});
-  // it("",()=>{});
-  // it("",()=>{});
-  // it("",()=>{});
-  // it("",()=>{});
-  // it("",()=>{});
-  // it("",()=>{});
-  // it("",()=>{});
-  // it("",()=>{});
-  // it("",()=>{});
-  // it("",()=>{});
+
+  it("should call the button function if variant is killer or cricket", async () => {
+    let title = "1";
+    const buttonPress = jest.fn();
+    render(
+      <ButtonItem {...buttonProps} item={title} onButtonPress={buttonPress} />
+    );
+
+    const button = screen.getByRole("button");
+
+    fireEvent(button, "pressOut");
+
+    await waitFor(() => {
+      expect(buttonPress.mock.calls[0][0]).toMatch(title);
+    });
+  });
+
+  it("should call the function for a regular button", async () => {
+    let title = "3";
+    const buttonPress = jest.fn();
+    render(
+      <ButtonItem {...buttonProps} item={title} onButtonPress={buttonPress} />
+    );
+
+    const button = screen.getByRole("button");
+
+    fireEvent(button, "pressOut");
+    fireEvent(button, "pressOut");
+
+    await waitFor(() => {
+      expect(
+        buttonPress.mock.calls[0].concat(buttonPress.mock.calls[1]).join("")
+      ).toBe("33");
+    });
+  });
 });

@@ -15,6 +15,13 @@ const useGame = () => {
   // leading score
   const [leadingScore, setLeadingScore] = useState<number>(0);
 
+  const [gameState, setGameState] = useState({
+    turn: 0,
+    round: 1,
+    currentPlayer: selectedPlayers[0],
+    leadingScore: 0,
+  });
+
   // delete input
   const onDeleteInput = (variant?: PlayableGameVariants) => {
     variant === "killer"
@@ -48,9 +55,9 @@ const useGame = () => {
           variant === "cricket" ||
           variant === "elimination" ||
           variant === "x01"
-        ) {
+        )
           player.scoreList = [];
-        }
+
         if (variant === "cricket" || variant === "x01") player.stats.darts = 0;
         if (assignedLives !== undefined) {
           variant === "elimination" && (player.lives = assignedLives);
@@ -60,9 +67,8 @@ const useGame = () => {
           player.lives = 0;
           player.killer = false;
         }
-        if (variant === "x01") {
-          player.stats.oneDartAverage = 0;
-        }
+        if (variant === "x01") player.stats.oneDartAverage = 0;
+
         return player;
       })
     );
@@ -70,6 +76,21 @@ const useGame = () => {
     setRound(1);
     setLeadingScore(0);
     playerIsOut.length > 0 && setPlayerIsOut(() => []);
+  };
+
+  const onChangeTurns = (players: Array<IPlayer>, score: number) => {
+    let newTurn = (gameState.turn + 1) % players.length;
+    let newScore =
+      gameState.leadingScore < score ? score : gameState.leadingScore;
+    let newRound = newTurn === 0 ? gameState.round + 1 : gameState.round;
+
+    setGameState((prev) => ({
+      ...prev,
+      turn: newTurn,
+      round: newRound,
+      leadingScore: newScore,
+      currentPlayer: { ...players[newTurn] },
+    }));
   };
 
   // turn information
@@ -104,7 +125,8 @@ const useGame = () => {
 
   const [playerIsOut, setPlayerIsOut] = useState<Array<IPlayer>>([]);
 
-  const nextPlayer = selectedPlayers[(turn + 1) % selectedPlayers.length];
+  const nextPlayer =
+    selectedPlayers[(gameState.turn + 1) % selectedPlayers.length];
 
   const limitNumberOfHits = (calculatedHits: Array<number>) => {
     let hits = calculatedHits.filter((hit) => hit > 0);
@@ -159,6 +181,9 @@ const useGame = () => {
     onResetGame,
     limitNumberOfHits,
     calculateHits,
+    gameState,
+    setGameState,
+    onChangeTurns,
   };
 };
 

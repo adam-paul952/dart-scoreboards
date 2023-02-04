@@ -3,6 +3,7 @@ import {
   cleanup,
   fireEvent,
   render,
+  screen,
   waitFor,
 } from "@testing-library/react-native";
 
@@ -91,26 +92,29 @@ describe("<CalculatorButtons />", () => {
   });
 
   describe("button onPress", () => {
-    // it("should call the provided delete input function", async () => {
-    //   const mockOnDeleteInput = jest.fn();
-    //   const { getAllByRole } = render(
-    //     <CalculatorButtons
-    //       {...buttonProps}
-    //       variant="baseball"
-    //       onDeleteInput={() => mockOnDeleteInput()}
-    //     />
-    //   );
-    //   expect(mockOnDeleteInput).not.toHaveBeenCalled();
-    //   const deleteButton = getAllByRole("button").filter(
-    //     (button) => button.props.title === "Del"
-    //   )[0];
-    //   expect(deleteButton).toBeTruthy();
-    //   fireEvent(deleteButton, "click");
-    //   // console.log(deleteButton);
-    //   await waitFor(() => {
-    //     expect(mockOnDeleteInput).toHaveBeenCalled();
-    //   });
-    // });
+    it("should call the provided delete input function", async () => {
+      const mockOnDeleteInput = jest.fn();
+      render(
+        <CalculatorButtons
+          {...buttonProps}
+          variant="baseball"
+          onDeleteInput={mockOnDeleteInput}
+        />
+      );
+      expect(mockOnDeleteInput).not.toHaveBeenCalled();
+
+      // const deleteButton = screen.getByRole("button", { name: /del/i });
+
+      // expect(deleteButton).toBeTruthy();
+
+      // fireEvent(deleteButton, "press");
+      // // screen.debug();
+      // console.log(deleteButton);
+      // await waitFor(() => {
+      //   console.log(mockOnDeleteInput.mock);
+      //   // expect(mockOnDeleteInput).toHaveBeenCalledWith("Del");
+      // });
+    });
     // it("",()=>{})
     // it("",()=>{})
     // it("",()=>{})
@@ -135,3 +139,13 @@ describe("<CalculatorButtons />", () => {
     // it("",()=>{})
   });
 });
+// import {Pressable, Text} from 'react-native'
+
+// render(
+//   <Pressable accessibilityRole="button" disabled>
+//     <Text>Hello</Text>
+//   </Pressable>
+// );
+// const element = screen.getByRole('button');
+// const element2 = screen.getByRole('button', { name: 'Hello' });
+// const element3 = screen.getByRole('button', { name: 'Hello', disabled: true });

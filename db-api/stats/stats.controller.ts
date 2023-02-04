@@ -90,7 +90,7 @@ export const updatePlayerStats = (
   statsToUpdate: (string | number | null)[]
 ) => {
   db.transaction((tx) => {
-    // console.log(`update player stats called`);
+    console.log(`Stats to update: `, statsToUpdate);
     let table = assignTableType(game);
     if (game === "overall")
       onUpdateOverallStats({

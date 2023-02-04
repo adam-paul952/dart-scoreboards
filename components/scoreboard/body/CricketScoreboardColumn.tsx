@@ -39,7 +39,6 @@ const CricketScoreboardColumn = (props: CricketScoreboardColumnProps) => {
     if (target === 1) {
       return (
         <MaterialCommunityIcons
-          testID="one-point"
           accessible={true}
           accessibilityLabel="One Point"
           name="slash-forward"
@@ -51,7 +50,6 @@ const CricketScoreboardColumn = (props: CricketScoreboardColumnProps) => {
     } else if (target === 2) {
       return (
         <Feather
-          testID="two-points"
           accessible={true}
           accessibilityLabel="Two Points"
           name="x"
@@ -63,8 +61,7 @@ const CricketScoreboardColumn = (props: CricketScoreboardColumnProps) => {
     } else if (target >= 3) {
       return (
         <AntDesign
-          testID="3-points"
-          accessibilityLabel="3 Points"
+          accessibilityLabel="Three Points"
           name="closecircleo"
           size={22}
           color={hitMarkColor}
@@ -74,42 +71,31 @@ const CricketScoreboardColumn = (props: CricketScoreboardColumnProps) => {
     } else return null;
   };
 
-  const renderCurrentIcons = () => {
-    if (hitTargets !== undefined)
-      return activeArray.map((target, index) => (
-        <View
-          key={index}
-          style={{
-            flex: 1,
-            justifyContent: "center",
-            alignItems: "center",
-            backgroundColor: "transparent",
-          }}
-        >
-          {renderIcon(target)}
-        </View>
-      ));
-
-    return numTargets.map((target, index) => (
-      <View
-        key={index}
-        style={{
-          flex: 1,
-          justifyContent: "center",
-          alignItems: "center",
-          backgroundColor: "transparent",
-        }}
-      >
-        {renderIcon(target)}
-      </View>
-    ));
-  };
-
-  return <>{renderCurrentIcons()}</>;
+  return (
+    <>
+      {hitTargets === undefined
+        ? numTargets.map((target, index) => (
+            <View key={index} style={styles.iconContainer}>
+              {renderIcon(target)}
+            </View>
+          ))
+        : activeArray.map((target, index) => (
+            <View key={index} style={styles.iconContainer}>
+              {renderIcon(target)}
+            </View>
+          ))}
+    </>
+  );
 };
 
 export default CricketScoreboardColumn;
 
 const styles = StyleSheet.create({
   iconMargin: { marginHorizontal: 6 },
+  iconContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "transparent",
+  },
 });

@@ -77,11 +77,11 @@ const usePlayerStats = () => {
   ) => {
     setOverallStats((prev) =>
       prev.map((item) => {
-        if (item.id === player.id && item.id !== winner.id) {
+        if (player.id === item.id && player.id !== winner.id) {
           item.games_played += 1;
           item.games_lost += 1;
           // console.log(`Losing Stats: `, player.stats);
-        } else if (item.id === player.id && item.id === winner.id) {
+        } else if (player.id === item.id && player.id === winner.id) {
           item.games_won += 1;
           item.games_played += 1;
           // console.log(`Winner stats: `, player.stats);

@@ -26,14 +26,16 @@ const GameScoreboardBody = (props: GameScoreboardBodyProps) => {
   const activePlayerColor = Colors[colorScheme].activePlayer;
   const hitMarkColor = Colors[colorScheme].text;
 
-  const playerStrikeThrough = (player: IPlayer) => {
+  const playerStrikeThrough = (player: IPlayer) =>
     (variant === "baseball" &&
       playersOut !== undefined &&
       playersOut.some((item) => item.id === player.id)) ||
     (variant === "elimination" && player.lives === 0) ? (
-      <View style={styles.strikeThrough} />
+      <View
+        style={styles.strikeThrough}
+        accessibilityLabel="eliminated player"
+      />
     ) : null;
-  };
 
   return (
     <>
@@ -85,10 +87,8 @@ const GameScoreboardBody = (props: GameScoreboardBodyProps) => {
                     ? {
                         flex: 4,
                         backgroundColor: "transparent",
-                        // textAlign: "center",
-                        // fontSize: 20,
                       }
-                    : variant === "killer"
+                    : variant === "killer" || variant === "baseball"
                     ? { textAlign: "left" }
                     : null,
                 ]}
@@ -110,15 +110,12 @@ const GameScoreboardBody = (props: GameScoreboardBodyProps) => {
                 ))
               : null}
 
-            {variant === "cricket" && player.id === currentPlayer ? (
+            {variant === "cricket" ? (
               <CricketScoreboardColumn
                 player={player}
-                hitTargets={hitTargets}
-                hitMarkColor={hitMarkColor}
-              />
-            ) : variant === "cricket" && player.id !== currentPlayer ? (
-              <CricketScoreboardColumn
-                player={player}
+                hitTargets={
+                  player.id === currentPlayer ? hitTargets : undefined
+                }
                 hitMarkColor={hitMarkColor}
               />
             ) : null}
@@ -134,9 +131,7 @@ const GameScoreboardBody = (props: GameScoreboardBodyProps) => {
                   ? { flex: 0.6 }
                   : variant === "x01"
                   ? { flexDirection: "row", flex: 1 }
-                  : variant === "killer"
-                  ? { flex: 1 }
-                  : null,
+                  : { flex: 1 },
               ]}
             >
               {variant === "x01" ? (
@@ -183,6 +178,7 @@ const GameScoreboardBody = (props: GameScoreboardBodyProps) => {
                       name="checkmark"
                       size={24}
                       color={Colors[colorScheme].text}
+                      accessibilityLabel={`Player ${player.id} killer`}
                     />
                   ) : (
                     ""
