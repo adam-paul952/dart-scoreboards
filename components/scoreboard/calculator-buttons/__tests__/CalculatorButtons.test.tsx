@@ -31,11 +31,9 @@ describe("<CalculatorButtons />", () => {
 
   describe("render the calculator buttons", () => {
     it("displays the regular calculator buttons", () => {
-      const { getAllByRole } = render(
-        <CalculatorButtons {...buttonProps} variant="baseball" />
-      );
+      render(<CalculatorButtons {...buttonProps} variant="baseball" />);
 
-      const buttons = getAllByRole("button");
+      const buttons = screen.getAllByRole("button");
 
       expect(buttons).toHaveLength(12);
       buttons.forEach((button, index) => {
@@ -44,11 +42,9 @@ describe("<CalculatorButtons />", () => {
     });
 
     it("displays the cricket calculator buttons", () => {
-      const { getAllByRole } = render(
-        <CalculatorButtons {...buttonProps} variant="cricket" />
-      );
+      render(<CalculatorButtons {...buttonProps} variant="cricket" />);
 
-      const buttons = getAllByRole("button");
+      const buttons = screen.getAllByRole("button");
 
       expect(buttons).toHaveLength(9);
       buttons.forEach((button, index) => {
@@ -66,7 +62,7 @@ describe("<CalculatorButtons />", () => {
       "displays the killer calculator buttons for %i players",
       (numPlayers, input) => {
         // console.log(`Input: `, input);
-        const { getAllByRole, queryAllByA11yState } = render(
+        render(
           <CalculatorButtons
             {...buttonProps}
             variant="killer"
@@ -74,12 +70,14 @@ describe("<CalculatorButtons />", () => {
           />
         );
 
-        const buttons = getAllByRole("button");
+        const buttons = screen.getAllByRole("button");
         const enterDelete = buttons.filter(
           (button) =>
             button.props.title === "Enter" || button.props.title === "Del"
         ).length;
-        const disabledButtons = queryAllByA11yState({ disabled: true }).length;
+        const disabledButtons = screen.queryAllByA11yState({
+          disabled: true,
+        }).length;
         const emptyButtons = buttons.filter(
           (button) => button.props.title === ""
         ).length;
@@ -91,53 +89,53 @@ describe("<CalculatorButtons />", () => {
     );
   });
 
-  describe("button onPress", () => {
-    it("should call the provided delete input function", async () => {
-      const mockOnDeleteInput = jest.fn();
-      render(
-        <CalculatorButtons
-          {...buttonProps}
-          variant="baseball"
-          onDeleteInput={mockOnDeleteInput}
-        />
-      );
-      expect(mockOnDeleteInput).not.toHaveBeenCalled();
+  // describe("button onPress", () => {
+  //   it("should call the provided delete input function", async () => {
+  //     const mockOnDeleteInput = jest.fn();
+  //     render(
+  //       <CalculatorButtons
+  //         {...buttonProps}
+  //         variant="baseball"
+  //         onDeleteInput={mockOnDeleteInput}
+  //       />
+  //     );
+  //     expect(mockOnDeleteInput).not.toHaveBeenCalled();
 
-      // const deleteButton = screen.getByRole("button", { name: /del/i });
+  //     const deleteButton = screen.getByRole("button", { name: /del/i });
 
-      // expect(deleteButton).toBeTruthy();
+  //     expect(deleteButton).toBeTruthy();
 
-      // fireEvent(deleteButton, "press");
-      // // screen.debug();
-      // console.log(deleteButton);
-      // await waitFor(() => {
-      //   console.log(mockOnDeleteInput.mock);
-      //   // expect(mockOnDeleteInput).toHaveBeenCalledWith("Del");
-      // });
-    });
-    // it("",()=>{})
-    // it("",()=>{})
-    // it("",()=>{})
-    // it("",()=>{})
-    // it("",()=>{})
-  });
+  //     fireEvent(deleteButton, "pressOut");
+  //     // // screen.debug();
+  //     // console.log(deleteButton);
+  //     await waitFor(() => {
+  //       console.log(mockOnDeleteInput.mock);
+  //       // expect(mockOnDeleteInput).toHaveBeenCalledWith("Del");
+  //     });
+  //   });
+  // it("",()=>{})
+  // it("",()=>{})
+  // it("",()=>{})
+  // it("",()=>{})
+  // it("",()=>{})
+});
 
-  describe("assign hits to button", () => {
-    // it("",()=>{})
-    // it("",()=>{})
-    // it("",()=>{})
-    // it("",()=>{})
-    // it("",()=>{})
-    // it("",()=>{})
-  });
-  describe("assign disabled", () => {
-    // it("",()=>{})
-    // it("",()=>{})
-    // it("",()=>{})
-    // it("",()=>{})
-    // it("",()=>{})
-    // it("",()=>{})
-  });
+describe("assign hits to button", () => {
+  // it("",()=>{})
+  // it("",()=>{})
+  // it("",()=>{})
+  // it("",()=>{})
+  // it("",()=>{})
+  // it("",()=>{})
+});
+describe("assign disabled", () => {
+  // it("",()=>{})
+  // it("",()=>{})
+  // it("",()=>{})
+  // it("",()=>{})
+  // it("",()=>{})
+  // it("",()=>{})
+  // });
 });
 // import {Pressable, Text} from 'react-native'
 

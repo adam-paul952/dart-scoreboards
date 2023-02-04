@@ -33,30 +33,22 @@ const Cricket = ({ route, navigation }: CricketProps) => {
   const {
     playerScore,
     setPlayerScore,
-    leadingScore,
-    setLeadingScore,
-    changeTurns,
-    round,
-    setRound,
-    changeRounds,
-    currentPlayer,
-    turn,
-    setCurrentPlayer,
-    setTurn,
+    gameState,
+    setGameState,
+    nextPlayer,
+    onChangeTurns,
     onDeleteInput,
     onResetGame,
-    nextPlayer,
     limitNumberOfHits,
     calculateHits,
   } = useGame();
 
+  const { turn, round, leadingScore, currentPlayer } = gameState;
+
   const [undoState, { set: setUndoState, undo: undoTurn, canUndo }] =
     useUndoRedo({
-      turn: 0,
-      round: 1,
-      player: { ...currentPlayer },
+      ...gameState,
       nextPlayer: {},
-      leadingScore: 0,
       disabledButtons: [] as boolean[],
       playerScore: "",
     });
@@ -98,7 +90,7 @@ const Cricket = ({ route, navigation }: CricketProps) => {
     // calculate score
     const newScore = handleScoreChange(currentPlayer.scoreList);
     // determine if player has highest score
-    newScore > leadingScore && setLeadingScore(newScore);
+    // newScore > leadingScore && setLeadingScore(newScore);
     // set player state with updated values
     setSelectedPlayers((prev) =>
       prev.map((player) => {
@@ -126,9 +118,10 @@ const Cricket = ({ route, navigation }: CricketProps) => {
       // else change turns and rounds
     } else {
       // change turns
-      changeTurns();
+      // changeTurns();
+      onChangeTurns(selectedPlayers, newScore);
       // changeRounds
-      changeRounds();
+      // changeRounds();
     }
   };
 
@@ -146,10 +139,7 @@ const Cricket = ({ route, navigation }: CricketProps) => {
 
   const onHandleSubmit = () => {
     setUndoState({
-      turn,
-      round,
-      player: JSON.parse(JSON.stringify(currentPlayer)),
-      leadingScore,
+      ...gameState,
       nextPlayer: JSON.parse(JSON.stringify(nextPlayer)),
       disabledButtons: [...disableButton],
       playerScore,
@@ -166,10 +156,14 @@ const Cricket = ({ route, navigation }: CricketProps) => {
     setGameOver({ isOver: true, game: variant });
 
     gameOverAlert({
-      playerName: currentPlayer.name,
-      onResetGame: resetGame,
+      winner: {
+        id: currentPlayer.id,
+        name: currentPlayer.name,
+      },
+      gameEnd: resetGame,
       navigation,
       variant,
+      undo: onUndoTurn,
     });
   };
 
@@ -223,14 +217,20 @@ const Cricket = ({ route, navigation }: CricketProps) => {
     undoTurn();
     setSelectedPlayers((prev) =>
       prev.map((player) =>
-        player.id === presentTurn.player.id ? presentTurn.player : player
+        player.id === presentTurn.currentPlayer.id
+          ? presentTurn.currentPlayer
+          : player
       )
     );
 
-    setCurrentPlayer(presentTurn.player);
-    setTurn(presentTurn.turn);
-    setRound(presentTurn.round);
-    setLeadingScore(presentTurn.leadingScore);
+    setGameState((prev) => ({
+      ...prev,
+      currentPlayer: { ...presentTurn.currentPlayer },
+      turn: presentTurn.turn,
+      round: presentTurn.round,
+      leadingScore: presentTurn.leadingScore,
+    }));
+
     setDisableButton(presentTurn.disabledButtons);
     setPlayerScore(presentTurn.playerScore);
   };
@@ -254,18 +254,15 @@ const Cricket = ({ route, navigation }: CricketProps) => {
       if (previousScreen === "resume-game" && resumeGameState !== undefined) {
         resumeGameState.undoState.past.forEach((item) => setUndoState(item));
         setUndoState(resumeGameState.undoState.present);
-        setTurn(
-          () =>
-            (resumeGameState.undoState.present.turn + 1) %
-            resumeGameState.players.length
-        );
-        setRound(() =>
-          turn === 0
-            ? resumeGameState.undoState.present.round + 1
-            : resumeGameState.undoState.present.round
-        );
-        setCurrentPlayer(resumeGameState.undoState.present.nextPlayer);
-        setLeadingScore(resumeGameState.undoState.present.leadingScore);
+
+        setGameState((prev) => ({
+          ...prev,
+          currentPlayer: presentTurn.currentPlayer,
+          turn: presentTurn.turn,
+          round: presentTurn.round,
+          leadingScore: presentTurn.leadingScore,
+        }));
+
         setSelectedPlayers(() => resumeGameState.players);
         setDisableButton(
           () => resumeGameState.undoState.present.disabledButtons

@@ -17,7 +17,7 @@ interface GameOverAlertProps {
   >;
   variant: PlayableGameVariants;
   undo: () => void;
-  gameEnd: () => void;
+  gameEnd: (variant: PlayableGameVariants) => void;
   assignedLives?: number;
 }
 
@@ -26,6 +26,7 @@ const gameOverAlert = ({
   navigation,
   undo,
   gameEnd,
+  variant,
 }: GameOverAlertProps) => {
   const callUndo = () => {
     console.log(`Undo called from alert`);
@@ -44,14 +45,14 @@ const gameOverAlert = ({
       {
         text: "Create New",
         onPress: () => {
-          gameEnd();
+          gameEnd(variant);
           navigation.navigate("create-match");
         },
         style: "cancel",
       },
       {
         text: "Rematch",
-        onPress: gameEnd,
+        onPress: () => gameEnd(variant),
       },
     ],
     {

@@ -126,8 +126,9 @@ const Killer = ({ route, navigation }: KillerProps) => {
     setGameOver({ isOver: true, game: variant });
 
     gameOverAlert({
-      playerName: winner.name,
-      onResetGame,
+      winner,
+      gameEnd: onResetGame,
+      undo: onUndoTurn,
       navigation,
       variant,
     });

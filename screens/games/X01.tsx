@@ -46,7 +46,7 @@ const X01 = ({ route, navigation }: X01Props) => {
 
   const [undoState, { set: setUndoState, undo: undoTurn, canUndo }] =
     useUndoRedo({
-      player: { ...currentPlayer },
+      currentPlayer: { ...currentPlayer },
       nextPlayer: {},
     });
 
@@ -129,10 +129,11 @@ const X01 = ({ route, navigation }: X01Props) => {
       setGameOver({ isOver: true, game: variant });
 
       gameOverAlert({
-        playerName: winner.name,
-        onResetGame,
+        winner,
+        gameEnd: onResetGame,
         navigation,
         variant,
+        undo: onUndo,
         assignedLives: x01Points,
       });
     }
@@ -149,16 +150,18 @@ const X01 = ({ route, navigation }: X01Props) => {
     undoTurn();
     setSelectedPlayers((prev) =>
       prev.map((player) =>
-        player.id === presentTurn.player.id ? presentTurn.player : player
+        player.id === presentTurn.currentPlayer.id
+          ? presentTurn.currentPlayer
+          : player
       )
     );
 
-    setCurrentPlayer(presentTurn.player);
+    setCurrentPlayer(presentTurn.currentPlayer);
   };
 
   const onHandleSubmit = () => {
     setUndoState({
-      player: JSON.parse(JSON.stringify(currentPlayer)),
+      currentPlayer: JSON.parse(JSON.stringify(currentPlayer)),
       nextPlayer: JSON.parse(JSON.stringify(nextPlayer)),
     });
 

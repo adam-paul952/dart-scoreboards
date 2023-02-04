@@ -26,8 +26,8 @@ type EliminationProps = NativeStackScreenProps<
 >;
 
 // set variables
-let winner: { id?: number; name: string } = {
-  id: undefined,
+let winner: { id: number; name: string } = {
+  id: 0,
   name: "",
 };
 
@@ -44,43 +44,39 @@ const Elimination = ({ route, navigation }: EliminationProps) => {
   const { onUpdatePlayerStats, setGameOver } = usePlayerStats();
   const { onAddGame } = useResumeGame();
   const {
-    currentPlayer,
     playerScore,
     setPlayerScore,
-    round,
-    setRound,
+    gameState,
+    setGameState,
+    onChangeTurns,
     onDeleteInput,
-    leadingScore,
-    setLeadingScore,
-    changeTurns,
-    changeRounds,
-    turn,
     assignCurrentPlayerHighScore,
-    setCurrentPlayer,
-    setTurn,
     nextPlayer,
     onResetGame,
   } = useGame();
 
+  const { turn, round, leadingScore, currentPlayer } = gameState;
+
   const [undoState, { set: setUndoState, undo: undoTurn, canUndo }] =
     useUndoRedo({
-      turn: 0,
-      round: 1,
-      player: { ...currentPlayer },
-      nextPlayer: {},
-      leadingScore: 0,
+      ...gameState,
+      // turn: 0,
+      // round: 1,
+      // player: { ...currentPlayer },
+      nextPlayer: { ...nextPlayer },
+      // leadingScore: 0,
     });
 
   const { present: presentTurn } = undoState;
 
   const [eliminationLives] = useState(currentPlayer.lives);
 
-  useEffect(() => {
-    if (currentPlayer.lives === 0) {
-      changeTurns();
-      changeRounds();
-    }
-  }, [currentPlayer]);
+  // useEffect(() => {
+  //   if (currentPlayer.lives === 0) {
+  //     changeTurns();
+  //     changeRounds();
+  //   }
+  // }, [currentPlayer]);
 
   const declareWinner = () => {
     selectedPlayers.forEach((player) => {
@@ -95,26 +91,27 @@ const Elimination = ({ route, navigation }: EliminationProps) => {
 
     // alert game over with winner name
     gameOverAlert({
-      playerName: winner.name,
-      onResetGame,
+      winner: { name: winner.name, id: winner.id },
+      gameEnd: onResetGame,
       navigation,
       variant,
+      undo: onUndo,
       assignedLives: eliminationLives,
     });
   };
 
-  const onChangeTurns = () => {
-    // convert playerScore to number
-    roundScore = parseInt(playerScore, 10);
-    // if playerScore isn't a number -> score = 0
-    if (isNaN(roundScore)) roundScore = 0;
-    // assign score to scorelist
-    currentPlayer.scoreList.push(roundScore);
-    assignCurrentPlayerHighScore(currentPlayer);
-  };
+  // const onChangeTurns = () => {
+  //   // convert playerScore to number
+  //   roundScore = parseInt(playerScore, 10);
+  //   // if playerScore isn't a number -> score = 0
+  //   if (isNaN(roundScore)) roundScore = 0;
+  //   // assign score to scorelist
+  //   currentPlayer.scoreList.push(roundScore);
+  //   assignCurrentPlayerHighScore(currentPlayer);
+  // };
 
   const onHandleTurnChange = () => {
-    onChangeTurns();
+    // onChangeTurns();
     // if it's the first turn of the game and the player doesn't score - player doesn't lose a life
     if (round === 1 && turn === 0 && roundScore === 0) {
       setSelectedPlayers((prev) =>
@@ -129,7 +126,7 @@ const Elimination = ({ route, navigation }: EliminationProps) => {
     // check to see if player score is > previous playerscore
     else if (roundScore > leadingScore) {
       // set leading score to new score
-      setLeadingScore(roundScore);
+      // setLeadingScore(roundScore);
       // set player's score to current score
       setSelectedPlayers((prev) =>
         prev.map((player) => {
@@ -140,7 +137,7 @@ const Elimination = ({ route, navigation }: EliminationProps) => {
         })
       );
     } else {
-      setLeadingScore(roundScore);
+      // setLeadingScore(roundScore);
 
       setSelectedPlayers((prev) =>
         prev.map((player) => {
@@ -153,8 +150,8 @@ const Elimination = ({ route, navigation }: EliminationProps) => {
       );
     }
 
-    changeTurns();
-    changeRounds();
+    // changeTurns();
+    // changeRounds();
 
     // if only one player left with lives game is over
     const checkForWinningPlayer: number = selectedPlayers.filter(
@@ -166,10 +163,7 @@ const Elimination = ({ route, navigation }: EliminationProps) => {
 
   const onHandleSubmit = () => {
     setUndoState({
-      turn,
-      round,
-      player: JSON.parse(JSON.stringify(currentPlayer)),
-      leadingScore,
+      ...gameState,
       nextPlayer: JSON.parse(JSON.stringify(nextPlayer)),
     });
 
@@ -181,14 +175,19 @@ const Elimination = ({ route, navigation }: EliminationProps) => {
     undoTurn();
     setSelectedPlayers((prev) =>
       prev.map((player) =>
-        player.id === presentTurn.player.id ? presentTurn.player : player
+        player.id === presentTurn.currentPlayer.id
+          ? presentTurn.currentPlayer
+          : player
       )
     );
 
-    setCurrentPlayer(presentTurn.player);
-    setTurn(presentTurn.turn);
-    setRound(presentTurn.round);
-    setLeadingScore(presentTurn.leadingScore);
+    setGameState((prev) => ({
+      ...prev,
+      currentPlayer: presentTurn.currentPlayer,
+      turn: presentTurn.turn,
+      round: presentTurn.round,
+      leadingScore: presentTurn.leadingScore,
+    }));
   };
 
   // handle saving game details if game is unfinished
@@ -216,10 +215,13 @@ const Elimination = ({ route, navigation }: EliminationProps) => {
         const { present } = undoState;
 
         setSelectedPlayers(() => players);
-        setCurrentPlayer(present.nextPlayer);
-        setTurn(() => (present.turn + 1) % resumeGameState.players.length);
-        setRound(() => (turn === 0 ? present.round + 1 : present.round));
-        setLeadingScore(present.leadingScore);
+        setGameState((prev) => ({
+          ...prev,
+          currentPlayer: present.nextPlayer,
+          turn: present.turn,
+          round: present.round,
+          leadingScore: present.leadingScore,
+        }));
       } else return;
     });
 
