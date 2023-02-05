@@ -1,4 +1,4 @@
-export const baseballData = [
+export const gameData = [
   { label: "Baseball", value: "baseball" },
   { label: "Cricket", value: "cricket" },
   { label: "Elimination", value: "elimination" },

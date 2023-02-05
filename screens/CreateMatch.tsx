@@ -9,7 +9,7 @@ import Dropdown from "../components/Dropdown";
 import ActivePlayerList from "@components/ActivePlayerList";
 
 import {
-  baseballData,
+  gameData,
   x01Data,
   eliminationData,
 } from "../constants/data/createMatch";
@@ -26,7 +26,8 @@ const CreateMatch = ({ navigation }: CreateMatchProps) => {
   const { selectedPlayers, setSelectedPlayers, togglePlayerSelect } =
     usePlayerState();
   // game to be selected
-  const [game, setGame] = useState<null>(null);
+  // TODO: need to find a way to assign type compatible with navigation
+  const [game, setGame] = useState<any>(null);
   // x01 points - elimination lives
   const [points, setPoints] = useState<number | null>(null);
 
@@ -84,7 +85,7 @@ const CreateMatch = ({ navigation }: CreateMatchProps) => {
         : navigation.navigate(game));
   };
 
-  const shufflePlayerList = (array: IPlayer[]) => {
+  const shufflePlayerList = <T,>(array: T[]) => {
     let currentIndex = array.length,
       randomIndex;
 
@@ -104,6 +105,13 @@ const CreateMatch = ({ navigation }: CreateMatchProps) => {
     return array;
   };
 
+  const onRandomGame = () => {
+    let games = [...gameData];
+    let randomGame = shufflePlayerList(games);
+
+    setGame(randomGame[0].value);
+  };
+
   useEffect(() => {
     const unsubscribe = navigation.addListener("focus", () =>
       resetPlayerState()
@@ -120,7 +128,7 @@ const CreateMatch = ({ navigation }: CreateMatchProps) => {
         }}
       >
         <Dropdown
-          data={baseballData}
+          data={gameData}
           label="Choose Game:"
           value={game}
           setValue={setGame}
@@ -140,6 +148,27 @@ const CreateMatch = ({ navigation }: CreateMatchProps) => {
             setValue={setPoints}
           />
         ) : null}
+      </View>
+      <View
+        style={{
+          flexDirection: "row",
+          alignItems: "center",
+          justifyContent: "space-around",
+          paddingVertical: 10,
+        }}
+      >
+        <Text style={{ fontSize: 20 }}>- Or -</Text>
+        <CustomButton
+          title="Randomize Game"
+          buttonStyle={{
+            backgroundColor: "transparent",
+            alignSelf: "flex-end",
+            flexBasis: "70%",
+            borderWidth: 1,
+            borderColor: "#ddd",
+          }}
+          onPressOut={() => onRandomGame()}
+        />
       </View>
       <View style={{ flexGrow: 1, paddingVertical: 10 }}>
         <View

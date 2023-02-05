@@ -84,13 +84,14 @@ const useGame = () => {
       gameState.leadingScore < score ? score : gameState.leadingScore;
     let newRound = newTurn === 0 ? gameState.round + 1 : gameState.round;
 
-    setGameState((prev) => ({
-      ...prev,
+    setGameState({
+      ...gameState,
       turn: newTurn,
       round: newRound,
-      leadingScore: newScore,
+      leadingScore:
+        typeof newScore === "string" ? parseInt(newScore, 10) : newScore,
       currentPlayer: { ...players[newTurn] },
-    }));
+    });
   };
 
   // turn information
@@ -128,7 +129,7 @@ const useGame = () => {
   const nextPlayer =
     selectedPlayers[(gameState.turn + 1) % selectedPlayers.length];
 
-  const limitNumberOfHits = (calculatedHits: Array<number>) => {
+  const limitNumberOfHits = (calculatedHits: Array<number>): void => {
     let hits = calculatedHits.filter((hit) => hit > 0);
 
     const countOccurances = (scoreArray: string, text: string) =>
@@ -160,6 +161,11 @@ const useGame = () => {
         ).length
     );
 
+  const skipPlayer = () => {
+    changeTurns();
+    changeRounds();
+  };
+
   return {
     playerScore,
     setPlayerScore,
@@ -184,6 +190,7 @@ const useGame = () => {
     gameState,
     setGameState,
     onChangeTurns,
+    skipPlayer,
   };
 };
 

@@ -34,6 +34,8 @@ const gameOverAlert = ({
     undo();
   };
 
+  console.log(`Winner: `, winner);
+
   return Alert.alert(
     "Game Over",
     `${winner.name} has won the game!\n\nCongratulations!`,

@@ -42,25 +42,16 @@ const Baseball = ({ route, navigation }: BaseballRouteProps) => {
   const {
     playerScore,
     setPlayerScore,
-    // leadingScore,
-    // setLeadingScore,
     onDeleteInput,
-    // turn,
-    changeTurns,
-    // round,
-    // setRound,
-    changeRounds,
-    // currentPlayer,
     assignCurrentPlayerHighScore,
     playerIsOut,
     setPlayerIsOut,
-    // setTurn,
-    // setCurrentPlayer,
     onResetGame,
     nextPlayer,
     gameState,
     setGameState,
     onChangeTurns,
+    skipPlayer,
   } = useGame();
 
   const { turn, round, leadingScore, currentPlayer } = gameState;
@@ -79,7 +70,7 @@ const Baseball = ({ route, navigation }: BaseballRouteProps) => {
   useEffect(() => {
     setSelectedPlayers((prev) =>
       prev.map((player) => {
-        player.scoreList = new Array(10).fill("");
+        player.scoreList = new Array(10).fill(0);
         return player;
       })
     );
@@ -97,7 +88,9 @@ const Baseball = ({ route, navigation }: BaseballRouteProps) => {
       : (currentPlayer.scoreList[9] += roundScore);
 
     // calculate total by reducing scorelist
-    const overallScore = currentPlayer.scoreList.reduce((a, b) => a + b);
+    const overallScore = currentPlayer.scoreList
+      .filter(String)
+      .reduce((a, b) => a + b, 0);
 
     assignCurrentPlayerHighScore(currentPlayer);
 
@@ -113,7 +106,6 @@ const Baseball = ({ route, navigation }: BaseballRouteProps) => {
             }
       )
     );
-    // if current player score is greater then leading score, set leading score
 
     onChangeTurns(selectedPlayers, overallScore);
   };
@@ -123,8 +115,6 @@ const Baseball = ({ route, navigation }: BaseballRouteProps) => {
     handleScoreInput();
     roundRef.current = round;
 
-    // changeTurns();
-    // changeRounds();
     // if round is = 9 and turn is last turn check for duplicates or winner
     if (round === 9 && turn === selectedPlayers.length - 1) {
       selectedPlayers.filter((player) => player.score === leadingScore).length >
@@ -134,40 +124,15 @@ const Baseball = ({ route, navigation }: BaseballRouteProps) => {
       return;
     } else if (
       round > 9 &&
-      roundRef.current === present.round &&
+      round === present.round &&
       // since state update is batched we need to manually add
       // if not always returns true
-      currentPlayer.score + parseInt(playerScore, 10) !== leadingScore
-    ) {
+      currentPlayer.score + parseInt(playerScore, 10) !== leadingScore &&
       selectedPlayers.filter((player) => player.score === leadingScore)
-        .length === 1 && declareWinner();
-    }
+        .length === 1
+    )
+      declareWinner();
   };
-
-  useEffect(() => {
-    console.log(`------- New Game State -------`);
-    console.log(``);
-    console.log(gameState);
-    console.log(``);
-    console.log(`------- End New Game State -------`);
-  }, [gameState]);
-
-  useEffect(() => {
-    console.log(`---  START  ----`);
-    console.log(`Past:`);
-    console.log(``);
-    console.log(past);
-    console.log(`----Present---`);
-    console.log(``);
-    console.log(present);
-    // console.log(`----Future---`);
-    // console.log(``);
-    // console.log(undoState.future);
-    // console.log(`-------`);
-    // if (undoState.future.length > 0) {
-    //   undoState.future.forEach((state) => console.log(state));
-    // }
-  }, [past, present]);
 
   // handle score submit
   const onHandleSubmit = () => {
@@ -176,7 +141,6 @@ const Baseball = ({ route, navigation }: BaseballRouteProps) => {
     // assign state to undo redo
     setUndoState({
       ...gameState,
-      // currentPlayer: { ...currentPlayer },
       nextPlayer: { ...nextPlayer },
     });
   };
@@ -200,7 +164,7 @@ const Baseball = ({ route, navigation }: BaseballRouteProps) => {
   };
 
   const onUndoGameEnd = () => {
-    // undoTurn();
+    undoTurn();
 
     setSelectedPlayers((prev) =>
       prev.map((player) =>
@@ -210,8 +174,8 @@ const Baseball = ({ route, navigation }: BaseballRouteProps) => {
 
     setGameState((prev) => ({
       ...prev,
-      currentPlayer: { ...present.currentPlayer },
-      turn: present.turn,
+      currentPlayer: { ...past[past.length - 1].currentPlayer },
+      turn: (present.turn + 1) % selectedPlayers.length,
       round: present.round,
       leadingScore: present.leadingScore,
     }));
@@ -226,7 +190,7 @@ const Baseball = ({ route, navigation }: BaseballRouteProps) => {
     onResetGame(variant);
   };
 
-  // set state for undo()
+  // set state for undo
   const onUndo = () => {
     undoTurn();
     setSelectedPlayers((prev) =>
@@ -260,10 +224,7 @@ const Baseball = ({ route, navigation }: BaseballRouteProps) => {
   useEffect(() => {
     if (playerIsOut.length >= 1)
       playerIsOut.forEach((player) => {
-        if (player.name === currentPlayer.name) {
-          changeTurns();
-          changeRounds();
-        }
+        if (player.name === currentPlayer.name) skipPlayer();
       });
   }, [currentPlayer]);
 

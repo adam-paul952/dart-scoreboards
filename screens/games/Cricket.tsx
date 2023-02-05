@@ -71,15 +71,6 @@ const Cricket = ({ route, navigation }: CricketProps) => {
     false,
   ]);
 
-  // useEffect(() => {
-  //   setSelectedPlayers((prev) =>
-  //     prev.map((player) => {
-  //       player.scoreList = new Array(7).fill(0);
-  //       return player;
-  //     })
-  //   );
-  // }, []);
-
   const onHandleTurnCharge = () => {
     previousTurn.current = turn;
     // convert string array into numbers and push into current player scoreList
@@ -105,6 +96,7 @@ const Cricket = ({ route, navigation }: CricketProps) => {
         }
       })
     );
+
     // check current player array for maximum marks
     const declareWinner = targets
       .map(
@@ -112,17 +104,11 @@ const Cricket = ({ route, navigation }: CricketProps) => {
           currentPlayer.scoreList.filter((num) => num === target).length
       )
       .every((hit) => hit >= 3);
+
     // if player has all marks and leading score
-    if (declareWinner && currentPlayer.score >= leadingScore) {
-      onDeclareWinner();
-      // else change turns and rounds
-    } else {
-      // change turns
-      // changeTurns();
-      onChangeTurns(selectedPlayers, newScore);
-      // changeRounds
-      // changeRounds();
-    }
+    if (declareWinner && currentPlayer.score >= leadingScore) onDeclareWinner();
+    // else change turns and rounds
+    else onChangeTurns(selectedPlayers, newScore);
   };
 
   // if player has more then three marks on a number assign score
